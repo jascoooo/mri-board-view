@@ -1,0 +1,1765 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<title>MRI leaderboard · view only</title>
+<style>
+  :root{
+    --bg:#060912; --panel:#0e1424; --panel2:#141b2f; --line:rgba(255,255,255,.08);
+    --text-primary:#eef2fb; --text-secondary:#aab4cc; --text-muted:#6f7a94;
+    --blue:#4c9dff; --cyan:#38e1ff; --gold:#ffcf5c; --gold2:#f0a93a; --green:#3ee98a; --red:#ff5d6c; --amber:#ffb84a;
+    --series:var(--blue); --good:var(--green); --warning:var(--amber); --critical:var(--red);
+    --surface-1:var(--panel); --surface-2:var(--panel2);
+    --display:"Bahnschrift","DIN Alternate","Inter Display","Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;
+    --body:"Segoe UI Variable Text","Segoe UI","Inter",system-ui,-apple-system,Arial,sans-serif;
+    --spring:cubic-bezier(.2,1.25,.35,1); --out:cubic-bezier(.16,.84,.24,1);
+  }
+  @property --ang{syntax:"<angle>";inherits:false;initial-value:0deg}
+  *{box-sizing:border-box}
+  html{font-size:clamp(12px,.8334vw,26px)}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--text-primary);overflow:hidden;font-family:var(--body);-webkit-font-smoothing:antialiased}
+  .num,.tile .big,.pnum,.nums b,.rank,.clock,.tm-r b,.ru-plus b,.ru-big b,.cel-val,.ring text{font-family:var(--display);font-stretch:88%;font-variant-numeric:tabular-nums;letter-spacing:.005em}
+
+  /* ---------- living background ---------- */
+  .bg{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+  .bg i{position:absolute;border-radius:50%;will-change:transform;opacity:.9}
+  .bg .a1{width:70vw;height:70vw;left:-22vw;top:-38vw;background:radial-gradient(closest-side,rgba(40,105,230,.42),transparent 70%);animation:drift1 38s ease-in-out infinite alternate}
+  .bg .a2{width:60vw;height:60vw;right:-20vw;top:-26vw;background:radial-gradient(closest-side,rgba(126,62,220,.32),transparent 70%);animation:drift2 46s ease-in-out infinite alternate}
+  .bg .a3{width:64vw;height:64vw;left:22vw;bottom:-46vw;background:radial-gradient(closest-side,rgba(20,190,140,.22),transparent 70%);animation:drift3 52s ease-in-out infinite alternate}
+  .bg .a4{width:36vw;height:36vw;right:6vw;bottom:-22vw;background:radial-gradient(closest-side,rgba(255,190,70,.13),transparent 70%);animation:drift1 60s ease-in-out infinite alternate-reverse}
+  @keyframes drift1{to{transform:translate3d(9vw,7vw,0) scale(1.15)}}
+  @keyframes drift2{to{transform:translate3d(-10vw,9vw,0) scale(1.1)}}
+  @keyframes drift3{to{transform:translate3d(-8vw,-6vw,0) scale(1.2)}}
+  .bg::after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px);background-size:3.2rem 3.2rem;-webkit-mask-image:radial-gradient(ellipse at 50% 30%,#000 10%,transparent 72%);mask-image:radial-gradient(ellipse at 50% 30%,#000 10%,transparent 72%)}
+  .bg::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 120%,rgba(0,0,0,.55),transparent 60%),radial-gradient(ellipse at 50% -20%,transparent 40%,rgba(0,0,0,.35))}
+
+  .wrap>*{min-width:0}.main>*,.side>*{min-width:0}
+  .wrap{position:relative;z-index:1;grid-template-columns:minmax(0,1fr);height:100%;display:grid;grid-template-rows:auto auto 1fr;gap:1.05rem;padding:1.5rem 1.9rem 1.6rem}
+
+  /* ---------- header ---------- */
+  header{display:flex;align-items:center;gap:1.1rem}
+  .brand{display:flex;align-items:center;gap:.9rem;flex:none}
+  header h1{white-space:nowrap}
+  .logo{width:2.9rem;height:2.9rem;border-radius:.85rem;display:grid;place-items:center;background:linear-gradient(145deg,#ffd978,#f0a93a 55%,#c9781f);box-shadow:0 .4rem 1.4rem rgba(240,169,58,.35),inset 0 1px 0 rgba(255,255,255,.55)}
+  .logo svg{width:1.7rem;height:1.7rem}
+  header h1{font-family:var(--display);font-stretch:82%;font-size:2.35rem;line-height:1;margin:0;font-weight:700;letter-spacing:.04em;text-transform:uppercase;background:linear-gradient(180deg,#fff 30%,#b9cdf5);-webkit-background-clip:text;background-clip:text;color:transparent}
+  #month{display:inline-block;margin-left:.2rem;font-family:var(--body);font-size:.95rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);-webkit-text-fill-color:var(--gold);padding:.32rem .8rem;border-radius:99px;background:rgba(255,207,92,.09);border:1px solid rgba(255,207,92,.28);vertical-align:.45rem}
+  .meta{min-width:0;margin-left:auto;display:flex;align-items:center;gap:.7rem;color:var(--text-secondary);font-size:.9rem}
+  #updated{min-width:0;overflow:hidden;text-overflow:ellipsis;display:inline-block;align-items:center;gap:.5rem;padding:.42rem .9rem;border-radius:99px;background:rgba(255,255,255,.045);border:1px solid var(--line);white-space:nowrap}
+  .dot{width:.6rem;height:.6rem;border-radius:50%;background:var(--green);display:inline-block;margin-right:.5rem;animation:livepulse 1.8s infinite}
+  .dot.err{background:var(--red);animation:none}
+  @keyframes livepulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.72)}}
+  #rcount{display:inline-flex;align-items:center;gap:.45rem;padding:.42rem .9rem .42rem .6rem;border-radius:99px;background:rgba(76,157,255,.1);border:1px solid rgba(76,157,255,.4);color:#cfe1f7;white-space:nowrap;font-size:.9rem}
+  #rcount svg{width:1.25rem;height:1.25rem;transform:rotate(-90deg)}
+  #rcount .rc-bg{fill:none;stroke:rgba(255,255,255,.14);stroke-width:3}#rcount .rc-fg{fill:none;stroke:var(--cyan);stroke-width:3;stroke-linecap:round;transition:stroke-dashoffset 1s linear}
+  #rcount b{font-family:var(--display);font-size:1.05rem;color:#fff;font-variant-numeric:tabular-nums}
+  #rcount.soon{border-color:var(--gold);background:rgba(255,207,92,.12);animation:hotpulse 1.2s ease-in-out infinite}#rcount.soon .rc-fg{stroke:var(--gold)}
+  .ctrl{display:flex;gap:.45rem;transition:opacity .6s,transform .6s}
+  body.idle .ctrl{opacity:0;pointer-events:none;transform:translateY(-.3rem)}
+  body.idle{cursor:none}
+  .iconbtn{background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--text-primary);border-radius:.6rem;padding:.42rem .75rem;font:500 .8rem var(--body);cursor:pointer;transition:background .2s,border-color .2s}
+  .iconbtn:hover{background:rgba(255,255,255,.11);border-color:rgba(255,255,255,.2)}
+  .clock{font-size:2.1rem;font-weight:600;line-height:1;color:#fff;padding-left:.5rem;text-align:right}
+  .clock small{display:block;font:500 .72rem var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);margin-top:.2rem}
+  .alert{background:rgba(255,93,108,.12);border:1px solid rgba(255,93,108,.55);color:#ffd9dd;border-radius:.75rem;padding:.6rem .9rem;font-size:.95rem;display:none;margin-bottom:.8rem}
+  .alert.on{display:block}
+  .spin{display:inline-block;margin-right:.45rem;color:var(--cyan);animation:spin 1.1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  #busybar{position:fixed;top:0;left:0;right:0;height:3px;pointer-events:none;z-index:50;opacity:0;transition:opacity .4s;background:linear-gradient(90deg,transparent,var(--blue),var(--cyan),var(--blue),transparent);background-size:40% 100%;background-repeat:no-repeat;animation:sweep 1.6s linear infinite}
+  body.busy #busybar{opacity:.95}
+  @keyframes sweep{from{background-position:-40% 0}to{background-position:140% 0}}
+
+  /* ---------- glass panels ---------- */
+  .tile,.card{position:relative;border:1px solid transparent;border-radius:1.15rem;
+    background:linear-gradient(180deg,rgba(20,27,47,.86),rgba(11,15,27,.9)) padding-box,linear-gradient(165deg,rgba(255,255,255,.2),rgba(255,255,255,.04) 38%,rgba(255,255,255,.02)) border-box;
+    box-shadow:0 1.2rem 2.6rem rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.04)}
+
+  /* ---------- hero tiles ---------- */
+  .tiles{display:grid;grid-template-columns:1.45fr 1fr 1fr 1fr;gap:1rem}
+  .tile{padding:1rem 1.3rem 1.05rem;display:flex;align-items:center;justify-content:space-between;gap:.8rem;overflow:hidden;animation:tilein .8s var(--spring) both}
+  .tile.t1{animation-delay:.07s}.tile.t2{animation-delay:.14s}.tile.t3{animation-delay:.21s}
+  body.settled .tile{animation:none}
+  @keyframes tilein{from{opacity:0;transform:translateY(1rem) scale(.97)}to{opacity:1;transform:none}}
+  .tile::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.07) 50%,transparent 65%);transform:translateX(-120%);animation:sheen 9s ease-in-out infinite;pointer-events:none}
+  .tile.t1::after{animation-delay:2s}.tile.t2::after{animation-delay:4s}.tile.t3::after{animation-delay:6s}
+  @keyframes sheen{0%,72%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
+  .tile .lab{font-size:.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.14em}
+  .tile .big{font-size:3.5rem;font-weight:700;line-height:1.02;margin-top:.3rem;color:#fff;white-space:nowrap}
+  .tile .sub{font-size:.88rem;color:var(--text-secondary);margin-top:.25rem}
+  .tile.t0{background:linear-gradient(180deg,rgba(22,36,70,.9),rgba(11,16,30,.92)) padding-box,linear-gradient(165deg,rgba(120,180,255,.55),rgba(76,157,255,.08) 45%,rgba(56,225,255,.25)) border-box}
+  .tile.t0::before{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(ellipse 60% 120% at 12% 40%,rgba(76,157,255,.2),transparent 70%);pointer-events:none}
+  .tile.t0 .big{font-size:3.9rem;background:linear-gradient(180deg,#fff 35%,#9cc8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .tgain{position:absolute;right:8.4rem;top:1.9rem;font:700 1.5rem var(--display);color:var(--green);text-shadow:0 0 1rem rgba(62,233,138,.7);pointer-events:none;animation:tgain 2.5s var(--out) forwards;z-index:2}
+  .tgain.adj{color:#9cc8ff;text-shadow:0 0 1rem rgba(76,157,255,.7)}
+  @keyframes tgain{0%{opacity:0;transform:translateY(.8rem) scale(.6)}15%{opacity:1;transform:translateY(0) scale(1.2)}30%{transform:scale(1)}75%{opacity:1}100%{opacity:0;transform:translateY(-2.2rem)}}
+  .tile.up .big{color:var(--green);text-shadow:0 0 1.6rem rgba(62,233,138,.35)}
+  .tile.down .big{color:var(--red);text-shadow:0 0 1.6rem rgba(255,93,108,.3)}
+  .tile.bump .big{animation:bump .9s var(--spring)}
+  @keyframes bump{30%{transform:scale(1.08)}100%{transform:none}}
+  .tile>div:first-child{position:relative;min-width:0;align-self:flex-start}
+  .mprog{height:.32rem;border-radius:99px;background:rgba(255,255,255,.08);margin-top:.55rem;overflow:hidden;width:11rem;max-width:100%}
+  .mprog i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--cyan))}
+  .ring{width:6.4rem;height:6.4rem;flex:none;position:relative;overflow:visible;filter:drop-shadow(0 0 .35rem rgba(56,225,255,.55))}
+  .ring .rbg{fill:none;stroke:rgba(255,255,255,.08);stroke-width:7}
+  .ring .rfg{fill:none;stroke:url(#rg);stroke-width:7;stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset 1.8s var(--out)}
+  .ring text{fill:#fff;font-size:17px;font-weight:700}
+  .ring .rl{fill:var(--text-muted);font:600 6.5px var(--body);letter-spacing:.12em}
+
+  /* ---------- team challenge ---------- */
+  .team{display:grid;grid-template-columns:auto 1fr auto;gap:1.1rem;align-items:center;margin-top:1.35rem;padding:.2rem .2rem 1.15rem}
+  .team:empty{display:none}
+  .tm-l{font-family:var(--display);font-stretch:85%;font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:1rem;color:var(--gold);display:flex;align-items:center;gap:.5rem}
+  .tm-l svg{width:1.15rem;height:1.15rem}
+  .tm-bar{position:relative;height:1.5rem;background:rgba(255,255,255,.055);border-radius:99px;box-shadow:inset 0 .15rem .5rem rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.07)}
+  .tm-bar i{position:absolute;left:0;top:0;bottom:0;min-width:1.5rem;border-radius:99px;background:linear-gradient(90deg,#0f9d58,#22d17a 55%,#9dffb0);box-shadow:0 0 1.4rem rgba(62,233,138,.5);transition:width 2.4s var(--out);overflow:hidden}
+  .tm-bar i::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,rgba(255,255,255,.16) 0 .7rem,transparent .7rem 1.4rem);background-size:2.8rem 100%;animation:stripes 1.6s linear infinite}
+  @keyframes stripes{to{background-position:2.8rem 0}}
+  .tm-bar i::after{content:"";position:absolute;right:.15rem;top:50%;width:1.2rem;height:1.2rem;margin-top:-.6rem;border-radius:50%;background:radial-gradient(circle,#fff,rgba(255,255,255,.2) 60%,transparent 70%);animation:headpulse 1.4s ease-in-out infinite}
+  @keyframes headpulse{50%{transform:scale(1.35);opacity:.7}}
+  .tm-bar s{position:absolute;top:-.45rem;bottom:-.45rem;width:2px;background:#fff;text-decoration:none;border-radius:2px;box-shadow:0 0 .5rem rgba(255,255,255,.7)}
+  .tm-bar s::after{content:attr(data-l);position:absolute;top:-1.15rem;left:50%;transform:translateX(-50%);font:700 .66rem var(--body);letter-spacing:.06em;color:#fff;white-space:nowrap;text-transform:uppercase}
+  .tm-bar s.r::after{left:auto;right:0;transform:none}.tm-bar s.l::after{left:0;transform:none}
+  .basis{font-size:.72rem;color:var(--text-muted);margin-top:.15rem}.tile .sub b{color:#fff}
+  .tm-bar u{position:absolute;top:.25rem;bottom:.25rem;width:1px;background:rgba(255,255,255,.22);text-decoration:none}
+  .tm-bar u span{position:absolute;top:1.45rem;left:0;transform:translateX(-50%);font:600 .68rem var(--body);color:var(--text-muted);transition:color .5s}
+  .tm-bar u.hit span{color:var(--green)}
+  .tm-bar u.pop span{animation:pop .8s var(--spring)}
+  .tm-r{font-size:.95rem;color:var(--text-secondary);white-space:nowrap}.tm-r b{color:#fff;font-size:1.5rem;font-weight:700}.tm-r em{font-style:normal;color:var(--green);font-weight:700;margin-left:.3rem}
+
+  /* ---------- ticker ---------- */
+  .ticker{display:flex;gap:.55rem;overflow:hidden;white-space:nowrap;margin-top:.2rem;padding:.15rem 0 .15rem .2rem;-webkit-mask-image:linear-gradient(90deg,#000 0,#000 92%,transparent);mask-image:linear-gradient(90deg,#000 0,#000 92%,transparent)}
+  .ticker:empty{display:none}
+  .ticker .tk{display:inline-flex;gap:.45rem;align-items:center;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:99px;padding:.3rem .8rem;font-size:.85rem;color:var(--text-secondary);flex:none}
+  .ticker .tk b{color:var(--text-primary);font-weight:600}
+  .ticker .tk .jb{color:var(--cyan);font-weight:600;font-variant-numeric:tabular-nums}.ticker .tk .ct{color:var(--gold)}.ticker .tk .pv{color:var(--green);font-weight:700}
+  .ticker .tk.new{border-color:rgba(62,233,138,.7);background:rgba(62,233,138,.1);animation:pop .7s var(--spring) both}
+  .ticker .lbl{font:700 .72rem var(--body);text-transform:uppercase;letter-spacing:.16em;color:var(--green);align-self:center;flex:none;display:inline-flex;align-items:center;gap:.4rem}
+  .ticker .lbl::before{content:"";width:.45rem;height:.45rem;border-radius:50%;background:var(--green);animation:livepulse 1.8s infinite}
+  @keyframes pop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.08);opacity:1}100%{transform:none}}
+
+  /* ---------- main grid ---------- */
+  .main{display:grid;grid-template-columns:1.62fr 1fr;gap:1.1rem;min-height:0}
+  .card{padding:1rem 1.25rem;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+  .card h2{font:600 .82rem var(--body);margin:0 0 .5rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.16em;display:flex;align-items:center;gap:.6rem}
+  .card h2::before{content:"";width:.28rem;height:1rem;border-radius:2px;background:linear-gradient(var(--cyan),var(--blue))}
+  .card h2 .legend{margin-left:auto;font-size:.72rem;font-weight:500;text-transform:none;letter-spacing:.02em;display:flex;gap:.9rem;color:var(--text-muted)}
+  .card h2 .h2s{text-transform:none;letter-spacing:.02em;font-weight:400;font-size:.78rem;color:var(--text-muted)}
+  .legend i{display:inline-block;width:.75rem;height:.5rem;border-radius:99px;vertical-align:0;margin-right:.35rem}
+  .side{display:grid;grid-template-rows:1.15fr 1fr;gap:1.1rem;min-height:0}
+
+  /* ---------- podium ---------- */
+  .podium{position:relative;display:flex;justify-content:center;align-items:flex-end;gap:1rem;margin:.1rem 0 .9rem;min-height:11.2rem}
+  .podium:empty{display:none}
+  .podium::before{content:"";position:absolute;left:50%;top:-4rem;width:26rem;height:19rem;transform:translateX(-50%);background:conic-gradient(from 180deg at 50% 0,transparent 158deg,rgba(255,207,92,.16) 172deg,rgba(255,225,150,.26) 180deg,rgba(255,207,92,.16) 188deg,transparent 202deg);transform-origin:50% 0;animation:beam 7s ease-in-out infinite alternate;pointer-events:none}
+  @keyframes beam{from{transform:translateX(-50%) rotate(-4deg)}to{transform:translateX(-50%) rotate(4deg)}}
+  .pod{position:relative;flex:1;max-width:19rem;min-width:0;text-align:center;animation:rise .9s var(--spring) both}
+  .pod.p1{animation-delay:.12s}.pod.p3{animation-delay:.26s}
+  body.settled .pod:not(.swap){animation:none}
+  @keyframes rise{from{opacity:0;transform:translateY(2.4rem)}to{opacity:1;transform:none}}
+  .pod .crown{height:2rem;display:grid;place-items:center}
+  .pod .crown svg{height:1.5rem;filter:drop-shadow(0 .3rem .6rem rgba(0,0,0,.5))}
+  .pod.p1 .crown svg{height:2rem;animation:bob 3s ease-in-out infinite;filter:drop-shadow(0 0 .8rem rgba(255,207,92,.7))}
+  @keyframes bob{50%{transform:translateY(-.3rem) rotate(-3deg)}}
+  .pod .pname{font-weight:700;font-size:1.05rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff;padding:0 .3rem}
+  .pod.p1 .pname{font-size:1.3rem}
+  .pod .pnum{font-size:2rem;font-weight:700;line-height:1.1;color:#fff}
+  .pod.p1 .pnum{font-size:2.7rem;background:linear-gradient(180deg,#fff3c9,#ffcf5c 60%,#f0a93a);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 1rem rgba(255,207,92,.35))}
+  .pod .pnum span{font:500 .85rem var(--body);color:var(--text-secondary);-webkit-text-fill-color:var(--text-secondary);letter-spacing:0}
+  .pod .psub{font-size:.8rem;color:var(--text-secondary);min-height:1.15rem;line-height:1.5}
+  .pod .psub .hot{display:inline-block;margin:0}
+  .pod .block{position:relative;margin-top:.5rem;border-radius:.7rem .7rem 0 0;overflow:hidden;display:grid;place-items:center;font:700 2rem var(--display);color:rgba(0,0,0,.55)}
+  .pod .block::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.55),transparent 22%),linear-gradient(90deg,rgba(0,0,0,.18),transparent 18%,transparent 82%,rgba(0,0,0,.22))}
+  .pod .block::after{content:"";position:absolute;top:0;bottom:0;width:35%;left:-40%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);animation:glint 6s ease-in-out infinite}
+  .pod.p2 .block::after{animation-delay:1.2s}.pod.p3 .block::after{animation-delay:2.4s}
+  @keyframes glint{0%,70%{left:-40%}100%{left:120%}}
+  .pod .block span{position:relative}
+  .pod.p1 .block{height:4.4rem;background:linear-gradient(180deg,#ffe08a,#f0a93a 60%,#b9761c);box-shadow:0 0 2.6rem rgba(255,207,92,.38)}
+  .pod.p2 .block{height:3.1rem;background:linear-gradient(180deg,#eef2f7,#aab3c2 60%,#7c8696)}
+  .pod.p3 .block{height:2.2rem;background:linear-gradient(180deg,#f2bd8f,#c9814c 60%,#925428)}
+  .pod.flash .pnum{animation:bump 1s var(--spring)}
+
+  /* ---------- leaderboard rows ---------- */
+  .board{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;position:relative;scrollbar-width:none;-webkit-mask-image:linear-gradient(#000 0,#000 calc(100% - 2.2rem),transparent);mask-image:linear-gradient(#000 0,#000 calc(100% - 2.2rem),transparent);padding-bottom:1.6rem}
+  .board::-webkit-scrollbar{display:none}
+  .row{position:relative;display:grid;grid-template-columns:2.8rem minmax(9rem,1.15fr) 1.55fr 13.5rem 10.6rem;align-items:center;gap:.8rem;padding:.5rem .55rem;border-radius:.7rem;animation:in .6s var(--out) both;will-change:transform}
+  .row+.row{margin-top:.12rem}
+  .row::after{content:"";position:absolute;left:.55rem;right:.55rem;bottom:-.08rem;height:1px;background:rgba(255,255,255,.05)}
+  body.settled .row:not(.flash){animation:none}
+  @keyframes in{from{opacity:0;transform:translateX(-1rem)}to{opacity:1;transform:none}}
+  .row.r1{background:linear-gradient(90deg,rgba(255,207,92,.13),rgba(255,207,92,.02) 60%,transparent)}
+  .row.r2{background:linear-gradient(90deg,rgba(200,210,225,.09),transparent 60%)}
+  .row.r3{background:linear-gradient(90deg,rgba(220,150,95,.09),transparent 60%)}
+  .row.moving{z-index:2;transition:transform 1.1s var(--out)}
+  .row.climb{z-index:3;box-shadow:0 .6rem 1.6rem rgba(0,0,0,.5),0 0 0 1px rgba(62,233,138,.5);background:linear-gradient(90deg,rgba(62,233,138,.18),rgba(20,27,47,.96) 70%)}
+  .row.flash{animation:flash 3s ease-out}
+  @keyframes flash{0%{box-shadow:inset 0 0 0 1px rgba(62,233,138,.9),0 0 1.6rem rgba(62,233,138,.35);background-color:rgba(62,233,138,.2)}60%{box-shadow:inset 0 0 0 1px rgba(62,233,138,.5),0 0 1rem rgba(62,233,138,.15);background-color:rgba(62,233,138,.1)}100%{box-shadow:inset 0 0 0 1px transparent;background-color:transparent}}
+  .rank{position:relative;font-size:1.25rem;font-weight:600;color:var(--text-muted);text-align:center}
+  .medal{display:inline-grid;place-items:center;width:2rem;height:2rem;border-radius:50%;font-size:1.05rem;font-weight:700;color:#1a1304;box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 .2rem .6rem rgba(0,0,0,.4)}
+  .m1{background:linear-gradient(145deg,#ffe08a,#f0a93a)}.m2{background:linear-gradient(145deg,#f1f4f8,#9aa4b4)}.m3{background:linear-gradient(145deg,#f2bd8f,#b9703a)}
+  .mv{position:absolute;left:2rem;top:-.25rem;font:800 .62rem var(--body);white-space:nowrap}.mv.up{color:var(--green)}.mv.down{color:var(--red)}
+  .name{display:flex;align-items:center;min-width:0;font-size:1.05rem;font-weight:600;white-space:nowrap;color:#dfe6f6}
+  .name .nm{min-width:0;overflow:hidden;text-overflow:ellipsis}
+  .name .cnt,.name .hot,.name .wcrown{flex:none}
+  .r1 .name,.r2 .name,.r3 .name{color:#fff}
+  .cnt{font-size:.7rem;color:var(--text-muted);font-weight:500;margin-left:.45rem}
+  .hot{font-size:.72rem;font-weight:700;color:#ffb36b;background:rgba(255,120,40,.13);border:1px solid rgba(255,140,60,.4);border-radius:99px;padding:.05rem .45rem;margin-left:.45rem;margin-right:.35rem;animation:hotpulse 1.6s ease-in-out infinite}
+  @keyframes hotpulse{50%{box-shadow:0 0 .35rem rgba(255,140,60,.75),inset 0 0 .4rem rgba(255,140,60,.35)}}
+  .bar{position:relative;height:.9rem;background:rgba(255,255,255,.06);border-radius:99px;box-shadow:inset 0 .1rem .3rem rgba(0,0,0,.45)}
+  .fill{position:absolute;left:0;top:0;bottom:0;min-width:.9rem;border-radius:99px;background:linear-gradient(90deg,#2b63d9,#4c9dff 55%,#38e1ff);box-shadow:0 0 .8rem rgba(76,157,255,.45);transition:width 1.6s var(--out);overflow:hidden}
+  .fill.over{background:linear-gradient(90deg,#2b63d9 0,#38e1ff var(--over),#f0a93a var(--over),#ffe08a 100%);box-shadow:0 0 .9rem rgba(255,207,92,.5)}
+  .zone{position:absolute;right:0;top:0;bottom:0;border-radius:0 99px 99px 0;background:repeating-linear-gradient(115deg,rgba(255,207,92,.13) 0 .35rem,transparent .35rem .7rem)}
+  .nums b.pc{color:var(--cyan)}.nums b.pc.hit{color:var(--gold);text-shadow:0 0 .9rem rgba(255,207,92,.45)}
+  .bonus{font-weight:700;color:var(--gold)}.bonus.b2{color:#ffe08a}.bonus.b3{color:#fff;text-shadow:0 0 .7rem rgba(255,207,92,.9)}
+  .pill.b1,.pill.b2,.pill.b3{background:linear-gradient(90deg,rgba(255,207,92,.25),rgba(240,169,58,.12));border-color:rgba(255,207,92,.75);color:#fff3cf;box-shadow:0 0 .8rem rgba(255,207,92,.25)}
+  .pill.s-done{box-shadow:0 0 .8rem rgba(255,207,92,.28)}
+  #quiet.win{font-size:1.4rem;padding:.9rem 1.6rem;right:50%;transform:translateX(50%);bottom:2.2rem;border-color:var(--gold);color:#fff;background:linear-gradient(90deg,#3b2a06,#1c1403);box-shadow:0 0 2.4rem rgba(255,207,92,.45)}
+  .r1 .fill::after,.r2 .fill::after,.r3 .fill::after,.fill.over::after,.fill.grew::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);transform:translateX(-100%);animation:shimmer 3.6s ease-in-out infinite}
+  .fill.grew::after{animation:shimmer 1.2s ease-out 3}
+  @keyframes shimmer{60%,100%{transform:translateX(100%)}}
+  .tick{position:absolute;top:-.28rem;bottom:-.28rem;width:.16rem;border-radius:2px;background:#fff;box-shadow:0 0 .4rem rgba(255,255,255,.6)}
+  .tick.pace{background:rgba(255,255,255,.45);box-shadow:none;top:-.14rem;bottom:-.14rem;width:.12rem}
+  .nums{text-align:right;white-space:nowrap;position:relative}
+  .nums b{font-size:1.4rem;font-weight:700;color:#fff}
+  .nums .u{font-size:.74rem;color:var(--text-secondary);font-weight:500}
+  .nums small{display:block;color:var(--text-muted);font-size:.74rem;margin-top:.05rem}
+  .gain{position:absolute;right:calc(100% + .6rem);top:.2rem;font:700 1.05rem var(--display);color:var(--green);background:rgba(5,22,14,.92);border:1px solid rgba(62,233,138,.55);border-radius:99px;padding:.08rem .6rem;box-shadow:0 0 1rem rgba(62,233,138,.35);pointer-events:none;animation:gain 3.2s var(--out) forwards}
+  .gain.big{font-size:1.5rem;padding:.12rem .8rem;top:-.05rem;animation:gainbig 3.4s var(--out) forwards;box-shadow:0 0 1.6rem rgba(62,233,138,.55)}
+  @keyframes gainbig{0%{opacity:0;transform:translateX(1.5rem) scale(.4)}10%{opacity:1;transform:translateX(0) scale(1.35) rotate(-3deg)}18%{transform:scale(.95) rotate(2deg)}26%{transform:scale(1.08)}34%{transform:scale(1)}82%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-1.6rem)}}
+  .gain small{display:block;font:600 .62rem var(--body);letter-spacing:.04em;text-transform:uppercase;opacity:.9;margin-top:-.1rem;white-space:nowrap}
+  .gain.adj{color:#9cc8ff;border-color:rgba(120,180,255,.6);background:rgba(8,18,40,.94);box-shadow:0 0 1.4rem rgba(76,157,255,.4)}
+  .ticker .tk .pv.adj{color:#9cc8ff}
+  .row.overtake{z-index:6;background:linear-gradient(90deg,rgba(62,233,138,.3),rgba(18,26,46,.98) 78%);box-shadow:0 .9rem 2.2rem rgba(0,0,0,.6),0 0 0 1px rgba(62,233,138,.75),0 0 1.8rem rgba(62,233,138,.4)}
+  .climbtag,.droptag{flex:none;margin-left:.5rem;font:800 .78rem var(--body);border-radius:99px;padding:.14rem .6rem;white-space:nowrap}
+  .climbtag{color:#06210f;background:var(--green);box-shadow:0 0 1rem rgba(62,233,138,.65);animation:tagpop 4s var(--out) forwards}
+  .climbtag.top{background:linear-gradient(90deg,#ffe08a,#f0a93a);color:#3a2504;box-shadow:0 0 1.3rem rgba(255,207,92,.8)}
+  .name.tagged{position:relative;z-index:3}.name.tagged .nm{flex-shrink:0;max-width:100%}
+  .droptag{color:#ffc9cf;background:#3a1722;border:1px solid rgba(255,93,108,.5);animation:tagfade 2.2s ease-out forwards}
+  @keyframes tagpop{0%{opacity:0;transform:scale(.3)}9%{opacity:1;transform:scale(1.3)}17%{transform:scale(1)}86%{opacity:1}100%{opacity:0}}
+  @keyframes tagfade{0%{opacity:0;transform:translateY(-.3rem)}15%{opacity:1;transform:none}70%{opacity:1}100%{opacity:0}}
+  .rank{perspective:20rem}
+  .row.pend .fill{transition:none}
+  .ops .gain.big{font-size:1.15rem;top:.1rem}
+  @keyframes gain{0%{opacity:0;transform:translateY(.9rem) scale(.7)}12%{opacity:1;transform:translateY(0) scale(1.15)}22%{transform:scale(1)}75%{opacity:1}100%{opacity:0;transform:translateY(-1.4rem)}}
+  .pill{font-size:.78rem;font-weight:600;border-radius:99px;padding:.26rem .65rem .26rem .35rem;display:inline-flex;align-items:center;gap:.4rem;float:right;color:var(--text-primary);background:rgba(255,255,255,.05);border:1px solid var(--line);white-space:nowrap}
+  .pill.none{color:var(--text-muted);padding-left:.65rem}
+  .pill .ic{width:1.05rem;height:1.05rem;border-radius:50%;display:inline-grid;place-items:center;font-size:.66rem;color:#08110b;font-weight:900}
+  .s-good{background:rgba(62,233,138,.1);border-color:rgba(62,233,138,.35);color:#baf7d3}.s-good .ic{background:var(--green)}
+  .s-warn{background:rgba(255,184,74,.1);border-color:rgba(255,184,74,.35);color:#ffe2b0}.s-warn .ic{background:var(--amber)}
+  .s-bad{background:rgba(255,93,108,.1);border-color:rgba(255,93,108,.35);color:#ffc9cf}.s-bad .ic{background:var(--red)}
+  .s-done{background:rgba(255,207,92,.12);border-color:rgba(255,207,92,.45);color:#ffe9b3}.s-done .ic{background:var(--gold)}
+  .ops .row{grid-template-columns:2rem minmax(0,1.1fr) minmax(0,.8fr) 9.4rem;padding:.38rem .4rem;gap:.7rem}
+  .ops .nums small{overflow:hidden;text-overflow:ellipsis}
+  .ops .name{font-size:.95rem;display:flex;align-items:center}
+  .ops .name span.nm{overflow:hidden;text-overflow:ellipsis}
+  .ops .bar{height:.6rem}.ops .fill{min-width:.6rem}
+  .ops .nums b{font-size:1.1rem}
+  .ops .medal{width:1.6rem;height:1.6rem;font-size:.85rem}
+  .ops .rank{font-size:1rem}
+  .av{flex:none;display:inline-grid;place-items:center;width:1.75rem;height:1.75rem;border-radius:50%;color:#fff;font:700 .68rem var(--body);margin-right:.55rem;box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 0 0 1px rgba(255,255,255,.08)}
+  .chart{flex:1;min-height:0;overflow:hidden}.chart svg{display:block}
+  .chart .col{transform-box:fill-box;transform-origin:50% 100%}
+  .chart.grow .col{animation:colgrow .9s var(--spring) both}
+  @keyframes colgrow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+  .chart .today{stroke:#fff3c9;stroke-width:1.2}
+  .tip{position:fixed;pointer-events:none;background:rgba(6,9,18,.95);color:var(--text-primary);border:1px solid rgba(255,255,255,.15);border-radius:.5rem;padding:.4rem .6rem;font-size:.8rem;display:none;z-index:60}
+  .empty{color:var(--text-secondary);font-size:1.1rem;padding:2.5rem .6rem;text-align:center}
+  #quiet{position:fixed;right:1.5rem;bottom:1.2rem;z-index:40;background:rgba(14,20,36,.92);border:1px solid rgba(76,157,255,.4);color:#cfe1f7;padding:.55rem 1rem;border-radius:99px;font-size:.92rem;opacity:0;transform:translateY(.8rem) scale(.96);transition:opacity .6s,transform .6s var(--spring);pointer-events:none;box-shadow:0 .6rem 1.6rem rgba(0,0,0,.5)}
+  #quiet.on{opacity:1;transform:none}
+
+  /* ---------- overlays: celebration + roundup ---------- */
+  #veil{position:fixed;inset:0;z-index:19;background:radial-gradient(ellipse at 50% 45%,rgba(6,9,18,.5),rgba(3,5,10,.86));opacity:0;transition:opacity .6s;pointer-events:none}
+  body:has(.celebrate.on) #veil,body:has(.roundup.on) #veil,body:has(.hitcard.on) #veil{opacity:1}
+  body:has(.hitcard.on) #veil{background:radial-gradient(ellipse at 50% 45%,rgba(40,26,4,.55),rgba(3,4,8,.93))}
+  body:has(.hitcard.on) #rays{opacity:1;background:repeating-conic-gradient(from 0deg,rgba(255,207,92,.2) 0 6deg,transparent 6deg 18deg);animation-duration:28s}
+  #fx{position:fixed;inset:0;pointer-events:none;z-index:20;opacity:0;transition:opacity .5s}#fx.on{opacity:1}
+  /* ---------- target smashed ---------- */
+  .hitcard{position:fixed;left:50%;top:50%;z-index:23;transform:translate(-50%,-44%) scale(.6);opacity:0;pointer-events:none;text-align:center;min-width:44rem;max-width:88vw;padding:2.2rem 3.4rem 2.4rem;border-radius:2.2rem;border:3px solid transparent;
+    background:linear-gradient(170deg,#2a1d05,#0c0a06 70%) padding-box,conic-gradient(from var(--ang),#fff3c9,#ffcf5c,#c9781f,#ffe08a,#fff,#f0a93a,#fff3c9) border-box;
+    box-shadow:0 3rem 7rem rgba(0,0,0,.75),0 0 7rem rgba(255,207,92,.45),inset 0 0 4rem rgba(255,207,92,.08);transition:opacity .4s,transform .9s cubic-bezier(.16,1.5,.3,1);animation:angspin 3.5s linear infinite}
+  .hitcard.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  .hitcard::before{content:"";position:absolute;inset:0;border-radius:inherit;overflow:hidden;background:linear-gradient(110deg,transparent 40%,rgba(255,255,255,.22) 50%,transparent 60%);background-size:250% 100%;animation:hitsheen 2.6s ease-in-out infinite;pointer-events:none}
+  @keyframes hitsheen{from{background-position:120% 0}to{background-position:-120% 0}}
+  .hitcard>*{position:relative;opacity:0;transform:translateY(1.4rem) scale(.9)}
+  .hitcard.on>*{opacity:1;transform:none;transition:opacity .5s,transform .8s var(--spring)}
+  .hitcard.on>*:nth-child(1){transition-delay:.2s}.hitcard.on>*:nth-child(2){transition-delay:.35s}.hitcard.on>*:nth-child(3){transition-delay:.55s}.hitcard.on>*:nth-child(4){transition-delay:.75s}.hitcard.on>*:nth-child(5){transition-delay:1.9s}.hitcard.on>*:nth-child(6){transition-delay:2.5s}
+  .hit-k{font-family:var(--display);font-stretch:84%;font-size:1.9rem;font-weight:700;letter-spacing:.42em;text-transform:uppercase;color:#ffe08a;text-shadow:0 0 1.4rem rgba(255,207,92,.8);padding-left:.42em}
+  .hit-trophy{margin:.8rem auto 0;width:8.5rem;height:8.5rem;animation:trophy 2.4s ease-in-out infinite;filter:drop-shadow(0 0 2.2rem rgba(255,207,92,.75))}
+  .hit-trophy svg{width:100%;height:100%}
+  @keyframes trophy{0%,100%{transform:translateY(0) rotate(-4deg) scale(1)}50%{transform:translateY(-.7rem) rotate(4deg) scale(1.06)}}
+  .hit-name{font-family:var(--display);font-stretch:84%;font-size:5.2rem;font-weight:700;line-height:1.05;margin:.5rem 0 .1rem;background:linear-gradient(180deg,#fff 20%,#ffe08a 55%,#f0a93a);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 1.6rem rgba(255,207,92,.45))}
+  .hit-pct{display:flex;flex-direction:column;align-items:center;margin-top:.5rem}
+  .hit-pct b{font-family:var(--display);font-size:6.4rem;font-weight:700;line-height:1;color:#fff;text-shadow:0 0 2.6rem rgba(255,207,92,.9);font-variant-numeric:tabular-nums;transition:transform .5s var(--spring),color .4s}
+  .hit-pct span{font-size:1.1rem;color:#e9d9ae;letter-spacing:.3em;text-transform:uppercase;margin-top:.5rem}
+  .hitcard.landed .hit-pct b{transform:scale(1.1);color:#ffe08a}
+  .hit-sub{font-size:1.35rem;color:#d9cba6;margin-top:.5rem}.hit-sub b{color:#fff}
+  .hit-thanks{font-size:1.6rem;font-weight:600;color:#fff;margin-top:1rem;letter-spacing:.01em}
+  /* rows that have passed their target keep a little glory */
+  .row.won{background:linear-gradient(90deg,rgba(255,207,92,.16),rgba(255,207,92,.03) 55%,transparent)}
+  .row.won::before{content:"";position:absolute;left:0;top:.35rem;bottom:.35rem;width:.22rem;border-radius:2px;background:linear-gradient(#ffe08a,#f0a93a);box-shadow:0 0 .8rem rgba(255,207,92,.8)}
+  .row.won .name{color:#fff3cf}
+  .wcrown{display:inline-block;height:.95rem;margin-right:.4rem;vertical-align:-.05rem;animation:bob 3s ease-in-out infinite}.wcrown svg{height:100%;filter:drop-shadow(0 0 .4rem rgba(255,207,92,.8))}
+  .fill.over::before{content:"";position:absolute;inset:0;left:var(--over);background-image:radial-gradient(circle,#fff 0 1px,transparent 1.6px),radial-gradient(circle,#fff 0 1px,transparent 1.6px);background-size:1.3rem .9rem,1.9rem .9rem;background-position:0 .1rem,.7rem .45rem;animation:twinkle 1.4s ease-in-out infinite alternate}
+  @keyframes twinkle{from{opacity:.15}to{opacity:.95}}
+  #rays{position:fixed;left:50%;top:50%;width:150vmax;height:150vmax;margin:-75vmax 0 0 -75vmax;z-index:19;pointer-events:none;opacity:0;transition:opacity .8s;background:repeating-conic-gradient(from 0deg,rgba(255,207,92,.09) 0 7deg,transparent 7deg 20deg);-webkit-mask-image:radial-gradient(circle,#000 0,transparent 55%);mask-image:radial-gradient(circle,#000 0,transparent 55%);animation:spin 60s linear infinite}
+  body:has(.celebrate.on) #rays{opacity:1}
+  #confetti{position:fixed;inset:0;pointer-events:none;z-index:30}
+  .celebrate{position:fixed;left:50%;top:50%;transform:translate(-50%,-46%) scale(.82);opacity:0;z-index:21;min-width:36rem;max-width:80vw;text-align:center;padding:2rem 2.8rem 1.9rem;border-radius:1.8rem;border:2px solid transparent;pointer-events:none;
+    background:linear-gradient(170deg,#152240,#0a101e) padding-box,conic-gradient(from var(--ang),#3ee98a,#38e1ff,#4c9dff,#ffcf5c,#3ee98a) border-box;
+    box-shadow:0 2.5rem 6rem rgba(0,0,0,.7),0 0 5rem rgba(62,233,138,.25);transition:opacity .35s,transform .6s var(--spring);animation:angspin 5s linear infinite}
+  @keyframes angspin{to{--ang:360deg}}
+  .celebrate.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  .celebrate>*{opacity:0;transform:translateY(.9rem)}
+  .celebrate.on>*{opacity:1;transform:none;transition:opacity .5s .15s,transform .7s var(--spring) .15s}
+  .celebrate.on>*:nth-child(2){transition-delay:.25s}.celebrate.on>*:nth-child(3){transition-delay:.35s}.celebrate.on>*:nth-child(4){transition-delay:.45s}.celebrate.on>*:nth-child(5){transition-delay:.55s}.celebrate.on>*:nth-child(6){transition-delay:.65s}
+  .celebrate .kicker{font:700 .9rem var(--body);letter-spacing:.24em;text-transform:uppercase;color:var(--green)}
+  .cel-av{width:5.4rem;height:5.4rem;border-radius:50%;margin:.9rem auto .2rem;display:grid;place-items:center;font:700 2.1rem var(--display);color:#fff;box-shadow:0 0 0 .3rem rgba(255,255,255,.08),0 0 2.4rem rgba(62,233,138,.45),inset 0 2px 0 rgba(255,255,255,.35)}
+  .celebrate .who{font-family:var(--display);font-stretch:86%;font-size:3.9rem;font-weight:700;line-height:1.05;margin:.3rem 0 .2rem;color:#fff;letter-spacing:.01em}
+  .cel-val{font-size:3.2rem;font-weight:700;line-height:1.1;color:var(--green);text-shadow:0 0 2rem rgba(62,233,138,.6)}
+  .cel-val.zero{font:500 1.05rem var(--body);color:var(--text-muted);text-shadow:none;padding:.5rem 0}
+  .celebrate .what{font-size:1.2rem;color:var(--text-secondary);margin-top:.2rem}
+  .celebrate .what b{color:var(--text-primary);font-weight:600}
+  .celebrate .prog{margin:1.2rem auto 0;width:82%;height:.85rem;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;position:relative}
+  .celebrate .prog i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#0f9d58,#3ee98a,#b6ffcb);border-radius:99px;transition:width 1.6s var(--out);box-shadow:0 0 1rem rgba(62,233,138,.6)}
+  .celebrate .progtxt{font-size:.98rem;color:var(--text-secondary);margin-top:.55rem}
+  .celebrate .progtxt b{color:#fff}
+  .celebrate .list{margin-top:1rem;display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center}
+  .celebrate .list div{display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:99px;padding:.3rem .8rem .3rem .3rem;font-size:1rem;color:var(--text-primary)}
+  .celebrate .list .av{margin:0;width:1.6rem;height:1.6rem}
+  .celebrate .list em{font-style:normal;color:var(--green);font-weight:700}
+
+  .roundup{position:fixed;left:50%;top:50%;transform:translate(-50%,-47%) scale(.9);opacity:0;pointer-events:none;z-index:22;width:min(64rem,90vw);padding:1.6rem 2rem 1.7rem;border-radius:1.8rem;border:2px solid transparent;
+    background:linear-gradient(170deg,#121d38,#080d18) padding-box,conic-gradient(from var(--ang),#4c9dff,#38e1ff,#7e5cff,#4c9dff) border-box;
+    box-shadow:0 2.5rem 6rem rgba(0,0,0,.7),0 0 5rem rgba(76,157,255,.22);transition:opacity .4s,transform .6s var(--spring);animation:angspin 6s linear infinite}
+  .roundup.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  .ru-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.8rem}
+  .ru-k{font-family:var(--display);font-stretch:85%;font-size:1.5rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;background:linear-gradient(90deg,#9cc8ff,#38e1ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .ru-t{color:var(--text-muted);font-size:.9rem;letter-spacing:.1em}
+  .ru-row{display:grid;grid-template-columns:minmax(11rem,1fr) 1.4fr 12.5rem;gap:1rem;align-items:center;padding:.55rem 0;border-bottom:1px solid rgba(255,255,255,.06);opacity:0;transform:translateX(-2.4rem);transition:opacity .4s,transform .6s var(--spring)}
+  .ru-row.in{opacity:1;transform:none}
+  .ru-name{font-size:1.25rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff}
+  .ru-bar{position:relative;height:.9rem;background:rgba(255,255,255,.07);border-radius:99px;margin-right:3rem;box-shadow:inset 0 .1rem .3rem rgba(0,0,0,.45)}
+  .ru-bar i{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:linear-gradient(90deg,#2b63d9,#4c9dff 55%,#38e1ff);box-shadow:0 0 1rem rgba(76,157,255,.65);transition:width 1.2s var(--out)}
+  .ru-bar em{position:absolute;right:-3rem;top:-.15rem;font-style:normal;font-size:.85rem;color:var(--text-secondary)}
+  .ru-plus{text-align:right;opacity:0;transform:translateY(.8rem) scale(.8)}.ru-plus.go{animation:plusin .7s var(--spring) forwards}
+  @keyframes plusin{to{opacity:1;transform:none}}
+  .ru-plus b{display:block;font-size:2rem;font-weight:700;line-height:1.05;color:var(--green);text-shadow:0 0 1.2rem rgba(62,233,138,.6)}
+  .ru-plus small{color:var(--text-secondary);font-size:.85rem}
+  .ru-more{color:var(--text-muted);padding:.5rem 0}
+  .ru-total{position:relative;display:flex;align-items:center;justify-content:center;gap:1.2rem;margin-top:1.1rem;padding-top:.3rem;opacity:0;transform:scale(.7)}
+  .ru-total.go{animation:totin .8s var(--spring) forwards}@keyframes totin{to{opacity:1;transform:none}}
+  .ru-total.go::before{content:"";position:absolute;left:50%;top:50%;width:6rem;height:6rem;margin:-3rem 0 0 -3rem;border-radius:50%;border:2px solid rgba(62,233,138,.8);animation:shock 1.4s var(--out) forwards;pointer-events:none}
+  @keyframes shock{from{transform:scale(.2);opacity:1}to{transform:scale(7);opacity:0}}
+  .ru-tk{font-family:var(--display);font-size:1.2rem;font-weight:700;letter-spacing:.3em;color:var(--gold)}
+  .ru-big b{font-size:4.6rem;font-weight:700;line-height:1;color:var(--green);text-shadow:0 0 2.4rem rgba(62,233,138,.65)}
+  .ru-sub{color:var(--text-secondary);font-size:1rem}
+
+  /* ---------- settings dialog ---------- */
+  dialog{background:#0f1526;color:var(--text-primary);border:1px solid rgba(255,255,255,.12);border-radius:1rem;width:min(860px,94vw);max-height:88vh;padding:20px 24px;font-size:14px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+  dialog::backdrop{background:rgba(3,5,10,.75)}
+  /* ---------- private staff insights ---------- */
+  dialog.insd{width:min(1100px,96vw);max-height:92vh;overflow:auto}
+  .ins-head{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+  .ins-head select{background:#182039;color:var(--text-primary);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:7px 10px;font-size:15px;font-weight:700;max-width:300px}
+  dialog .ins-head input[type=date]{width:auto}
+  .ins-tag{background:#3a1f4d;color:#e7c6ff;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+  .ins-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
+  .ins-tile{background:#141c33;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:3px}
+  .ins-tile small{color:#8fa0c3;font-size:11px;text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+  .ins-tile b{font-size:24px}
+  .ins-tile span{color:#b9c6e0;font-size:12.5px}
+  .ins-hours{background:#141c33;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px 12px;margin-bottom:12px}
+  .ins-legend{font-size:12px;color:#b9c6e0;display:flex;gap:6px;align-items:center;margin-bottom:6px}
+  .ins-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-left:8px}
+  .ins-legend i.n,.ins-hb i.n{background:#4da3ff}.ins-legend i.s,.ins-hb i.s{background:#4a5677}
+  .ins-bars{display:flex;gap:6px;align-items:flex-end;height:110px}
+  .ins-h{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%}
+  .ins-hb{flex:1;width:100%;display:flex;flex-direction:column-reverse;border-radius:4px;overflow:hidden;background:rgba(255,255,255,.03)}
+  .ins-hb i{display:block;width:100%}
+  .ins-h span{font-size:11px;color:#8fa0c3}
+  .ins-listhead{display:flex;justify-content:space-between;align-items:center;margin:4px 0 6px}
+  dialog .ins-listhead input{width:auto}
+  .ins-list{max-height:34vh;overflow:auto;border:1px solid rgba(255,255,255,.08);border-radius:10px}
+  .ins-line{display:grid;grid-template-columns:5.5rem 11.5rem 7.5rem minmax(0,1fr) 5.8rem 10.5rem;gap:10px;padding:5px 10px;border-bottom:1px solid rgba(255,255,255,.05);font-size:13px;color:#8fa0c3;align-items:baseline}
+  .ins-line .o{color:#8fa0c3;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ins-line .v{text-align:right;font-family:Consolas,monospace;font-size:12.5px}.ins-line .v.up{color:#5fe0a0}.ins-line .v.down{color:#ff9a9a}
+  .ins-line.named{color:var(--text-primary)}
+  .ins-line .t,.ins-line .j{font-family:Consolas,monospace}
+  .ins-note{font-size:12px;color:#8fa0c3;margin:8px 0 0}
+  .ins-wait{color:#b9c6e0;padding:20px 4px}
+  .ins-fill{font-size:13px;color:#d6c6ff;background:#1b1530;border:1px solid rgba(190,150,255,.25);border-radius:10px;padding:8px 12px;margin:10px 0 0}
+  .ins-fill small{color:#a99cc9;font-size:12px}
+  dialog .ins-fill input[type=date]{width:auto;padding:3px 6px}
+  dialog .ins-fill .btn{padding:4px 10px}
+  dialog.insp{width:min(360px,92vw)}
+  .cv-tag{background:#103a2c;color:#9ff0cf}
+  .ins-tile.warn{border-color:rgba(255,180,90,.55);background:#2a1f12}
+  .cv-people{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+  .cv-chip{background:#141c33;border:1px solid rgba(255,255,255,.08);border-radius:999px;padding:4px 10px;font-size:12.5px;color:#b9c6e0}
+  .cv-chip b{color:var(--text-primary);font-weight:700}
+  .cv-list{max-height:46vh;overflow:auto;border:1px solid rgba(255,255,255,.08);border-radius:10px}
+  .cv-line{display:grid;grid-template-columns:8.5rem 8rem minmax(0,1fr) minmax(0,1.2fr) 7rem 7rem;gap:10px;padding:5px 10px;border-bottom:1px solid rgba(255,255,255,.05);font-size:13px;color:var(--text-primary)}
+  .cv-line.cv-h{position:sticky;top:0;background:#0f1526;color:#8fa0c3;font-size:11px;text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+  .cv-line.off{color:#6f7d9c}
+  .cv-line .t,.cv-line .j{font-family:Consolas,monospace;font-size:12.5px}
+  .cv-line .w{color:#8fa0c3}.cv-line .r{text-align:right;font-family:Consolas,monospace}
+  .cv-line .up{color:#5fe0a0}.cv-line .down{color:#ff9a9a}
+  #board .row{cursor:pointer}
+  /* the client pop-up: Value check | Change log */
+  #cv [hidden]{display:none!important}
+  dialog#cv.insd{width:min(1320px,96vw)}
+  .cv-tabs{display:flex;gap:2px;background:#141c33;border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:3px}
+  .cv-tab{background:none;border:0;color:#b9c6e0;font:inherit;font-size:13px;font-weight:700;padding:5px 14px;border-radius:999px;cursor:pointer}
+  .cv-tab:hover{color:#fff}.cv-tab.on{background:#2a3a66;color:#fff}
+  .cv-tab .lk{width:11px;height:11px;margin-right:5px;vertical-align:-1px;opacity:.8}
+  .cv-ctl{margin-top:-4px}
+  dialog .cv-ctl input[type=date]{width:auto}
+  .cv-line .j[data-job],.cv-cl .j[data-job]{cursor:pointer;text-decoration:underline dotted rgba(255,255,255,.35);text-underline-offset:3px}
+  .ins-line .p,.cv-cl .p{text-align:right;font-family:Consolas,monospace;font-size:12.5px;color:#ffd36a;white-space:nowrap}
+  .ins-line .p.zero,.cv-cl .p.zero{color:#6f7d9c}
+  .cv-cl{display:grid;grid-template-columns:5.3rem 9.5rem 11.5rem 7.4rem minmax(0,1fr) 5.8rem 10.5rem;gap:10px;padding:5px 10px;border-bottom:1px solid rgba(255,255,255,.05);font-size:13px;color:#8fa0c3;align-items:baseline}
+  .cv-cl.named{color:var(--text-primary)}
+  .cv-cl.cv-h{position:sticky;top:0;z-index:2;background:#0f1526;color:#8fa0c3;font-size:11px;text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+  .cv-cl .t,.cv-cl .j{font-family:Consolas,monospace;font-size:12.5px}
+  .cv-cl .who{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+  .cv-cl.site .who{color:#9ff0cf}
+  .cv-cl .o{font-size:12.5px;color:#8fa0c3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cv-cl .v{text-align:right;font-family:Consolas,monospace;font-size:12.5px}.cv-cl .v.up{color:#5fe0a0}.cv-cl .v.down{color:#ff9a9a}
+  .cv-day{position:sticky;top:1.75rem;z-index:1;background:#16203a;color:#d6e0f5;font-size:12px;font-weight:800;padding:5px 10px;border-bottom:1px solid rgba(255,255,255,.08);cursor:pointer}
+  dialog .btn:disabled{opacity:.4;cursor:default}
+  .cv-chip.pick{cursor:pointer}.cv-chip.pick:hover{border-color:rgba(255,255,255,.3)}.cv-chip.on{background:#2a3a66;border-color:#6f8fd8}
+  .cv-sub{font-size:12px;font-weight:700;color:#8fa0c3;text-transform:uppercase;letter-spacing:.05em;margin:4px 0 6px}
+  .cv-rank{max-height:28vh;overflow:auto;border:1px solid rgba(255,255,255,.08);border-radius:10px;margin-bottom:12px}
+  .cv-r{display:grid;grid-template-columns:2.2rem minmax(0,1.2fr) 6rem 11rem minmax(0,1.4fr) 8rem;gap:10px;padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.05);font-size:13.5px;align-items:baseline}
+  .cv-r .n{font-weight:800;color:#ffd36a;text-align:right}.cv-r .who{font-weight:700}.cv-r .pts{font-weight:800;text-align:right}
+  .cv-r .sh,.cv-r .what,.cv-r .b{color:#8fa0c3;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cv-r .b{text-align:right}
+  dialog h3{margin:10px 0 10px;font-size:16px}
+  dialog table{width:100%;border-collapse:collapse;font-size:14px}
+  dialog td,dialog th{padding:6px 6px;border-bottom:1px solid var(--line);text-align:left}
+  dialog input{background:#182039;border:1px solid rgba(255,255,255,.12);color:var(--text-primary);border-radius:6px;padding:6px 8px;width:110px;font-size:14px}
+  dialog .row2{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:6px 0 14px;font-size:14px}
+  dialog .btn{background:var(--blue);color:#04101f;border:0;border-radius:8px;padding:8px 14px;font-weight:700;cursor:pointer}
+  dialog .ghost{background:#182039;color:var(--text-primary);border:1px solid rgba(255,255,255,.12);font-weight:600}
+  .scroll{max-height:42vh;overflow:auto}
+  #grpBoard{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px;max-height:40vh;overflow:auto;padding:2px;margin-bottom:14px}
+  .gcard{border:1px solid rgba(255,255,255,.1);border-radius:10px;background:#131a2e;padding:8px 10px;transition:border-color .15s,background .15s,opacity .2s}
+  .gcard.dim{opacity:.3}
+  .gcard.over,.gz.over{border-color:var(--green)!important;background:rgba(62,233,138,.14)!important;box-shadow:0 0 0 2px rgba(62,233,138,.35)}
+  .ghead{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+  dialog input.gname{flex:1;min-width:0;width:auto;font-weight:700;background:transparent;border-color:transparent;padding:3px 6px;margin-left:-6px}
+  dialog input.gname:hover,dialog input.gname:focus{background:#182039;border-color:rgba(255,255,255,.2)}
+  .gchips{display:flex;flex-wrap:wrap;gap:5px;min-height:24px}
+  .gchip{font-size:12px;padding:3px 9px;border-radius:99px;background:#1d2743;border:1px solid rgba(255,255,255,.12);cursor:grab;user-select:none;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+  .gchip:hover{border-color:var(--blue)}.gchip:active{cursor:grabbing}
+  .gchip.moved{border-color:rgba(255,207,92,.7);background:rgba(255,207,92,.1)}
+  .gchip.moved::before{content:"● ";color:var(--gold);font-size:9px}
+  .gchip.match{box-shadow:0 0 0 2px var(--cyan)}
+  .gchip.drag{opacity:.4}
+  .gz{font-size:13px;padding:7px 12px;border-radius:10px;border:1.5px dashed rgba(255,255,255,.25);color:var(--text-secondary);transition:all .15s}
+  dialog.dragging .gz{border-color:var(--blue);color:#fff}
+  .hint{color:var(--text-muted);font-size:12.5px}
+  @media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important}}
+</style>
+<meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><meta name="viewport" content="width=1500">
+<style>#btnGroup,#btnMonth,#btnTable,#btnNow,#btnSettings{display:none!important}#board .row,#ops .row{cursor:default!important}
+.vo{background:#1d2a4a;color:#9cc8ff;border:1px solid rgba(156,200,255,.35);border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-right:10px}
+#mrivBanner{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:99;display:none;background:#2a1f12;border:1px solid rgba(255,180,90,.55);color:#ffd9a0;border-radius:10px;padding:10px 16px;font:600 15px/1.3 system-ui,sans-serif}
+#mrivBanner.on{display:block}#mrivBanner.bad{background:#3a1515;border-color:rgba(255,120,120,.6);color:#ffc4c4}</style>
+</head>
+<body><div class="bg"><i class="a1"></i><i class="a2"></i><i class="a3"></i><i class="a4"></i></div><div id="busybar"></div>
+<svg width="0" height="0" style="position:absolute"><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#38e1ff"/><stop offset="1" stop-color="#4c9dff"/></linearGradient></defs></svg>
+<div class="wrap">
+  <header>
+    <div class="brand"><div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="#3a2504" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4M12 14v4M8.5 20h7"/></svg></div>
+      <h1>Completed Jobs <span id="month"></span></h1></div>
+    <div class="meta"><div class="ctrl">
+      <button class="iconbtn" id="btnGroup">Group: Clients</button>
+      <button class="iconbtn" id="btnMonth">Show last month</button>
+      <button class="iconbtn" id="btnTable" style="display:none">Table view</button>
+      <button class="iconbtn" id="btnNow">Update now</button>
+      <button class="iconbtn" id="btnSettings">⚙ Targets &amp; schedule</button>
+      <button class="iconbtn" id="btnFull">⛶</button></div>
+      <span id="rcount" style="display:none"></span>
+      <span id="updated"><span class="dot"></span>Waiting for first update…</span>
+      <div class="clock" id="clock"></div></div>
+  </header>
+  <div>
+    <div class="alert" id="alert"></div>
+    <div class="tiles" id="tiles"></div>
+    <div class="team" id="team"></div>
+    <div class="ticker" id="ticker"></div>
+  </div>
+  <div class="main">
+    <div class="card"><div class="podium" id="podium"></div><h2><span id="boardTitle">Client leaderboard</span><span class="h2s">ranked by % of revenue target</span>
+      <span class="legend"><span><i style="background:linear-gradient(90deg,#4c9dff,#38e1ff)"></i>Revenue vs target</span><span><i style="background:linear-gradient(90deg,#f0a93a,#ffe08a)"></i>Bonus zone</span><span><i style="background:#fff;width:.2rem;height:.8rem;vertical-align:-.15rem"></i>Target</span><span><i style="background:rgba(255,255,255,.45);width:.2rem;height:.8rem;vertical-align:-.15rem"></i>Expected by now (working days)</span></span></h2>
+      <div class="board" id="board"></div></div>
+    <div class="side">
+      <div class="card ops"><h2>Top office staff <span class="h2s" id="opsSub">Contribution points</span></h2><div class="board" id="ops"></div></div>
+      <div class="card"><h2><span id="dailyTitle">Jobs completed per day</span></h2><div class="chart" id="daily"></div></div>
+    </div>
+  </div>
+</div>
+<div class="tip" id="tip"></div>
+<div id="veil"></div><div id="rays"></div>
+<canvas id="confetti"></canvas>
+<canvas id="fx"></canvas>
+<div class="hitcard" id="hit"></div>
+<div class="celebrate" id="cel"></div>
+<div class="roundup" id="roundup"></div>
+<div id="quiet"></div>
+
+<dialog id="dlg">
+  <h3>What counts as "completed"</h3>
+  <div class="row2" id="stBox"></div>
+  <p class="hint">MRI's Completed Date also catches cancelled and other closed jobs. Tick the statuses that should count. The board updates straight away.</p>
+  <h3>Office staff leaderboard</h3>
+  <div class="row2"><label>Don't count these "Completed By" names <input id="exBy" style="width:320px" placeholder="Mobile"></label></div>
+  <p class="hint">Comma-separated (MRI user names, e.g. Mobile, administrator, HECKMANM). They're left out of the staff leaderboard, the celebrations and the ticker; their jobs still count towards contract totals.</p>
+  <h3>Staff points</h3>
+  <div class="row2">
+    <label>Raise a job <input type="number" id="pt_r" min="0" step="1" style="width:56px"></label>
+    <label>Book a visit <input type="number" id="pt_b" min="0" step="1" style="width:56px"></label>
+    <label>Letter or call <input type="number" id="pt_k" min="0" step="1" style="width:56px"></label>
+    <label>Price a job <input type="number" id="pt_p" min="0" step="1" style="width:56px"></label>
+    <label>Close a job <input type="number" id="pt_c" min="0" step="1" style="width:56px"></label>
+    <label>Clear to invoice <input type="number" id="pt_x" min="0" step="1" style="width:56px"></label>
+    <label>1 point per <input type="number" id="pt_u4" min="1" step="1" style="width:56px"> other updates</label>
+  </div>
+  <div class="row2"><label><input type="checkbox" id="pt_bonus" style="width:auto"> Bigger jobs earn more for pricing and closing: +1 with 3–5 sales lines, +2 with 6 or more</label></div>
+  <p class="hint">Read from MRI's own job history (who did what, to the second). Each action counts once per job, per person, per day. Pricing = adding or changing sales or cost items. Closing = whoever switches the job to Complete/Variation, whatever MRI's "Completed By" says. Other updates = any other save on a job. Only bulk uploads and bulk updates are limited: one action that saves more than 20 jobs back to back (each within 2 seconds of the last) counts as 20 jobs. Everything else counts in full, however fast someone works. Value doesn't matter, time between jobs earns nothing, and shared logins earn nobody points. Scores are always whole numbers. Counting since <b id="ptSince">–</b> – every board counts from the same moment unless Reset is pressed on one of them (it resets that PC's board only).</p>
+  <div class="row2"><button class="btn ghost" id="ptReset">Reset this board's points to zero now</button><span class="hint" id="ptResetMsg"></span></div>
+  <h3>Client groups</h3>
+  <p class="hint">Contracts are grouped under their MRI client automatically. <b>Drag a contract</b> onto another client to move it, or onto one of the two boxes below. Click a client's name to rename it. Changes apply when you press Save.</p>
+  <div class="row2" style="margin-bottom:8px"><input id="grpFilter" placeholder="Find a contract or client…" style="width:220px"><span class="gz" id="gzNew">＋ Drop here to start a new client</span><span class="gz" id="gzAuto">↺ Drop here to put it back where MRI has it</span></div>
+  <div id="grpBoard"></div>
+  <h3>Overall monthly revenue target</h3>
+  <div class="row2"><label>£ <input id="sTotal" inputmode="numeric" placeholder="e.g. 2146800" style="width:160px"></label><span class="hint">Used for Revenue completed, the team challenge bar and "ahead / behind pace". Leave blank to add up the client targets below instead.</span></div>
+  <h3 id="tgtTitle">Monthly targets per client</h3>
+  <p class="hint">Tick <b>Other (Misc)</b> to fold smaller clients into one combined row on the board. That row uses the sum of their targets, or type its own target on the "Other (Misc)" line that appears at the top after saving.</p>
+  <div class="row2"><button class="btn ghost" id="loadPrev">Load last month from MRI</button><button class="btn ghost" id="usePrev">Use last month as targets</button><input id="filterC" placeholder="Filter contracts…" style="width:220px"><span class="hint" id="prevHint"></span></div>
+  <div class="scroll"><table><thead><tr><th id="tgtCol">Client</th><th>Last month</th><th>Revenue target (£)</th><th>Jobs target <span style="font-weight:400">(optional)</span></th><th title="Tick to fold this one into a single combined 'Other (Misc)' row on the board">Other (Misc)</th><th>Hide</th></tr></thead><tbody id="tgtBody"></tbody></table></div>
+  <div class="row2"><input id="newC" placeholder="Add contract name" style="width:280px"><button class="btn ghost" id="addC">Add</button></div>
+  <h3>Automatic updates (this PC)</h3>
+  <div class="row2">
+    <label><input type="checkbox" id="sEn" style="width:auto"> Update automatically</label>
+    <label>every <input type="number" id="sEvery" min="15" step="5" style="width:70px"> seconds</label>
+    <label>between <input type="number" id="sStart" min="0" max="23" style="width:60px">:00 and <input type="number" id="sEnd" min="1" max="24" style="width:60px">:00</label>
+    <label><input type="checkbox" id="sWk" style="width:auto"> weekdays only</label>
+  </div>
+  <div class="row2"><label>Quick check of every job touched today every <input type="number" id="sAct" min="15" step="5" style="width:70px"> seconds</label><span class="hint">Keeps revenue and staff points up to date between full reads (fastest 15; it automatically slows down if MRI is slow)</span></div>
+  <div class="row2">
+    <label><input type="checkbox" id="sLive" style="width:auto"> <b>Live mode</b>: re-check today's completions every <input type="number" id="sLiveMins" min="10" style="width:60px"> seconds and celebrate each new one</label>
+    <label><input type="checkbox" id="sChime" style="width:auto"> play a chime</label>
+  </div>
+  <p class="hint">Live checks re-run today's search inside the hidden MRI window without reloading it, so they take a few seconds and use no AI. 20 seconds is a good balance; 10 is the fastest allowed. The full month is re-read on the schedule above (30 seconds by default, 15 is the fastest) inside the hidden MRI window, without reloading it. Live mode adds quicker checks of today only in between, and is not needed at this speed.</p>
+  <div class="row2">
+    <label>Roundup pop-up every <input type="number" id="sRound" min="0" step="5" style="width:60px"> minutes, showing what each client gained (0 = off)</label>
+    <label><input type="checkbox" id="sCards" style="width:auto"> also pop up a card for each job closed</label>
+  </div>
+  <p class="hint">New revenue always goes straight onto the board: the client's bar grows and a green +£ appears on its row. The roundup runs on the clock (e.g. :00, :15, :30, :45) with a countdown in the header.</p>
+  <div class="row2"><label><input type="checkbox" id="sHide" style="width:auto"> Run updates in a hidden (minimised) window, so the MRI tab never shows</label></div>
+  <div class="row2"><label><input type="checkbox" id="sAwake" style="width:auto"> Keep this PC and its screen awake while the board is open</label><span class="hint">Stops Windows turning the screen off or sleeping, the way a video player does – no mouse wiggler needed. It stops as soon as the board is closed.</span></div>
+  <p class="hint">The hidden window is opened once, when Edge starts, and reused for every update after that. If you untick this, updates run in a background tab beside the leaderboard instead, which never shows while the board is full screen. Keep Edge open and signed in to MRI on this PC. If MRI signs out, this board shows a red notice until someone signs back in.</p>
+  <h3>Staff insights (private)</h3>
+  <p class="hint">Click a name on the board and enter the PIN to see that person's day in MRI: every action, roughly how long they were active and their pace against the team. Nothing shows on the board itself. <b id="insState"></b></p>
+  <div class="row2">
+    <label>Current PIN <input type="password" id="insCur" inputmode="numeric" maxlength="8" style="width:90px" autocomplete="off"></label>
+    <label>New PIN <input type="password" id="insNew" inputmode="numeric" maxlength="8" style="width:90px" autocomplete="off"></label>
+    <button class="btn ghost" id="insChange">Change PIN</button>
+    <button class="btn ghost" id="insLockPc">Lock on this PC</button>
+    <span class="hint" id="insMsg"></span>
+  </div>
+  <h3>Share between boards (GitHub)</h3>
+  <div class="row2">
+    <label>Private repository <input id="syRepo" placeholder="yourname/mri-board-data" style="width:230px" autocomplete="off"></label>
+    <label>Token <input id="syToken" type="password" placeholder="github_pat_… (leave blank to keep the saved one)" style="width:300px" autocomplete="off"></label>
+  </div>
+  <div class="row2">
+    <label>This PC <select id="syRole" style="padding:6px 8px;border-radius:8px"><option value="off">doesn't share</option><option value="publish">reads MRI and shares the board (one PC only, e.g. the TV)</option><option value="view">shows the shared board</option></select></label>
+    <label>Name <input id="syName" placeholder="e.g. Office TV" style="width:150px"></label>
+    <button class="btn ghost" id="syGo">Save &amp; connect</button>
+  </div>
+  <p class="hint" id="syMsg">One PC (the TV) reads MRI and shares the finished board; every other board shows exactly the same, without reading MRI itself. Settings changed on any board – point values, statuses, targets, client groups, a points reset – reach every board within a minute. Connect the TV first: its settings become the shared ones. Use a private repository and a token that can only reach that repository (Contents: read and write). Never shared: resident details, the Claude API key, this PC's own update schedule.</p>
+  <h3>View-only link (for Teams)</h3>
+  <div class="row2">
+    <label>Public repository <input id="vlRepo" placeholder="yourname/mri-board-view" style="width:230px" autocomplete="off" spellcheck="false"></label>
+    <label>Viewer key <input id="vlToken" placeholder="ghp_… (a token with no permissions)" style="width:250px" autocomplete="off" spellcheck="false"></label>
+    <button class="btn ghost" id="vlGo">Turn on</button>
+    <button class="btn ghost" id="vlOff">Turn off</button>
+  </div>
+  <div class="row2" id="vlLinkRow" style="display:none">
+    <input id="vlLink" readonly style="flex:1;min-width:320px;font:12px Consolas,monospace">
+    <button class="btn ghost" id="vlCopy">Copy link</button>
+    <button class="btn ghost" id="vlNew" title="Makes a new link; the old one stops working within a minute">New link</button>
+  </div>
+  <p class="hint" id="vlMsg">A copy of this board that anyone with the link can watch live in their browser (usually within half a minute of this board) – nothing to install, no sign-in, and nothing to click into (no names, contracts, change logs or settings). The TV puts it on a free GitHub Pages site; the figures there are encrypted, and the key to them is in the link itself, so only people with the link can see them. Needs the boards connected above.</p>
+  <p class="hint" id="vlState" style="color:#ffd9a0"></p>
+  <h3>Health check <button class="btn ghost" id="diagCopy" style="margin-left:8px;padding:4px 10px;font-size:12px">Copy</button></h3>
+  <pre id="diag" style="margin:0 0 12px;padding:10px 12px;background:#0a0f1c;border:1px solid rgba(255,255,255,.1);border-radius:8px;font:12px/1.5 Consolas,monospace;color:#b9c6e0;white-space:pre-wrap;max-height:300px;overflow:auto"></pre>
+  <div class="row2" style="justify-content:flex-end"><button class="btn ghost" id="dlgCancel">Cancel</button><button class="btn" id="dlgSave">Save</button></div>
+</dialog>
+<dialog id="ins" class="insd">
+  <div class="ins-head">
+    <span class="ins-tag">Private</span>
+    <select id="insWho" aria-label="Person"></select>
+    <button class="btn ghost" id="insPrev" title="Day before">‹</button>
+    <input type="date" id="insDay" min="2026-11-18" aria-label="Day">
+    <button class="btn ghost" id="insNext" title="Day after">›</button>
+    <span style="flex:1"></span>
+    <button class="btn ghost" id="insLock">Lock</button>
+    <button class="btn" id="insClose">Close</button>
+  </div>
+  <div id="insBody"></div>
+</dialog>
+<dialog id="cv" class="insd">
+  <div class="ins-head">
+    <span class="ins-tag cv-tag" id="cvTag">Value check</span><b id="cvTitle" style="font-size:18px"></b><span id="cvMonth" class="hint"></span>
+    <span style="flex:1"></span>
+    <div class="cv-tabs" role="tablist"><button class="cv-tab on" id="cvTabV" role="tab">Value check</button><button class="cv-tab" id="cvTabC" role="tab" title="Private – needs the staff insights PIN"><svg class="lk" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M4 7V5a4 4 0 1 1 8 0v2h1v8H3V7h1zm2 0h4V5a2 2 0 1 0-4 0v2z"/></svg>Change log</button></div>
+    <button class="btn" id="cvClose">Close</button>
+  </div>
+  <div class="ins-head cv-ctl" id="cvCtlV">
+    <input id="cvFilter" placeholder="Filter by job or name" style="width:220px" autocomplete="off">
+    <label class="hint"><input type="checkbox" id="cvToday" style="width:auto"> today only</label>
+  </div>
+  <div class="ins-head cv-ctl" id="cvCtlC" hidden>
+    <button class="btn ghost" id="cvPrev" title="Day before">‹</button>
+    <input type="date" id="cvDay" aria-label="Day">
+    <button class="btn ghost" id="cvNext" title="Day after">›</button>
+    <input type="search" id="cvJob" placeholder="Find a job number" style="width:210px" autocomplete="off" spellcheck="false">
+    <span style="flex:1"></span>
+    <span id="cvAsOf" class="hint"></span>
+  </div>
+  <div id="cvBody"></div>
+</dialog>
+<dialog id="insPin" class="insp">
+  <h3>Private – enter PIN</h3>
+  <div class="row2"><input type="password" id="insPinVal" inputmode="numeric" maxlength="8" autocomplete="off" style="width:150px;font-size:20px;letter-spacing:.3em"></div>
+  <div class="row2"><label><input type="checkbox" id="insPinKeep" style="width:auto"> keep this PC unlocked</label></div>
+  <p class="hint" id="insPinMsg" style="color:#ff9a9a"></p>
+  <div class="row2" style="justify-content:flex-end"><button class="btn ghost" id="insPinCancel">Cancel</button><button class="btn" id="insPinGo">Open</button></div>
+</dialog>
+<script>window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin","version":"2.29.1"};
+// MRI Assist – the VIEW-ONLY board: the leaderboard as a normal web page that anyone with the link can watch – nothing to
+// install, no sign-in, nothing to click into. The PC that reads MRI (the TV) puts this page on a GitHub Pages site together
+// with the board's figures, ENCRYPTED. The key is in the link, after the "#", which a browser never sends anywhere, so the
+// file on GitHub can't be read without the link. This script stands in for the extension's storage, so the board's own code
+// (dashboard.js) runs unchanged and animates new figures exactly as the TV does. It can't change anything anywhere.
+(() => {
+  const C = window.MRIV || {}, q = new URLSearchParams(location.hash.slice(1)), KEY = q.get("k") || "", TOKEN = q.get("t") || "";
+  const store = {}, listeners = []; let ready, isReady = false; const readyP = new Promise((r) => (ready = r));
+  const copy = (x) => (x === undefined ? x : JSON.parse(JSON.stringify(x)));
+  const pick = (keys) => { const ks = keys == null ? Object.keys(store) : Array.isArray(keys) ? keys : typeof keys === "string" ? [keys] : Object.keys(keys); const o = {}; for (const k of ks) if (k in store) o[k] = copy(store[k]); return o; };
+  // what the board's code expects from the browser extension (kept in this page only)
+  window.chrome = {
+    storage: {
+      local: { get: async (k) => { await readyP; return pick(k); }, set: async (o) => { Object.assign(store, copy(o)); }, remove: async (k) => { for (const x of [].concat(k)) delete store[x]; } },
+      onChanged: { addListener: (fn) => listeners.push(fn) },
+    },
+    runtime: { getManifest: () => ({ version: C.version || "" }), sendMessage: async () => ({}), getURL: (p) => p },
+  };
+  // a note along the bottom when something's wrong (and a "view only" tag by the clock)
+  const banner = (txt, kind) => { let b = document.getElementById("mrivBanner"); if (!b) { b = document.createElement("div"); b.id = "mrivBanner"; document.body.appendChild(b); } b.textContent = txt || ""; b.className = txt ? "on " + (kind || "") : ""; };
+  addEventListener("DOMContentLoaded", () => { const u = document.getElementById("updated"); if (u && !document.querySelector(".vo")) { const t = document.createElement("span"); t.className = "vo"; t.textContent = "View only"; u.before(t); } });
+  const unb64u = (s) => { s = String(s).replace(/-/g, "+").replace(/_/g, "/"); while (s.length % 4) s += "="; const b = atob(s), u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; };
+  let key = null;
+  async function unseal(bytes) {
+    if (new TextDecoder().decode(bytes.slice(0, 4)) !== "MRV1") throw new Error("not a board file");
+    key ||= await crypto.subtle.importKey("raw", unb64u(KEY), "AES-GCM", false, ["decrypt"]);
+    const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: bytes.slice(4, 16) }, key, bytes.slice(16));
+    return JSON.parse(await new Response(new Blob([plain]).stream().pipeThrough(new DecompressionStream("gzip"))).text());
+  }
+  function apply(snap) {
+    const next = {
+      "dash:data": snap.data ? { ...snap.data, shared: { from: snap.from || "the office", at: snap.at || Date.now() } } : null,
+      "dash:contrib": snap.contrib || null, "dash:events": snap.events || { seq: 0, list: [] },
+      "dash:prefs": { ...(snap.prefs || {}), chime: false }, "dash:targets": snap.targets || {}, "dash:gtargets": snap.gtargets || {}, "dash:schedule": {},
+    };
+    const ch = {};
+    for (const [k, v] of Object.entries(next)) if (JSON.stringify(store[k]) !== JSON.stringify(v)) { ch[k] = { oldValue: copy(store[k]), newValue: copy(v) }; store[k] = v; }
+    if (!isReady) { isReady = true; ready(); return; }
+    if (Object.keys(ch).length) for (const fn of listeners) { try { fn(ch, "local"); } catch (e) { console.error(e); } }
+  }
+  // the latest figures: checked every 10 seconds. A check that finds nothing new costs nothing (GitHub answers "not changed"), so
+  // only real changes count against the viewer key's 5,000 an hour, which everyone watching shares: if it runs low, every page
+  // watching slows down by itself, and speeds up again when the hour resets. A page in a background tab checks once a minute.
+  let etag = null, timer = null, busy = false, lastSnapAt = 0;
+  const next = (ms) => { clearTimeout(timer); timer = setTimeout(poll, ms + Math.random() * 1500); };
+  const pace = (left) => (!(left >= 0) ? 10000 : left < 150 ? 300000 : left < 600 ? 90000 : left < 1500 ? 30000 : 10000);
+  // keeps "SHARED from … · 8s ago" honest: while the TV is sharing (it says it's alive at least every 5 minutes), a check that
+  // finds nothing new means what's on screen is current
+  function fresh() {
+    const d = store["dash:data"]; if (!d?.shared || Date.now() - lastSnapAt > 360000) return;
+    const n = { ...d, shared: { ...d.shared, at: Date.now() } }; store["dash:data"] = n;
+    for (const fn of listeners) { try { fn({ "dash:data": { oldValue: copy(d), newValue: copy(n) } }, "local"); } catch (_) {} }
+  }
+  async function poll() {
+    if (busy) return; busy = true; let wait = 10000;
+    try {
+      const r = await fetch(`https://api.github.com/repos/${C.repo}/contents/${C.file}?ref=${C.branch}`, { cache: "no-store", referrerPolicy: "no-referrer",
+        headers: { Accept: "application/vnd.github.raw", ...(TOKEN ? { Authorization: "Bearer " + TOKEN } : {}), ...(etag ? { "If-None-Match": etag } : {}) } });
+      wait = pace(r.headers.get("x-ratelimit-remaining") == null ? NaN : Number(r.headers.get("x-ratelimit-remaining")));
+      const slow = wait >= 90000 ? "Lots of people are watching – the board updates a little less often for now." : "";
+      if (r.status === 304) { fresh(); if (isReady) banner(slow, "warn"); return; }
+      if (r.status === 401) { wait = 300000; return banner("This link's viewer key doesn't work any more – ask for the new link.", "bad"); }
+      if (r.status === 403 || r.status === 429) { wait = 180000; return banner("Lots of people are watching – updates pause for a few minutes.", "warn"); }
+      if (r.status === 404) { wait = 60000; return banner("Nothing has been shared yet – this page fills in as soon as it is.", "warn"); }
+      if (!r.ok) throw new Error("GitHub said " + r.status);
+      const bytes = new Uint8Array(await r.arrayBuffer()); etag = r.headers.get("etag");
+      let snap; try { snap = await unseal(bytes); } catch (_) { wait = 120000; return banner("This link has been replaced – ask for the new one.", "bad"); }
+      if (snap.off) { wait = 120000; return banner("The view-only board has been turned off.", "bad"); }
+      lastSnapAt = snap.at || Date.now(); banner(slow, "warn"); apply(snap); fresh();
+    } catch (_) { wait = 30000; banner("Can't reach the board right now – trying again shortly.", "warn"); }
+    finally { busy = false; next(document.hidden ? Math.max(wait, 60000) : wait); }
+  }
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) next(300); }); // back on screen: look straight away
+  if (!KEY || !C.repo) { addEventListener("DOMContentLoaded", () => banner("This link isn't complete – copy the whole link, including everything after the #.", "bad")); return; }
+  poll();
+})();
+</script>
+<script>// MRI leaderboard – runs on the always-on PC. Reads the figures the collector stores; nothing leaves this PC.
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
+  const fmtN = (n) => Math.round(n).toLocaleString("en-GB");
+  const totalTarget = () => Math.max(0, Number(prefs.totalTarget) || 0); // overall monthly revenue target set by hand (0 = add up the clients' targets)
+  const fmtFull = (n) => "£" + Math.round(n).toLocaleString("en-GB"); // to the pound, so even a small job visibly moves the total
+  const fmtGBP = (n) => "£" + (n >= 999500 ? (n / 1e6).toFixed(2) + "m" : n >= 100000 ? (n / 1000).toFixed(0) + "k" : Math.round(n).toLocaleString("en-GB"));
+  let data = null, targets = {}, schedule = {}, tableMode = false, page = 0, viewPrev = false, prefs = {};
+  let contrib = null, contribResetAt = 0; // staff points worked out by the hidden MRI window (see content.js "STAFF POINTS")
+  const DEFAULT_COUNT = ["Complete", "Variation"]; // Compl-FOC (free of charge) is not counted
+  const counted = () => prefs.statuses || DEFAULT_COUNT;
+  // "Completed By" is the office staff member who closed the job; system closers like "Mobile" don't count for people
+  const excluded = () => [...new Set((prefs.excludeBy ?? ["Mobile", "administrator"]).map((s) => s.trim().toLowerCase()).filter(Boolean))];
+  const isPerson = (n) => !!n && !excluded().includes(String(n).trim().toLowerCase());
+  // jobs/value for an aggregate, counting only the chosen statuses (older data without a breakdown counts everything)
+  // "jake.scott" / "JAKE.SCOTT" / "jake_scott" -> "Jake Scott"
+  const person = (n) => { let t = String(n || "").replace(/[._]+/g, " ").replace(/\s+/g, " ").trim(); if (t === t.toLowerCase() || t === t.toUpperCase()) t = t.toLowerCase().replace(/(^|[\s'-])\p{L}/gu, (m) => m.toUpperCase()); return t; };
+  const J = (o) => (o?.st ? counted().reduce((s, k) => s + (o.st[k]?.j || 0), 0) : o?.jobs || 0);
+  const V = (o) => (o?.st ? counted().reduce((s, k) => s + (o.st[k]?.v || 0), 0) : o?.value || 0);
+  const DV = (x) => counted().reduce((s, k) => s + (x?.[k] || 0), 0); // revenue on one day, counted statuses only
+  const D = (x) => (typeof x === "number" ? x : counted().reduce((s, k) => s + (x?.[k] || 0), 0));
+  // ---- grouping: contracts roll up to their client (MRI Client Code), with renames and manual overrides ----
+  const grouped = () => (prefs.groupBy || "client") === "client";
+  const codeOf = (contract) => data?.contractClient?.[contract] || (String(contract).split(/\s+-\s+|\s+/)[0] || contract);
+  const groupName = (code) => prefs.groupNames?.[code] || data?.clients?.[code] || data?.clients?.[String(code).toUpperCase()] || code;
+  const stripYear = (s) => String(s).replace(/[\s_-]*(19|20)\d{2}$/, "").replace(/[\s_-]+\d{2}$/, "").trim() || String(s);
+  const gkey = (s) => stripYear(s).toUpperCase().replace(/[^A-Z0-9]/g, "");
+  let groupDisplay = {};
+  function buildGroupDisplay() {
+    groupDisplay = {};
+    const all = new Set([...Object.keys(data?.byContract || {}), ...Object.keys(data?.contractClient || {}), ...Object.values(data?.history || {}).flatMap((h) => Object.keys(h.byContract || {}))]);
+    for (const c of all) { const raw = groupName(codeOf(c)); const k = gkey(raw), nice = stripYear(raw); const cur = groupDisplay[k]; if (!cur || (/\s/.test(nice) && !/\s/.test(cur))) groupDisplay[k] = nice; }
+  }
+  const groupOf = (contract) => prefs.groupOf?.[contract] || (() => { const raw = groupName(codeOf(contract)); return groupDisplay[gkey(raw)] || stripYear(raw); })();
+  const tgtStore = () => (grouped() ? gtargets : targets);
+  function mergeInto(t, o) { if (!o) return t; t.jobs += o.jobs || 0; t.value += o.value || 0; for (const [s, x] of Object.entries(o.st || {})) { (t.st[s] ||= { j: 0, v: 0 }); t.st[s].j += x.j; t.st[s].v += x.v; } return t; }
+  // raw = true gives every client/contract separately (for the settings list); otherwise those ticked "Other (Misc)" are combined into one row
+  const MISC = "Other (Misc)";
+  const isMisc = (name) => name !== MISC && !!tgtStore()[name]?.misc;
+  const viewName = (contract) => { const n = grouped() ? groupOf(contract) : contract; return isMisc(n) ? MISC : n; };
+  function rollup(byContract, raw = false) {
+    let rows = {}, members = {};
+    if (!grouped()) rows = { ...(byContract || {}) };
+    else for (const [c, o] of Object.entries(byContract || {})) { const g = groupOf(c); mergeInto(rows[g] ||= { jobs: 0, value: 0, st: {} }, o); (members[g] ||= []).push(c); }
+    if (raw) return { rows, members };
+    const names = Object.keys(rows).filter(isMisc);
+    if (names.length) {
+      const m = { jobs: 0, value: 0, st: {} }; if (rows[MISC]) mergeInto(m, rows[MISC]);
+      for (const n of names) { mergeInto(m, rows[n]); delete rows[n]; delete members[n]; }
+      rows[MISC] = m; members[MISC] = names;
+    }
+    return { rows, members };
+  }
+  // targets as the board uses them: "Other (Misc)" gets its own target if one is typed in, otherwise the sum of its members' targets
+  function effT() {
+    const T = tgtStore(), names = Object.keys(T).filter(isMisc); if (!names.length) return T;
+    const out = { ...T }; const sum = (k) => names.reduce((s, n) => s + (Number(T[n][k]) || 0), 0);
+    out[MISC] = { ...(T[MISC] || {}), value: Number(T[MISC]?.value) || sum("value"), jobs: Number(T[MISC]?.jobs) || sum("jobs") };
+    for (const n of names) delete out[n];
+    return out;
+  }
+  let gtargets = {};
+  const prevKey = () => { const n = new Date(); const p = new Date(n.getFullYear(), n.getMonth() - 1, 1); return `${p.getFullYear()}-${String(p.getMonth() + 1).padStart(2, "0")}`; };
+  const source = () => (viewPrev ? data?.history?.[prevKey()] || null : data);
+
+  // the screen (and so the PC) stays awake while the board is open – Chrome/Edge's own power setting, as a video player uses.
+  // It's held for the whole extension, so it's only let go when the last board on this PC closes. ⚙ can switch it off.
+  function keepAwake() { try { if (!chrome.power) return; if (schedule.awake === false) chrome.power.releaseKeepAwake(); else chrome.power.requestKeepAwake("display"); } catch (_) {} }
+  setInterval(keepAwake, 30000);
+  addEventListener("pagehide", () => { try { const others = (chrome.extension?.getViews?.() || []).filter((w) => w !== window && /dashboard\.html$/.test(w.location.pathname)); if (!others.length) chrome.power?.releaseKeepAwake(); } catch (_) {} });
+  async function load() {
+    const s = await chrome.storage.local.get(["dash:data", "dash:targets", "dash:gtargets", "dash:schedule", "dash:prefs", "dash:contrib", "dash:pointsReset"]);
+    data = s["dash:data"] || null; targets = s["dash:targets"] || {}; gtargets = s["dash:gtargets"] || {};
+    contrib = s["dash:contrib"] || null;
+    prefs = s["dash:prefs"] || {}; schedule = s["dash:schedule"] || {}; keepAwake();
+    if (s["dash:pointsReset"]?.at) { if (!(prefs.pointsStart >= s["dash:pointsReset"].at)) { prefs = { ...prefs, pointsStart: s["dash:pointsReset"].at }; await chrome.storage.local.set({ "dash:prefs": prefs }); } await chrome.storage.local.remove("dash:pointsReset"); }
+    contribResetAt = prefs.pointsStart || 0;
+    // one-off: Compl-FOC used to be counted by default – take it out of saved settings once (it can be ticked again in ⚙ if ever wanted)
+    if (!prefs.focRemoved) { prefs = { ...prefs, focRemoved: true, ...(prefs.statuses ? { statuses: prefs.statuses.filter((x) => x !== "Compl-FOC") } : {}) }; chrome.storage.local.set({ "dash:prefs": prefs }); }
+    // one-off: the shared "administrator" login (and MRI's own system updates under that name) can't be credited to a person
+    if (!prefs.adminExcluded) { prefs = { ...prefs, adminExcluded: true, excludeBy: [...new Set([...(prefs.excludeBy ?? ["Mobile"]), "administrator"])] }; chrome.storage.local.set({ "dash:prefs": prefs }); }
+    buildGroupDisplay();
+    let diffs = [];
+    if (data?.updatedAt && data.updatedAt !== lastUpdatedAt && !viewPrev) {
+      const snap = groupSnapshot();
+      if (lastSnap && lastUpdatedAt) diffs = diffSnap(lastSnap, snap);
+      lastSnap = snap; lastUpdatedAt = data.updatedAt;
+    }
+    // New figures go straight onto the board: the client's bar grows, a green +£ pops on the row and rows glide to their new rank.
+    // The roundup pop-up is on a timer (see tickRound) rather than after every update.
+    const vd = data?.hasValue ? diffs.filter((x) => x.dv > 0.5) : diffs;
+    if (diffs.length && !vd.length) quietNote(data, diffs.reduce((n, x) => n + x.dj, 0));
+    if ((celQueue.length || celBusy) && !$("dlg").open) {
+      if (!hold) holdSince = Date.now();
+      hold = true; renderStatus(); setTimeout(runQueue, 1800); // something is playing: update the board as soon as it finishes
+      setTimeout(() => { if (hold && !celBusy && !celQueue.length) { hold = false; render(); } }, 60000);
+    } else { render(); if (vd.length) chime(true); }
+  }
+  let holdSince = 0, drawnAt = 0; // when new figures were last put on screen (Health check)
+  setInterval(() => {
+    const stuck = (hold && Date.now() - holdSince > 90000) || (showing && Date.now() - showSince > 90000) || (celBusy && Date.now() - celSince > 90000);
+    if (!stuck) return;
+    logChange("board", "Display", "pop-ups were holding back new figures for over 90 seconds – showing them now");
+    celQueue.length = 0; celBusy = false; showing = false; showSeq++; hold = false; try { $("cel").classList.remove("on"); } catch (_) {}
+    [$("board"), $("ops")].forEach((l) => delete l.dataset.show); render();
+  }, 15000);
+  chrome.storage.onChanged.addListener((ch) => {
+    if (ch["dash:events"]) onEvents(ch["dash:events"].newValue);
+    const dd = ch["dash:data"];
+    if (dd && !ch["dash:targets"] && !ch["dash:gtargets"] && !ch["dash:prefs"] && !ch["dash:contrib"]) { // (a shared board's points arrive with its figures: never skip those)
+      const o = dd.oldValue || {}, n = dd.newValue || {};
+      if (o.updatedAt === n.updatedAt && o.ok === n.ok && o.errorAt === n.errorAt && o.month === n.month && JSON.stringify(o.history ? Object.keys(o.history) : []) === JSON.stringify(n.history ? Object.keys(n.history) : [])) { data = n; renderStatus(); return; }
+    }
+    if (ch["dash:data"] || ch["dash:targets"] || ch["dash:gtargets"] || ch["dash:prefs"] || ch["dash:contrib"]) load();
+  });
+
+  // ================= live celebrations =================
+  let lastSnap = null, lastUpdatedAt = null, hold = false;
+  function groupSnapshot() {
+    const R = rollup(data?.byContract).rows, T = effT(), out = {};
+    for (const [n, v] of Object.entries(R)) if (!T[n]?.hidden) out[n] = { jobs: J(v), value: V(v), tj: Number(T[n]?.jobs) || 0, tv: Number(T[n]?.value) || 0 };
+    return out;
+  }
+  function diffSnap(a, b) {
+    return Object.entries(b).map(([n, x]) => { const o = a[n] || { jobs: 0, value: 0 }; return { name: n, dj: x.jobs - o.jobs, dv: x.value - o.value, from: o, to: x }; })
+      .filter((x) => x.dj > 0 || x.dv > 0.5).sort((p, q) => q.dv - p.dv || q.dj - p.dj);
+  }
+  let revHeld = 0, drawTotals = null;
+  // Staff score = jobs closed (Completed By) + value increases (Amended By), counting only jobs in the chosen statuses.
+  // "Mia.Bailey" and "MIA.BAILEY" are the same person; names on the exclude list (Mobile, administrator…) are left out.
+  // ---- staff points: counts per person per day come from the hidden MRI window; the points values live here (⚙) ----
+  const ACTS = ["r", "b", "k", "p", "c", "x", "u"];
+  const ACT_NAME = { r: "raised", b: "booked", k: "letters/calls", p: "priced", c: "closed", x: "cleared", u: "updates" }, ACT_ONE = { k: "letter/call", u: "update" };
+  const PT_DEF = { r: 2, b: 2, k: 1, p: 2, c: 2, x: 1, u4: 4, bonus: true };
+  const ptCfg = () => ({ ...PT_DEF, ...(prefs.points || {}) });
+  // whole points only: named actions are whole numbers, and other updates are 1 point per 4 (rounded up)
+  const ptsOf = (t, W = ptCfg()) => Math.round(W.r * t.r + W.b * t.b + W.k * t.k + W.p * t.p + W.c * t.c + W.x * t.x + (W.bonus ? (t.p1 || 0) + 2 * (t.p2 || 0) + (t.c1 || 0) + 2 * (t.c2 || 0) : 0)) + Math.ceil((t.u || 0) / Math.max(1, Number(W.u4) || 4));
+  const contribPending = () => !!(contribResetAt && contribResetAt > (contrib?.since || 0)); // reset pressed, not yet picked up
+  const monthNow = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`; };
+  function monthRows(m) {
+    const W = { ...ptCfg(), ...(m.w || {}) };
+    return Object.entries(m.users || {}).filter(([u]) => isPerson(u)).map(([u, t]) => [contrib?.names?.[u] || u, { pts: ptsOf(t, W), t, key: u }]).filter(([, v]) => v.pts > 0).sort((a, b) => b[1].pts - a[1].pts || a[0].localeCompare(b[0]));
+  }
+  function contribRows(month) {
+    if (!contrib || contribPending()) return [];
+    const per = {};
+    for (const [day, users] of Object.entries(contrib.days || {})) {
+      if (!day.startsWith(month || monthNow())) continue;
+      for (const [u, t] of Object.entries(users)) { const o = (per[u] ||= { r: 0, b: 0, k: 0, p: 0, p1: 0, p2: 0, c: 0, c1: 0, c2: 0, x: 0, u: 0 }); for (const k in o) o[k] += t[k] || 0; }
+    }
+    return Object.entries(per).filter(([u]) => isPerson(u)).map(([u, t]) => [contrib.names?.[u] || u, { pts: ptsOf(t), t, key: u }]).filter(([, v]) => v.pts > 0).sort((a, b) => b[1].pts - a[1].pts || a[0].localeCompare(b[0]));
+  }
+  const topActs = (t) => ACTS.map((k) => [k, t[k] || 0]).filter(([, n]) => n > 0).sort((a, b) => b[1] - a[1]).slice(0, 2).map(([k, n]) => `${fmtN(n)} ${n === 1 ? ACT_ONE[k] || ACT_NAME[k] : ACT_NAME[k]}`).join(" · ");
+  const actText = (d) => ACTS.filter((k) => d[k] > 0).map((k) => (d[k] > 1 ? d[k] + " " + ACT_NAME[k] : ACT_ONE[k] || ACT_NAME[k])).join(" + ");
+  const actFull = (t) => ACTS.filter((k) => t[k] > 0).map((k) => `${ACT_NAME[k]} ${fmtN(t[k])}${(k === "p" || k === "c") && (t[k + "1"] || t[k + "2"]) ? ` (${[t[k + "1"] ? t[k + "1"] + " with 3–5 lines" : "", t[k + "2"] ? t[k + "2"] + " with 6+" : ""].filter(Boolean).join(", ")})` : ""}`).join(" · ");
+  const minus = (t, d) => { const o = { ...t }; for (const k of Object.keys(d || {})) o[k] = Math.max(0, (o[k] || 0) - d[k]); return o; };
+  function contribSince() {
+    const s = contribPending() ? contribResetAt : contrib?.since; if (!s) return "Points for raising, booking, pricing, closing and clearing jobs";
+    const d = new Date(s), today = d.toDateString() === new Date().toDateString();
+    return `Contribution points since ${today ? d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) + " today" : d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" })}`;
+  }
+  function staffStats(src) {
+    // jobs closed = who moved each job into Complete/Variation (byCloser, from v2.17.2); older months fall back to MRI's Completed By
+    const closers = src?.byCloser, jobsOf = (x) => J(closers ? closers[x] : src.byOp?.[x]);
+    const groups = {}; for (const n of [...Object.keys(src?.byOp || {}), ...Object.keys(closers || {}), ...Object.keys(src?.byCredit || {})]) (groups[n.toLowerCase()] ||= new Set()).add(n);
+    const out = [];
+    for (const set of Object.values(groups)) {
+      const list = [...set]; const name = list.find((x) => src.byOp?.[x] && x !== x.toUpperCase()) || list.find((x) => x !== x.toUpperCase()) || list[0];
+      if (!isPerson(name)) continue;
+      let jobs = 0, adds = 0, value = 0;
+      for (const x of list) { jobs += jobsOf(x); const c = src.byCredit?.[x]; if (c) for (const k of counted()) { adds += c.st[k]?.n || 0; value += c.st[k]?.v || 0; } }
+      if (jobs + adds > 0) out.push({ name, jobs, adds, pts: jobs + adds, value });
+    }
+    return out.sort((a, b) => b.pts - a.pts || b.jobs - a.jobs || a.name.localeCompare(b.name));
+  }
+  let staffBase = null; const staffSeen = new Set(), cliSeen = new Set();
+  let lastSeq = null, events = [], celQueue = [], celBusy = false, celSince = 0, prevTotals = {}, flashNames = new Set();
+  chrome.storage.local.get("dash:events").then(({ "dash:events": ev }) => { events = ev?.list || []; lastSeq = ev?.seq || 0; staffBase = lastSeq; renderTicker(); });
+  // does this event add to the board? a status change only does when the job has just started to count (e.g. Query -> Complete)
+  const nowCounts = (e) => counted().includes(e.status) && (e.kind !== "status" || !counted().includes(e.from));
+  function onEvents(ev) {
+    if (!ev) return; events = ev.list || [];
+    const fresh = events.filter((e) => e.id > (lastSeq ?? ev.seq) && nowCounts(e));
+    lastSeq = ev.seq;
+    renderTicker(fresh.map((e) => e.id));
+    const cards = !prefs.cards ? [] : fresh.filter((e) => e.kind !== "added" && (!data?.hasValue || +e.value > 0)).map((e) => (e.kind === "status" ? { ...e, op: e.closer ?? (e.by || e.op) } : e)); // value added to an existing job shows in the roundup and the Latest strip, not as a "job closed" card
+    if (cards.length) { if (cards.length > 3) celQueue.push(cards); else celQueue.push(...cards); setTimeout(runQueue, 1500); } // wait for the new totals to arrive // big batches become one grouped card
+  }
+  const short = (t, n) => (String(t).length > n ? String(t).slice(0, n - 1).trimEnd() + "…" : String(t));
+  // "Mobile" and other excluded names aren't people: their jobs still show, just without a staff name
+  const who = (op) => person(op) || "—";
+  function renderTicker(newIds = []) {
+    const actor = (e) => (e.kind !== "new" && e.by ? e.by : e.op);
+    const twin = (e) => e.kind === "added" && events.some((x) => x.kind === "status" && x.job === e.job && Math.abs(x.at - e.at) < 5000 && nowCounts(x)); // priced and completed in one go: one entry
+    const list = events.filter((e) => nowCounts(e) && !twin(e) && isPerson(actor(e)) && (!data?.hasValue || +e.value > 0)).slice(-12).reverse(); // jobs closed on Mobile (or any excluded name) aren't listed
+    $("ticker").innerHTML = list.length ? `<span class="lbl">Latest</span>` + list.map((e) => `<span class="tk${newIds.includes(e.id) ? " new" : ""}">${esc(new Date(e.at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }))} · <span class="jb">${esc(e.job || "—")}</span> · <b>${esc(who(actor(e)))}</b>${data?.hasValue ? ` · <span class="pv${e.kind === "added" ? " adj" : ""}">+${fmtGBP(+e.value || 0)}${e.kind === "added" ? (e.by ? " added" : " added to existing job") : e.kind === "status" ? ` · ${esc(e.from)} → ${esc(e.status)}` : ""}</span>` : ""}</span>`).join("") : "";
+  }
+  async function runQueue() {
+    if (celBusy || !celQueue.length) return;
+    if (showing) { setTimeout(runQueue, 1000); return; } // let every row have its turn first
+    celBusy = true; celSince = Date.now();
+    const item = celQueue.shift();
+    try { if (item?.hit) await targetHit(item.hit); else if (item?.roundup) await roundup(item.roundup, item); else await celebrate(Array.isArray(item) ? item : [item]); }
+    catch (e) { logChange("board", "Display", "a pop-up failed and was skipped: " + (e?.message || e)); try { $("cel").classList.remove("on"); } catch (_) {} }
+    finally { celBusy = false; }
+    // everything has played: now let the board itself animate to the new figures
+    if (!celQueue.length && hold) { hold = false; document.dispatchEvent(new Event("board-reset")); render(); setTimeout(() => flashNames.clear(), 3500); }
+    runQueue();
+  }
+  function contractProgress(contract) {
+    const name = viewName(contract);
+    const v = rollup(data?.byContract).rows[name]; const t = effT()[name] || {};
+    const useV = !!data?.hasValue; return { name, useV, done: useV ? V(v) : J(v), target: (useV ? Number(t.value) : Number(t.jobs)) || 0 };
+  }
+  async function celebrate(list) {
+    const el = $("cel"); const one = list.length === 1 ? list[0] : null;
+    list.forEach((e) => { flashNames.add(e.contract); flashNames.add(groupOf(e.contract)); flashNames.add(viewName(e.contract)); if (isPerson(e.op)) flashNames.add(e.op); });
+    if (one) {
+      const p = contractProgress(one.contract); const pct = p.target ? Math.min(100, (p.done / p.target) * 100) : null;
+      const val = +one.value || 0;
+      el.innerHTML = `<div class="kicker">Job closed</div><div class="cel-av" style="background:${isPerson(one.op) ? avGrad(one.op) : "linear-gradient(135deg,#3b4a66,#1d2740)"}">${isPerson(one.op) ? esc(initials(one.op)) : "✓"}</div><div class="who">${esc(isPerson(one.op) ? person(one.op) : viewName(one.contract))}</div>
+        ${data?.hasValue ? (val ? `<div class="cel-val" data-to="${Math.round(val)}">+£0</div>` : `<div class="cel-val zero">£0 – no sales items on this job yet</div>`) : ""}
+        <div class="what"><b>${esc(one.job)}</b>${one.addr ? ` · ${esc(short(one.addr, 60))}` : ""}<br>${grouped() ? `<b>${esc(groupOf(one.contract))}</b> · ` : ""}${esc(one.contract)}</div>
+        ${pct != null ? `<div><div class="prog"><i style="width:${Math.max(0, pct - (p.useV ? (val / p.target) * 100 : 100 / Math.max(1, p.target)))}%"></i></div><div class="progtxt">${esc(p.name)}: <b>${(p.useV ? fmtGBP : fmtN)(p.done)}</b> of ${(p.useV ? fmtGBP : fmtN)(p.target)} this month${p.done >= p.target ? " · 🏆 target hit!" : ""}</div></div>` : ""}`;
+      setTimeout(() => { const bar = el.querySelector(".prog i"); if (bar) bar.style.width = pct + "%"; const v = el.querySelector(".cel-val[data-to]"); if (v) tick(v, +v.dataset.to, "+£", 1300); }, 500);
+    } else {
+      const byOp = {}; list.forEach((e) => { const k = isPerson(e.op) ? e.op : ""; byOp[k] = (byOp[k] || 0) + 1; });
+      const sumV = list.reduce((s, e) => s + (+e.value || 0), 0), zero = list.filter((e) => !(+e.value)).length;
+      el.innerHTML = `<div class="kicker">${list.length} jobs just closed</div><div class="who">${fmtN(list.length)} new jobs</div>
+        ${data?.hasValue ? (sumV ? `<div class="cel-val" data-to="${Math.round(sumV)}">+£0</div>` : `<div class="cel-val zero">£0 so far – no sales items on these jobs yet</div>`) : ""}
+        ${data?.hasValue && sumV && zero ? `<div class="progtxt">${zero} of these were closed at £0 – no sales items on them yet</div>` : ""}
+        <div class="list">${Object.entries(byOp).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([n, k]) => `<div>${n ? avatar(n) : `<span class="av" style="background:#3b4a66">✓</span>`}${esc(n ? person(n) : "Mobile")} <em>×${k}</em></div>`).join("")}</div>`;
+      setTimeout(() => { const v = el.querySelector(".cel-val[data-to]"); if (v) tick(v, +v.dataset.to, "+£", 1500); }, 500);
+    }
+    chime(); confetti(list.length > 1 ? 260 : 160);
+    el.classList.add("on"); if (!hold) render();
+    await new Promise((r) => setTimeout(r, one ? 6500 : 8000));
+    el.classList.remove("on"); await new Promise((r) => setTimeout(r, 600));
+    setTimeout(() => { flashNames.clear(); }, 2500);
+  }
+  // ---- the big one: a client has hit their monthly target ----
+  async function targetHit(h) {
+    const el = $("hit"); const f = h.useV ? fmtGBP : fmtN; const pctNow = Math.round(h.pct * 100);
+    const thanks = ["Outstanding work, team.", "That's how it's done.", "Brilliant effort, everyone.", "Take a bow, team.", "Superb – thank you all."][Math.floor(Math.random() * 5)];
+    el.innerHTML = `<div class="hit-k">Target smashed</div>
+      <div class="hit-trophy"><svg viewBox="0 0 64 64"><defs><linearGradient id="tg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3c9"/><stop offset=".5" stop-color="#ffcf5c"/><stop offset="1" stop-color="#c9781f"/></linearGradient></defs><path fill="url(#tg)" d="M18 6h28v6h10v8c0 8-5 13-12 14-2 5-6 8-10 9v7h9v8H21v-8h9v-7c-4-1-8-4-10-9C13 33 8 28 8 20v-8h10zm-4 12v2c0 4 2 7 5 8-1-3-1-6-1-10zm36 0h-4c0 4 0 7-1 10 3-1 5-4 5-8z"/></svg></div>
+      <div class="hit-name">${esc(h.name)}</div>
+      <div class="hit-pct"><b>${Math.round(h.from * 100)}%</b><span>of target</span></div>
+      <div class="hit-sub"><b>${f(h.m)}</b> against a target of <b>${f(h.mt)}</b></div>
+      <div class="hit-thanks">${thanks}</div>`;
+    el.classList.add("on"); flashNames.add(h.name);
+    fanfare(); fireworks(8500); confetti(320, true);
+    await wait(900); const b = el.querySelector(".hit-pct b"); const a0 = Math.round(h.from * 100), t0 = performance.now();
+    (function tickPct(t) { const k = Math.min(1, (t - t0) / 1600), e = 1 - Math.pow(1 - k, 3); b.textContent = Math.round(a0 + (pctNow - a0) * e) + "%"; if (k < 1) requestAnimationFrame(tickPct); else el.classList.add("landed"); })(t0);
+    await wait(3200); confetti(260, true);
+    await wait(5200);
+    el.classList.remove("on", "landed"); await wait(700);
+  }
+  function fanfare() {
+    if (!prefs.chime) return;
+    try { const ctx = new AudioContext(); [523, 659, 784, 1047, 784, 1047, 1319].forEach((fq, i) => { const o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime + i * 0.14; o.type = "triangle"; o.frequency.value = fq; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.22, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + (i === 6 ? 1.4 : 0.32)); o.connect(g).connect(ctx.destination); o.start(t); o.stop(t + 1.5); }); } catch (_) {}
+  }
+  // fireworks: rockets climb, burst, and the sparks drift down with glowing trails
+  function fireworks(ms) {
+    const cv = $("fx"), ctx = cv.getContext("2d"); cv.width = innerWidth; cv.height = innerHeight; cv.classList.add("on");
+    const W = cv.width, H = cv.height, u = Math.max(0.7, W / 1920), run = (fireworks.run = (fireworks.run || 0) + 1);
+    const pal = [["#ffe08a", "#ffcf5c", "#fff"], ["#38e1ff", "#9cc8ff", "#fff"], ["#3ee98a", "#b6ffcb", "#fff"], ["#ff8a5c", "#ffcf5c", "#fff"], ["#b48cff", "#e3d4ff", "#fff"]];
+    const rockets = [], sparks = []; const t0 = performance.now(); let next = 0;
+    const launch = () => rockets.push({ x: W * (0.12 + Math.random() * 0.76), y: H, vy: -(13 + Math.random() * 6) * u, vx: (Math.random() - 0.5) * 2 * u, top: H * (0.14 + Math.random() * 0.34), c: pal[(Math.random() * pal.length) | 0] });
+    const burst = (r) => { const n = 70 + ((Math.random() * 50) | 0), ring = Math.random() < 0.35; for (let i = 0; i < n; i++) { const a = (i / n) * 6.283 + Math.random() * 0.1, sp = (ring ? 6.5 : 2 + Math.random() * 7) * u; sparks.push({ x: r.x, y: r.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 1, d: 0.008 + Math.random() * 0.012, c: r.c[(Math.random() * r.c.length) | 0], s: (1.4 + Math.random() * 1.8) * u }); } };
+    (function frame(t) {
+      if (run !== fireworks.run) return; const el = t - t0;
+      ctx.globalCompositeOperation = "destination-out"; ctx.fillStyle = "rgba(0,0,0,.2)"; ctx.fillRect(0, 0, W, H); ctx.globalCompositeOperation = "lighter";
+      if (el < ms - 1800 && el > next) { launch(); if (Math.random() < 0.45) launch(); next = el + 260 + Math.random() * 420; }
+      for (let i = rockets.length - 1; i >= 0; i--) { const r = rockets[i]; r.x += r.vx; r.y += r.vy; r.vy += 0.12 * u; ctx.fillStyle = "#fff3c9"; ctx.beginPath(); ctx.arc(r.x, r.y, 2.2 * u, 0, 6.3); ctx.fill(); if (r.y <= r.top || r.vy >= 0) { burst(r); rockets.splice(i, 1); } }
+      for (let i = sparks.length - 1; i >= 0; i--) { const p = sparks[i]; p.x += p.vx; p.y += p.vy; p.vx *= 0.975; p.vy = p.vy * 0.975 + 0.07 * u; p.life -= p.d; if (p.life <= 0) { sparks.splice(i, 1); continue; } ctx.globalAlpha = Math.max(0, p.life); ctx.fillStyle = p.c; ctx.beginPath(); ctx.arc(p.x, p.y, p.s * (0.6 + p.life * 0.6), 0, 6.3); ctx.fill(); }
+      ctx.globalAlpha = 1;
+      if (el < ms || sparks.length) requestAnimationFrame(frame); else { ctx.clearRect(0, 0, W, H); cv.classList.remove("on"); }
+    })(t0);
+  }
+  function quietNote(d, newJobs) {
+    const el = $("quiet"); const since = lastUpdatedAt ? new Date(lastUpdatedAt).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) : "";
+    el.innerHTML = newJobs ? `✓ ${fmtN(newJobs)} new job${newJobs === 1 ? "" : "s"} closed · no revenue added yet` : `✓ ${d.liveAt === d.updatedAt ? "Live check" : "Update"} done · no new completions${since ? " since " + since : ""}`;
+    el.classList.add("on"); clearTimeout(quietNote.t); quietNote.t = setTimeout(() => el.classList.remove("on"), 7000);
+  }
+  // "Update roundup": each client that moved slides in, its bar fills from old to new, a green +£ counts up and fades
+  // ---- timed roundup: every N minutes (on the clock: :00, :15, :30, :45), what each client gained since the last one ----
+  const roundMins = () => Number(prefs.roundMins ?? 15) || 0;
+  const rbKey = () => `round:${grouped() ? "g" : "c"}`;
+  const getRoundBase = () => { try { const b = JSON.parse(localStorage.getItem(rbKey())); return b && b.month === data?.month ? b : null; } catch (_) { return null; } };
+  const setRoundBase = (at) => { const snap = {}; for (const [n, x] of Object.entries(groupSnapshot())) snap[n] = { jobs: x.jobs, value: x.value }; localStorage.setItem(rbKey(), JSON.stringify({ at, month: data?.month, snap })); };
+  const hhmm = (t) => new Date(t).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+  function tickRound() {
+    const el = $("rcount"), mins = roundMins();
+    if (!mins || !data?.byContract || viewPrev) { el.style.display = "none"; return; }
+    const ms = mins * 60000, now = Date.now(), slot = Math.floor(now / ms) * ms, next = slot + ms;
+    let b = getRoundBase(); if (!b) { setRoundBase(now); b = getRoundBase(); }
+    if (b.at < slot && !$("dlg").open && !celBusy && !showing) {
+      // a roundup time has passed since we last took stock
+      const diffs = now - b.at > ms * 2.5 ? [] : diffSnap(b.snap, groupSnapshot()).filter((x) => !data.hasValue || x.dv > 0.5); // board was closed for a while: just start again
+      setRoundBase(now);
+      if (diffs.length) { celQueue.push({ roundup: diffs, from: b.at, to: now }); runQueue(); }
+      else if (now - b.at <= ms * 2.5) { const q = $("quiet"); q.textContent = `Roundup ${hhmm(now)} · no new revenue in the last ${mins} minutes`; q.classList.add("on"); clearTimeout(quietNote.t); quietNote.t = setTimeout(() => q.classList.remove("on"), 8000); }
+    }
+    const left = Math.max(0, next - now), m = Math.floor(left / 60000), sec = Math.floor((left % 60000) / 1000), C = 2 * Math.PI * 9;
+    el.style.display = ""; el.classList.toggle("soon", left < 60000);
+    el.innerHTML = `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" class="rc-bg"/><circle cx="12" cy="12" r="9" class="rc-fg" style="stroke-dasharray:${C};stroke-dashoffset:${C * (left / ms)}"/></svg><span>Roundup in <b>${m}:${String(sec).padStart(2, "0")}</b></span>`;
+  }
+  async function roundup(diffs, meta = {}) {
+    const el = $("roundup"); const show = diffs.slice(0, 8); const rest = diffs.length - show.length;
+    const tot = diffs.reduce((s, x) => ({ dj: s.dj + x.dj, dv: s.dv + x.dv }), { dj: 0, dv: 0 });
+    const useV = !!data?.hasValue;
+    const pctOf = (v, j, x) => { const t = useV && x.tv ? x.tv : x.tj; const val = useV && x.tv ? v : j; return t ? Math.min(100, (val / t) * 100) : null; };
+    el.innerHTML = `<div class="ru-head"><span class="ru-k">${roundMins() ? roundMins() + "-minute roundup" : "Roundup"}</span><span class="ru-t">${meta.from ? hhmm(meta.from) + " – " + hhmm(meta.to || Date.now()) : hhmm(Date.now())}</span></div><div class="ru-list"></div><div class="ru-total"></div>`;
+    el.classList.add("on"); flashNames.clear(); diffs.forEach((x) => flashNames.add(x.name));
+    const list = el.querySelector(".ru-list");
+    for (const x of show) {
+      const p0 = pctOf(x.from.value || 0, x.from.jobs || 0, x.to), p1 = pctOf(x.to.value, x.to.jobs, x.to);
+      const row = document.createElement("div"); row.className = "ru-row";
+      row.innerHTML = `<div class="ru-name">${esc(x.name)}</div><div class="ru-bar"><i style="width:${p0 ?? 0}%"></i>${p1 == null ? "" : `<em>${Math.round(p1)}%</em>`}</div><div class="ru-plus">${useV && x.dv > 0.5 ? `<b data-to="${Math.round(x.dv)}">+£0</b>` : useV ? `<b style="color:var(--text-muted);font-size:.6em">£0 · no sales items yet</b>` : ""}<small>${x.dj > 0 ? `+${fmtN(x.dj)} job${x.dj === 1 ? "" : "s"}` : "items priced"}</small></div>`;
+      list.appendChild(row);
+      requestAnimationFrame(() => row.classList.add("in"));
+      await wait(250);
+      row.querySelector(".ru-bar i").style.width = (p1 ?? Math.min(100, 20 + x.dj * 10)) + "%";
+      const b = row.querySelector(".ru-plus b"); if (b) tick(b, +b.dataset.to, "+£");
+      row.querySelector(".ru-plus").classList.add("go");
+      chime(true); await wait(750);
+    }
+    if (rest > 0) { const m = document.createElement("div"); m.className = "ru-more"; m.textContent = `…and ${rest} more`; list.appendChild(m); }
+    await wait(400);
+    const T = el.querySelector(".ru-total");
+    T.innerHTML = `<div class="ru-tk">TEAM</div><div class="ru-big">${useV ? `<b data-to="${Math.round(tot.dv)}">+£0</b>` : `<b>+${fmtN(tot.dj)}</b>`}</div><div class="ru-sub">+${fmtN(tot.dj)} job${tot.dj === 1 ? "" : "s"} ${meta.from ? "since " + hhmm(meta.from) : "this update"}</div>`;
+    T.classList.add("go"); const tb = T.querySelector("b[data-to]"); if (tb) tick(tb, +tb.dataset.to, "+£", 1600);
+    confetti(220); chime(); teamBar(true);
+    await wait(4200);
+    el.classList.remove("on"); await wait(600);
+  }
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  function tick(el, to, pre = "", dur = 900) { const t0 = performance.now(); (function f(t) { const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3); el.textContent = pre + Math.round(to * e).toLocaleString("en-GB"); if (k < 1) requestAnimationFrame(f); })(t0); }
+  // persistent team challenge bar (value target if set, otherwise jobs)
+  function teamBar(animate) {
+    const el = $("team"); if (!el) return; if (viewPrev || !data?.byContract) { el.innerHTML = ""; return; }
+    const vals = Object.values(groupSnapshot());
+    const tv = totalTarget() || vals.reduce((s, x) => s + x.tv, 0), tj = vals.reduce((s, x) => s + x.tj, 0);
+    const useV = !!data?.hasValue; const t = useV ? tv : tj; if (!t) { el.innerHTML = ""; return; }
+    const v = useV ? Math.max(0, vals.reduce((s, x) => s + x.value, 0) - revHeld) : vals.reduce((s, x) => s + x.jobs, 0);
+    const pct = Math.min(100, (v / t) * 100), mi = monthInfo(data?.month); const pace = Math.min(100, mi.pace * 100);
+    const fmt = (n) => (useV ? fmtGBP(n) : fmtN(n)), fmtV = (n) => (useV ? fmtFull(n) : fmtN(n));
+    const w0 = el.dataset.w != null ? +el.dataset.w : 0;
+    el.innerHTML = `<div class="tm-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg>Team challenge</div><div class="tm-bar"><i style="width:${w0}%"></i>${[25, 50, 75, 100].map((m) => `<u class="${pct >= m ? "hit" : ""}${pct >= m && w0 < m && w0 > 0 ? " pop" : ""}" style="left:${m}%"><span>${m}%</span></u>`).join("")}<s style="left:${pace}%" data-l="Expected by now · ${fmt(t * mi.pace)}" class="${pace > 82 ? "r" : pace < 18 ? "l" : ""}"></s></div><div class="tm-r"><b>${fmtV(v)}</b> of ${useV && totalTarget() ? fmtFull(t) : fmt(t)}<em>${Math.round((v / t) * 100)}%</em></div>`;
+    later(() => { const i = el.querySelector(".tm-bar i"); if (i) i.style.width = pct + "%"; });
+    el.dataset.w = pct;
+  }
+  function chime(soft) {
+    if (!prefs.chime) return;
+    if (soft) { try { const ctx = new AudioContext(), o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.value = 990; g.gain.setValueAtTime(0.0001, ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.25); o.connect(g).connect(ctx.destination); o.start(); o.stop(ctx.currentTime + 0.3); } catch (_) {} return; }
+    chimeFull();
+  }
+  function chimeFull() {
+    if (!prefs.chime) return;
+    try { const ctx = new AudioContext(); [660, 880, 1320].forEach((f, i) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.value = f; o.type = "sine"; g.gain.setValueAtTime(0.0001, ctx.currentTime + i * 0.12); g.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + i * 0.12 + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + i * 0.12 + 0.5); o.connect(g).connect(ctx.destination); o.start(ctx.currentTime + i * 0.12); o.stop(ctx.currentTime + i * 0.12 + 0.6); }); } catch (_) {}
+  }
+  function confetti(n, gold) {
+    const cv = $("confetti"), ctx = cv.getContext("2d"); cv.width = innerWidth; cv.height = innerHeight;
+    const W = cv.width, H = cv.height, u = Math.max(0.7, W / 1920);
+    const cols = gold ? ["#ffe08a", "#ffcf5c", "#f0a93a", "#fff3c9", "#ffffff"] : ["#4c9dff", "#38e1ff", "#3ee98a", "#ffcf5c", "#ffffff", "#ff8a5c", "#b48cff"];
+    const mk = (x, y, ang, sp) => ({ x, y, vx: Math.cos(ang) * sp * u, vy: Math.sin(ang) * sp * u, r: (Math.random() * 6 + 4) * u, c: cols[(Math.random() * cols.length) | 0], a: Math.random() * 6, va: (Math.random() - 0.5) * 0.5, f: Math.random() * 6, s: (Math.random() * 3) | 0 });
+    const ps = [];
+    for (let i = 0; i < n; i++) {
+      const k = i % 3;
+      if (k === 0) ps.push(mk(0, H * 0.92, -Math.PI / 3.2 + (Math.random() - 0.5) * 0.7, 18 + Math.random() * 22));
+      else if (k === 1) ps.push(mk(W, H * 0.92, Math.PI + Math.PI / 3.2 + (Math.random() - 0.5) * 0.7, 18 + Math.random() * 22));
+      else ps.push(mk(W / 2 + (Math.random() - 0.5) * 240 * u, H * 0.48, -Math.PI / 2 + (Math.random() - 0.5) * 2.6, 6 + Math.random() * 18));
+    }
+    const t0 = performance.now(), run = (confetti.run = (confetti.run || 0) + 1), DUR = 5200;
+    (function frame(t) {
+      if (run !== confetti.run) return;
+      const el = t - t0; ctx.clearRect(0, 0, W, H); ctx.globalAlpha = el > DUR - 1200 ? Math.max(0, (DUR - el) / 1200) : 1;
+      for (const p of ps) {
+        p.vy += 0.38 * u; p.vx *= 0.985; p.vy *= 0.992; p.f += 0.12; p.x += p.vx + Math.cos(p.f) * 1.2 * u; p.y += p.vy; p.a += p.va;
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.scale(1, Math.cos(p.f * 1.7)); ctx.fillStyle = p.c;
+        if (p.s === 0) ctx.fillRect(-p.r, -p.r / 2, p.r * 2, p.r); else if (p.s === 1) { ctx.beginPath(); ctx.arc(0, 0, p.r * 0.6, 0, 6.3); ctx.fill(); } else ctx.fillRect(-p.r * 1.6, -p.r / 5, p.r * 3.2, p.r / 2.5);
+        ctx.restore();
+      }
+      if (el < DUR) requestAnimationFrame(frame); else ctx.clearRect(0, 0, W, H);
+    })(t0);
+  }
+
+  // ---- pace: where each contract should be by today ----
+  function monthInfo(monthKey) {
+    const [y, m] = (monthKey || "").split("-").map(Number); const now = new Date();
+    const days = new Date(y, m, 0).getDate();
+    const isCurrent = now.getFullYear() === y && now.getMonth() + 1 === m;
+    const day = isCurrent ? now.getDate() : days;
+    return { y, m, days, day, frac: day / days, ...paceInfo(y, m, isCurrent), label: new Date(y, m - 1, 1).toLocaleString("en-GB", { month: "long", year: "numeric" }) };
+  }
+  // "Expected by now": the share of the month's target we'd expect to have reached at this moment.
+  // Counts working days only (Mon–Fri, and only the part of today's working hours that has passed). If last month's
+  // day-by-day revenue is known, it follows that shape (e.g. a slow start and a busy last week) instead of a straight line.
+  const isWorkDay = (d) => d.getDay() !== 0 && d.getDay() !== 6;
+  function paceInfo(y, m, isCurrent) {
+    const days = new Date(y, m, 0).getDate(), now = new Date();
+    let wdTotal = 0, wdDone = 0;
+    for (let d = 1; d <= days; d++) { const dt = new Date(y, m - 1, d); if (!isWorkDay(dt)) continue; wdTotal++; if (isCurrent && d < now.getDate()) wdDone++; }
+    if (!isCurrent) return { pace: 1, wdTotal, wdDone: wdTotal, wdNow: wdTotal, paceBasis: "" };
+    const st = schedule.startHour ?? 7, en = schedule.endHour ?? 19;
+    const part = isWorkDay(now) ? Math.max(0, Math.min(1, (now.getHours() + now.getMinutes() / 60 - st) / Math.max(1, en - st))) : 0;
+    const x = wdTotal ? (wdDone + part) / wdTotal : 0; // how far through the month's working time we are
+    let pace = x, paceBasis = "working days";
+    const pk = `${m === 1 ? y - 1 : y}-${String(m === 1 ? 12 : m - 1).padStart(2, "0")}`, last = data?.history?.[pk];
+    if (last?.byDayV) {
+      const ld = new Date(y, m - 1, 0).getDate(), [ly, lm] = pk.split("-").map(Number); const pts = [0]; let cum = 0;
+      // running total after each working day; weekend revenue is added to the working day before it
+      for (let d = 1; d <= ld; d++) { cum += DV(last.byDayV[d]); if (isWorkDay(new Date(ly, lm - 1, d))) pts.push(cum); else if (pts.length > 1) pts[pts.length - 1] = cum; }
+      const tot = cum, n = pts.length - 1; if (n > 0) pts[n] = tot;
+      if (tot > 0 && n > 3) { const pos = x * n, i = Math.min(n - 1, Math.floor(pos)), f = pos - i; pace = Math.max(0, Math.min(1, (pts[i] + (pts[Math.min(n, i + 1)] - pts[i]) * f) / tot)); paceBasis = "working days, following last month's pattern"; }
+    }
+    return { pace, wdTotal, wdDone, wdNow: wdDone + (isWorkDay(now) ? 1 : 0), paceBasis };
+  }
+  function status(done, target, frac, f = fmtN) {
+    if (!target) return null;
+ if (done >= target) { const over = Math.round((done / target) * 100) - 100; return { cls: "s-done", ic: "★", label: over > 0 ? `Smashed +${over}%` : "Target hit!", over }; }
+    const exp = target * frac, ratio = exp ? done / exp : 1;
+    if (ratio >= 1) return { cls: "s-good", ic: "✓", label: "On pace" };
+    if (ratio >= 0.85) return { cls: "s-warn", ic: "!", label: `${f(exp - done)} behind pace` };
+    return { cls: "s-bad", ic: "▼", label: `${f(exp - done)} behind pace` };
+  }
+
+  function renderStatus() {
+    const src = source();
+    // freshness / errors
+    const upd = $("updated");
+    if (data?.shared && data?.updatedAt) { // this board shows the one another PC shares
+      const at = data.shared.at || 0, secs = Math.round((Date.now() - Math.max(at, data.liveAt || 0, data.fullAt || 0)) / 1000);
+      upd.innerHTML = `<span class="dot${data.ok === false ? " err" : ""}"></span>SHARED from ${esc(data.shared.from)} · ${secs < 90 ? secs + "s" : Math.round(secs / 60) + " min"} ago · last change ${new Date(data.updatedAt).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}`;
+    } else if (data?.updatedAt) {
+      const seen = Math.max(data.updatedAt, schedule.enabled ? Math.max(data.liveAt || 0, data.fullAt || 0) : 0), secs = Math.round((Date.now() - seen) / 1000);
+      const mins = Math.round((Date.now() - data.updatedAt) / 60000);
+      upd.innerHTML = `<span class="dot${data.ok === false ? " err" : ""}"></span>${schedule.enabled ? `${schedule.live ? "LIVE" : "AUTO"} · checked ${secs < 90 ? secs + "s" : Math.round(secs / 60) + " min"} ago${data.todayRows != null ? ` · ${fmtN(data.todayRows)} rows today` : ""} · last change ` : `Updated ${mins < 1 ? "just now" : mins + " min ago"} · `}${new Date(data.updatedAt).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}${schedule.enabled ? "" : " · auto-update off"}`;
+    }
+    const al = $("alert");
+    al.style.background = ""; al.style.borderColor = ""; al.style.color = "";
+    const busy = !!(data?.running && Date.now() - data.running.at < 300000);
+    document.body.classList.toggle("busy", busy);
+    if (busy) upd.innerHTML = `<span class="spin">⟳</span>${data.running.live ? "Checking for new jobs…" : "Updating from MRI…"}` + (data?.updatedAt ? ` · last ${new Date(data.updatedAt).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}` : "");
+    al.className = "alert";
+    const capped = src?.mriTotal && src.total && src.mriTotal > src.total;
+    if (busy) {}
+    else if (data?.ok === false) { al.className = "alert on"; al.textContent = "⚠ Last update failed: " + data.error + " (" + new Date(data.errorAt).toLocaleString("en-GB") + "). Showing the last good figures."; }
+    else if (data?.shared?.at && Date.now() - data.shared.at > 600000 && new Date().getHours() >= 7 && new Date().getHours() < 18) { al.className = "alert on"; al.textContent = `⚠ ${data.shared.from} hasn't shared an update since ${new Date(data.shared.at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })} – check that PC is on and signed in to MRI.`; }
+    else if (capped) { al.className = "alert on"; al.textContent = `⚠ MRI reported ${fmtN(src.mriTotal)} rows but only ${fmtN(src.total)} were read – totals may be low.`; }
+    else al.className = "alert";
+  }
+  function render() {
+    drawnAt = Date.now();
+    const src = source();
+    const mi = monthInfo(src?.month || (viewPrev ? prevKey() : new Date().toISOString().slice(0, 7)));
+    $("btnMonth").textContent = viewPrev ? "Show this month" : "Show last month";
+    $("month").textContent = mi.label;
+    renderStatus();
+    if (!src?.byContract) { $("tiles").innerHTML = ""; if (viewPrev) { $("board").innerHTML = `<div class="empty">No figures for last month yet. Open ⚙ Targets &amp; schedule and press "Load last month from MRI".</div>`; $("ops").innerHTML = ""; $("daily").innerHTML = ""; return; } $("board").innerHTML = `<div class="empty">No figures yet. Open ⚙ Targets &amp; schedule, turn on automatic updates (or press Update now) with MRI signed in on this PC.</div>`; $("ops").innerHTML = ""; $("daily").innerHTML = ""; return; }
+
+    $("btnGroup").textContent = grouped() ? "Group: Clients" : "Group: Contracts";
+    $("boardTitle").textContent = grouped() ? "Client leaderboard" : "Contract leaderboard";
+    const T = effT(); const R = rollup(src.byContract);
+    const useV = !!src.hasValue; const fm = useV ? fmtGBP : fmtN;
+    // m = the measure that counts (revenue), mt = its target
+    const mk = (name, jobs, value, tj, tv) => { const m = useV ? value : jobs, mt = useV ? tv : tj; return { name, jobs, value, tj, tv, m, mt, pct: mt ? m / mt : null, st: status(m, mt, mi.pace, fm) }; };
+    const rows = Object.entries(R.rows).filter(([name]) => !T[name]?.hidden).map(([name, v]) => {
+      const t = T[name] || {}; return mk(name, J(v), V(v), Number(t.jobs) || 0, Number(t.value) || 0);
+    }).filter((r) => r.jobs > 0 || r.value > 0 || r.mt > 0);
+    for (const [name, t] of Object.entries(T)) if (!R.rows[name] && !t.hidden && !t.misc && ((Number(t.jobs) || 0) > 0 || (Number(t.value) || 0) > 0)) rows.push(mk(name, 0, 0, Number(t.jobs) || 0, Number(t.value) || 0));
+    // rank by how close each one is to its target (past 100% keeps climbing); those without a target follow, by revenue
+    rows.sort((a, b) => (b.pct != null) - (a.pct != null) || (b.pct ?? 0) - (a.pct ?? 0) || b.m - a.m || b.jobs - a.jobs);
+
+    // ---- animation memory: what was on screen last time, so things glide instead of jumping ----
+    const viewKey = `${grouped() ? "g" : "c"}:${viewPrev ? "prev" : "cur"}:${src.month}`;
+    if (memo.key !== viewKey) { for (const k of Object.keys(pend)) delete pend[k]; memo.key = viewKey; memo.w = {}; memo.m = {}; memo.hi = {}; memo.dip = {}; memo.r = {}; memo.txt = {}; memo.cnt = {}; memo.pod = []; memo.first = true; }
+    const first = memo.first;
+
+    // ---- hero tiles ----
+    // Revenue still waiting for its row to be revealed is held back from the totals, so the big number and the team bar
+    // climb in step with each "+£" on the board instead of jumping ahead of it.
+    revHeld = 0;
+    for (const r of rows) { const key = "b:" + r.name, hw = memo.hi[key] ?? memo.m[key] ?? (first ? null : 0); const g = pend[key] ? r.m - pend[key].m0 : !first && !viewPrev && hw != null && r.m - hw > 0.5 ? r.m - hw : 0; if (useV && g > 0.5) revHeld += g; }
+    const totJ = rows.reduce((s, r) => s + r.jobs, 0), totVall = rows.reduce((s, r) => s + r.value, 0);
+    // the overall target is the figure typed into ⚙ if there is one; otherwise the clients' targets added together
+    const tgtJ = rows.reduce((s, r) => s + r.tj, 0), tgtV = totalTarget() || rows.reduce((s, r) => s + r.tv, 0);
+    const withT = rows.filter((r) => r.mt), onPace = withT.filter((r) => r.st && (r.st.cls === "s-good" || r.st.cls.startsWith("s-done"))).length;
+    drawTotals = () => {
+    const totV = Math.max(0, totVall - revHeld);
+    const totM = useV ? totV : totJ, tgtM = useV ? tgtV : tgtJ;
+    const pace = tgtM ? totM - tgtM * mi.pace : null;
+    const ringP = tgtV && useV ? Math.max(0, Math.min(1, totV / tgtV)) : null, RC = 2 * Math.PI * 30;
+    const ring = ringP == null ? "" : `<svg class="ring" viewBox="0 0 72 72"><circle cx="36" cy="36" r="30" class="rbg"/><circle cx="36" cy="36" r="30" class="rfg" data-off="${RC * (1 - ringP)}" style="stroke-dasharray:${RC};stroke-dashoffset:${RC * (1 - (memo.ring ?? 0))}"/><text x="36" y="39" text-anchor="middle">${Math.round((totV / tgtV) * 100)}%</text><text class="rl" x="36" y="49" text-anchor="middle">OF TARGET</text></svg>`;
+    memo.ring = ringP ?? 0;
+    const tiles = [
+      { l: "Revenue completed", b: useV ? fmtFull(totV) : "–", s: tgtV ? `of ${totalTarget() ? fmtFull(tgtV) : fmtGBP(tgtV)} target` : useV ? "sales value · set targets in ⚙" : "no value column", x: ring },
+      { l: "Jobs completed", b: fmtN(totJ), s: "for information" },
+      { l: pace == null ? "Ahead or behind pace" : pace >= 0 ? "Ahead of pace" : "Behind pace", b: pace == null ? "–" : (pace >= 0 ? "+" : "−") + fm(Math.abs(pace)), s: pace == null ? "needs revenue targets" : `vs the <b>${fm(tgtM * mi.pace)}</b> expected by now<div class="basis">${Math.round(mi.pace * 100)}% of target · by ${mi.paceBasis}</div>`, c: pace == null ? "" : pace >= 0 ? " up" : " down" },
+      { l: (grouped() ? "Clients" : "Contracts") + " on pace", b: withT.length ? `${onPace}/${withT.length}` : "–", s: `working day ${mi.wdNow} of ${mi.wdTotal}<div class="mprog"><i style="width:${mi.wdTotal ? (mi.wdNow / mi.wdTotal) * 100 : 0}%"></i></div>` },
+    ];
+    $("tiles").innerHTML = tiles.map((t, i) => `<div class="tile t${i}${t.c || ""}${prevTotals[i] != null && prevTotals[i] !== t.b && !viewPrev ? " bump" : ""}"><div><div class="lab">${t.l}</div><div class="big" data-count="${esc(t.b)}" data-from="${esc(prevTotals[i] ?? (i < 2 ? "0" : ""))}">${t.b}</div><div class="sub">${t.s}</div></div>${t.x || ""}</div>`).join("");
+    tiles.forEach((t, i) => (prevTotals[i] = t.b));
+    later(() => { const r = document.querySelector(".ring .rfg"); if (r) r.style.strokeDashoffset = r.dataset.off; });
+    };
+    drawTotals();
+
+    // ---- who's hot, and the ranks saved a few minutes ago (for the small ▲▼ beside a rank) ----
+    const hot = {}; const hourAgo = Date.now() - 3600000;
+    for (const e of events) if (e.at > hourAgo && counted().includes(e.status)) { const g = viewName(e.contract); hot[g] = (hot[g] || 0) + 1; }
+    const rankKey = `ranks:${grouped() ? "g" : "c"}:${viewPrev ? "prev" : "cur"}`;
+    let oldRanks = {}; try { oldRanks = JSON.parse(localStorage.getItem(rankKey) || "{}"); } catch (_) {}
+    const newRanks = {}; rows.forEach((r, i) => (newRanks[r.name] = i + 1));
+    if (!render.lastRankSave || Date.now() - render.lastRankSave > 600000 || !Object.keys(oldRanks).length) { localStorage.setItem(rankKey, JSON.stringify(newRanks)); render.lastRankSave = Date.now(); if (!Object.keys(oldRanks).length) oldRanks = newRanks; }
+    rankOld.board = oldRanks;
+    const crown = (i) => `<svg viewBox="0 0 34 26"><path d="M3 20h28l2-15-9 7-7-11-7 11-9-7z" fill="${["#ffcf5c", "#cfd6e2", "#d9945c"][i]}"/><rect x="3" y="21.5" width="28" height="3.5" rx="1.4" fill="${["#f0a93a", "#9aa4b4", "#b9703a"][i]}"/></svg>`;
+
+    // ---- leaderboard rows ----
+    // A row that has gained keeps its old figure AND its old rank until the board reaches it. Then the "+£" lands, and the row
+    // climbs past whoever it has overtaken (see showcase / resort). So the order on screen is by the figures on screen.
+    const board = $("board"); const oldTops = first ? {} : tops(board); const hits = [];
+    // value that came from sales items being added to jobs already on the books (not from newly closed jobs), per row, not yet shown
+    const cliAdj = {}; if (staffBase == null) staffBase = events.reduce((m, e) => Math.max(m, e.id), 0);
+    for (const e of events) if (e.id > staffBase && !cliSeen.has(e.id) && e.kind === "added" && counted().includes(e.status) && Date.now() - e.at < 600000) (cliAdj[viewName(e.contract)] ||= []).push(e);
+    const hitKey = `hits:${grouped() ? "g" : "c"}:${src.month}`; let hitSeen; try { hitSeen = new Set(JSON.parse(localStorage.getItem(hitKey) || "[]")); } catch (_) { hitSeen = new Set(); }
+    const maxScale = Math.max(1, ...rows.map((r) => Math.max(r.m, r.mt)));
+    const info = {}; // what the podium needs to know about each row
+    board.innerHTML = rows.map((r) => {
+      const key = "b:" + r.name;
+      const scale = r.mt ? Math.max(r.m, r.mt * 1.25) : maxScale;
+      const w = Math.min(100, (r.m / scale) * 100), w0 = memo.w[key] ?? 0;
+      const overAt = r.mt && r.m > r.mt ? (r.mt / r.m) * 100 : null; // where the bonus (gold) part of the bar starts
+      if (r.mt && r.m >= r.mt && !viewPrev && !hitSeen.has(r.name)) { hitSeen.add(r.name); if (!first) hits.push({ name: r.name, m: r.m, mt: r.mt, pct: r.pct, from: memo.m[key] != null ? memo.m[key] / r.mt : 0.99, useV }); }
+      // a row that has gained is held at its old figures until the board has scrolled to it (see showcase)
+      const hw = memo.hi[key] ?? memo.m[key] ?? (first ? null : 0); // highest figure this row has already shown: a dip and recovery isn't new money
+      const created = !first && !viewPrev && hw != null && r.m - hw > 0.5 && !pend[key];
+      if (created) pend[key] = { m0: hw, w0: memo.w[key] ?? 0, t0: memo.txt[key], p0: memo.txt[key + "%"], adj: 0 };
+      if (hw != null && r.m < hw - 0.5) { memo.dip[key] = (memo.dip[key] || 0) + 1; memo.hi[key] = memo.dip[key] >= 2 ? r.m : hw; if (memo.dip[key] >= 2) memo.dip[key] = 0; }
+      else { memo.dip[key] = 0; memo.hi[key] = Math.max(hw ?? 0, r.m); }
+      let pd = pend[key]; if (pd && (r.m - pd.m0 <= 0.5 || viewPrev)) { delete pend[key]; pd = null; }
+      const gain = pd ? r.m - pd.m0 : 0;
+      const older = pd ? cliAdj[r.name] : null;
+      if (pd && older) { pd.adj = (pd.adj || 0) + older.reduce((s, e) => s + (+e.value || 0), 0); older.forEach((e) => cliSeen.add(e.id)); }
+      const adj = pd ? Math.min(gain, pd.adj || 0) : 0;
+      if (created || (pd && older)) logChange("client", r.name, "+" + fm(gain) + (adj > 0.5 ? ` (${fm(adj)} of it added to existing jobs${older ? ": " + [...new Set(older.map((e) => e.job + (e.by ? " by " + person(e.by) : "")))].join(", ") : ""})` : ""));
+      const tick = r.mt ? (r.mt / scale) * 100 : null, paceTick = r.mt ? ((r.mt * mi.pace) / scale) * 100 : null;
+      const mem = R.members[r.name]; const tip = `${r.name}${mem?.length > 1 ? ` (${mem.length} contracts)` : ""}: ${src.hasValue ? fmtGBP(r.value) + (r.tv ? " of " + fmtGBP(r.tv) : "") + " · " : ""}${fmtN(r.jobs)} jobs${r.tj ? " of " + fmtN(r.tj) : ""}`;
+      // ranking key: those with a target first, by % of target; then by the figure itself
+      const sortOf = (m) => [r.mt ? 1 : 0, r.mt ? m / r.mt : 0, m, r.jobs];
+      info[key] = { r, m0: pd ? pd.m0 : r.m };
+      const html = `<div class="row${r.pct >= 1 ? " won" : ""}${pd ? " pend" : ""}${flashNames.has(r.name) && !pd ? " flash" : ""}" data-key="${esc(key)}" data-name="${esc(r.name)}" data-sort='${JSON.stringify(sortOf(pd ? pd.m0 : r.m))}'${pd ? ` data-sortnew='${JSON.stringify(sortOf(r.m))}' data-gaintxt="${esc(fm(gain))}" data-gain="${gain}" data-adj="${adj}"` : ""} data-tip="${esc(tip)}">
+        <div class="rank"></div>
+        <div class="name" title="${esc(r.name)}${mem ? "\n" + esc(mem.join("\n")) : ""}">${r.pct >= 1 ? `<span class="wcrown">${crown(0)}</span>` : ""}<span class="nm">${esc(r.name)}</span>${mem?.length > 1 || r.name === MISC ? `<span class="cnt">${mem.length} ${r.name === MISC && grouped() ? "client" : "contract"}${mem.length === 1 ? "" : "s"}</span>` : ""}${hot[r.name] >= 3 ? `<span class="hot">🔥 ${hot[r.name]}</span>` : ""}</div>
+        <div class="bar">${tick != null ? `<div class="zone" style="left:${tick}%"></div>` : ""}<div class="fill${overAt != null ? " over" : ""}" ${pd ? `data-later="${w}"` : `data-w="${w}"`} style="width:${pd ? pd.w0 : w0}%${overAt != null ? `;--over:${overAt}%` : ""}"></div>${paceTick != null ? `<div class="tick pace" style="left:${paceTick}%"></div>` : ""}${tick != null ? `<div class="tick" style="left:calc(${tick}% - .08rem)"></div>` : ""}</div>
+        <div class="nums">${r.mt ? (pd?.p0 ? `<b class="pc${r.pct >= 1 ? " hit" : ""}" data-count="${Math.round(r.pct * 100)}%" data-hold="${esc(pd.p0)}">${esc(pd.p0)}</b>` : `<b class="pc${r.pct >= 1 ? " hit" : ""}" data-count="${Math.round(r.pct * 100)}%" data-from="${esc(memo.txt[key + "%"] ?? "")}">${Math.round(r.pct * 100)}%</b>`) + `<span class="u"> · ${fm(r.m)} of ${fm(r.mt)}</span>` : (pd?.t0 ? `<b data-count="${esc(fm(r.m))}" data-hold="${esc(pd.t0)}">${esc(pd.t0)}</b>` : `<b data-count="${esc(fm(r.m))}" data-from="${esc(memo.txt[key] ?? "")}">${fm(r.m)}</b>`) + (useV ? "" : ` <span class="u">jobs</span>`)}<small>${useV ? `${fmtN(r.jobs)} job${r.jobs === 1 ? "" : "s"} completed` : ""}</small></div>
+        <div>${r.st ? `<span class="pill ${r.st.cls}"><span class="ic">${r.st.ic}</span>${esc(r.st.label)}</span>` : `<span class="pill none">No target</span>`}</div>
+      </div>`;
+      memo.w[key] = w; memo.m[key] = r.m; memo.txt[key] = fm(r.m); if (r.mt) memo.txt[key + "%"] = Math.round(r.pct * 100) + "%";
+      return html;
+    }).join("");
+    sortRows(board); applyRanks(board);
+    flip(board, oldTops);
+
+    // ---- podium: whoever holds the top three places on the board right now ----
+    podiumFn = () => {
+      const top = [...board.children].filter(isRow).slice(0, 3).map((el) => { const x = info[el.dataset.key]; if (!x) return null; const m = el.classList.contains("pend") ? x.m0 : x.r.m; return { r: x.r, m, pct: x.r.mt ? m / x.r.mt : null }; }).filter(Boolean);
+      $("podium").innerHTML = top.length ? [1, 0, 2].filter((i) => top[i]).map((i) => { const { r, m } = top[i]; const pct = top[i].pct != null ? Math.round(top[i].pct * 100) : null;
+        return `<div class="pod p${i + 1}${flashNames.has(r.name) ? " flash" : ""}${memo.pod[i] && memo.pod[i] !== r.name ? " swap" : ""}"><div class="crown">${crown(i)}</div><div class="pname" title="${esc(r.name)}">${esc(r.name)}</div>
+        <div class="pnum"><span class="num" style="all:unset" data-count="${esc(pct != null ? pct + "%" : fm(m))}" data-from="${esc(memo.txt["p:" + r.name] ?? (first ? "0" : ""))}">${pct != null ? pct + "%" : fm(m)}</span><span>${pct != null ? " of target" : useV ? "" : " jobs"}</span></div>
+        <div class="psub">${[r.mt ? `${fm(m)} of ${fm(r.mt)}` : "", pct != null && pct >= 100 ? `<span class="bonus">★ ${pct > 100 ? "Target smashed +" + (pct - 100) + "%" : "Target hit!"}</span>` : "", !r.mt && useV ? fmtN(r.jobs) + " job" + (r.jobs === 1 ? "" : "s") : ""].filter(Boolean).join(" · ")}${hot[r.name] >= 3 ? ` <span class="hot">🔥 ${hot[r.name]} this hour</span>` : ""}</div>
+        <div class="block"><span>${i + 1}</span></div></div>`; }).join("") : "";
+      memo.pod = top.map((x) => x.r.name); top.forEach((x) => (memo.txt["p:" + x.r.name] = x.pct != null ? Math.round(x.pct * 100) + "%" : fm(x.m)));
+    };
+    podiumFn();
+    // someone just crossed their target: let the bar finish filling into gold, then give them the full treatment
+    if (!viewPrev) localStorage.setItem(hitKey, JSON.stringify([...hitSeen]));
+    if (hits.length) { hits.forEach((h) => celQueue.push({ hit: h })); setTimeout(runQueue, 2400); }
+
+    // ---- office staff: contribution points (raise 2 · book 2 · letter/call 1 · price 2 · close 2 · clear 1 · 1 per 4 other updates) ----
+    // (last month, from before the points existed, still shows the old jobs-closed scoring)
+    const prevPts = viewPrev ? contrib?.months?.[prevKey()] : null;
+    const ops = viewPrev ? (prevPts ? monthRows(prevPts) : staffStats(src).map((x) => [x.name, { pts: x.pts, old: x }])) : contribRows(src?.month);
+    const opMax = Math.max(1, ...ops.map(([, v]) => v.pts));
+    // the points were re-counted from a different start (e.g. every board lined up to the same one): show the new scores quietly
+    const rebased = !viewPrev && !!contrib?.since && !!memo.since && contrib.since !== memo.since; if (!viewPrev && contrib?.since) memo.since = contrib.since;
+    if (rebased) for (const k of Object.keys(pend)) if (k.startsWith("o:")) delete pend[k];
+    const opsEl = $("ops"), oldOps = first ? {} : tops(opsEl);
+    $("opsSub").textContent = viewPrev ? (prevPts ? `Contribution points, final${prevPts.since && new Date(prevPts.since).getMonth() === new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).getMonth() ? " (counted from " + new Date(prevPts.since).toLocaleDateString("en-GB", { day: "numeric", month: "short" }) + ")" : ""}` : "jobs closed + value increases (before points started)") : contribSince();
+    opsEl.innerHTML = ops.length ? ops.map(([n, v]) => { const key = "o:" + String(v.key || n).toLowerCase(), w = (v.pts / opMax) * 100, w0 = memo.w[key] ?? 0, txt = fmtN(v.pts);
+      const was = memo.m[key] ?? 0;
+      if (!first && !rebased && !viewPrev && v.t && v.pts > was) {
+        // what they've just done, for the chip ("+3 pts · priced + cleared")
+        const before = memo.cnt[key] || {}, d = {}; for (const k of ACTS) { const x = (v.t[k] || 0) - (before[k] || 0); if (x > 0) d[k] = x; }
+        const pd0 = (pend[key] ||= { m0: was, w0: memo.w[key] ?? 0, t0: memo.txt[key] ?? "0", d: {} });
+        for (const [k, x] of Object.entries(d)) pd0.d[k] = (pd0.d[k] || 0) + x;
+        logChange("staff", person(n), `+${v.pts - was} pt${v.pts - was === 1 ? "" : "s"}: ${actText(d) || "updates"} (now ${v.pts})`);
+      }
+      let pd = pend[key]; if (pd && viewPrev) { delete pend[key]; pd = null; }
+      const np = pd ? v.pts - pd.m0 : 0;
+      const chip = pd ? `${np} pt${np === 1 ? "" : "s"}` : "";
+      const sub = pd ? actText(pd.d) || "updates" : "";
+      const line = v.t ? topActs(v.t) : `${fmtN(v.old.jobs)} closed · ${fmtN(v.old.adds)} added`;
+      const lineBefore = pd && v.t ? topActs(minus(v.t, pd.d)) : line;
+      const tip = v.t ? `${person(n)}: ${fmtN(v.pts)} points = ${actFull(v.t)}` : `${person(n)}: ${fmtN(v.pts)} points`;
+      const html = `<div class="row${pd ? " pend" : ""}${flashNames.has(n) && !pd ? " flash" : ""}" data-key="${esc(key)}" data-sort='${JSON.stringify(pd ? [pd.m0] : [v.pts])}'${pd ? ` data-sortnew='${JSON.stringify([v.pts])}' data-gaintxt="${esc(chip)}" data-gain="${np}" data-sub="${esc(sub)}"` : ""} data-tip="${esc(tip)}">
+      <div class="rank"></div>
+      <div class="name">${avatar(n)}<span class="nm">${esc(person(n))}</span></div><div class="bar"><div class="fill" ${pd ? `data-later="${w}"` : `data-w="${w}"`} style="width:${pd ? pd.w0 : w0}%"></div></div>
+      <div class="nums">${pd ? `<b data-count="${esc(txt)}" data-hold="${esc(pd.t0)}">${esc(pd.t0)}</b>` : `<b data-count="${esc(txt)}" data-from="${esc(memo.txt[key] ?? "")}">${txt}</b>`} <span class="u">pt${v.pts === 1 ? "" : "s"}</span><small${pd ? ` data-later="${esc(line)}"` : ""}>${esc(lineBefore)}</small></div></div>`;
+      memo.w[key] = w; memo.txt[key] = txt; memo.m[key] = v.pts; if (v.t) memo.cnt[key] = { ...v.t }; return html; }).join("") : `<div class="empty" style="font-size:.9rem">${viewPrev ? "No office staff data yet." : "No points yet – they appear here as people raise, book, price, close and clear jobs."}</div>`;
+    sortRows(opsEl); applyRanks(opsEl);
+    flip(opsEl, oldOps);
+    showcase(); // after both lists are drawn: one queue, clients then staff
+    later(() => document.querySelectorAll(".fill[data-w]").forEach((f) => (f.style.width = f.dataset.w + "%")));
+    countUp();
+
+    drawDaily(mi, src);
+    teamBar(false); renderTicker();
+    memo.first = false;
+  }
+  // ---- showcase: visit each client that gained, one at a time, and add the money in front of everyone ----
+  const pend = {};
+  // a plain record of every animation the board has played, so it can be checked against MRI (shown in ⚙ Health check)
+  function logChange(kind, name, what) { try { const l = JSON.parse(localStorage.getItem("changeLog") || "[]"); l.push(`${new Date().toLocaleTimeString("en-GB")}  ${kind === "client" ? "CLIENT" : kind === "board" ? "BOARD " : "STAFF "}  ${name}  ${what}`); localStorage.setItem("changeLog", JSON.stringify(l.slice(-80))); } catch (_) {} }
+  function reveal(row) {
+    delete pend[row.dataset.key]; row.classList.remove("pend"); row.classList.add("flash");
+    if (row.dataset.sortnew) { row.dataset.sort = row.dataset.sortnew; delete row.dataset.sortnew; }
+    const f = row.querySelector(".fill"); if (f) { f.classList.add("grew"); f.style.width = f.dataset.later + "%"; }
+    const b = row.querySelector(".nums b[data-hold]"); if (b) { b.dataset.from = b.dataset.hold; b.removeAttribute("data-hold"); }
+    const sm = row.querySelector(".nums small[data-later]"); if (sm) { sm.textContent = sm.dataset.later; sm.removeAttribute("data-later"); } // the breakdown changes with the total, not before it
+    // blue chip = money added to a job that was already closed (no new job, so nobody gets "+1 job"); green = newly closed work
+    const gain = +row.dataset.gain || 0, adj = +row.dataset.adj || 0, allAdj = adj > 0.5 && adj >= gain - 0.5;
+    const g = document.createElement("span"); g.className = "gain big" + (allAdj || row.dataset.blue ? " adj" : "");
+    g.innerHTML = "+" + esc(row.dataset.gaintxt) + (row.dataset.sub ? `<small>${esc(row.dataset.sub)}</small>` : row.dataset.sub === "" ? "" : allAdj ? `<small>added to existing job${adj && row.dataset.adjn > 1 ? "s" : ""}</small>` : adj > 0.5 ? `<small>incl. ${fmtGBP(adj)} on existing jobs</small>` : "");
+    row.querySelector(".nums")?.prepend(g);
+    if (row.closest("#board") && revHeld > 0) {
+      revHeld = Math.max(0, revHeld - gain); if (drawTotals) { drawTotals(); teamBar(true); }
+      // the same "+£" lifts off the Revenue completed tile as its total ticks up
+      const t0 = document.querySelector(".tile.t0"); if (t0) { const c = document.createElement("span"); c.className = "tgain" + (allAdj ? " adj" : ""); c.textContent = "+" + row.dataset.gaintxt; t0.appendChild(c); setTimeout(() => c.remove(), 2600); }
+    }
+    countUp();
+  }
+  // ----- ranks: the order on screen always follows the figures on screen -----
+  const rankOld = {}; let podiumFn = null;
+  const isRow = (el) => el.classList?.contains("row");
+  const sortKey = (el) => { try { return JSON.parse(el.dataset.sort || "[]"); } catch (_) { return []; } };
+  const cmpRows = (a, b) => { const x = sortKey(a), y = sortKey(b); for (let i = 0; i < Math.max(x.length, y.length); i++) { const d = (y[i] || 0) - (x[i] || 0); if (Math.abs(d) > 1e-9) return d; } return a.dataset.key < b.dataset.key ? -1 : a.dataset.key > b.dataset.key ? 1 : 0; };
+  function sortRows(list) { [...list.children].filter(isRow).sort(cmpRows).forEach((r) => list.appendChild(r)); }
+  function applyRanks(list) {
+    [...list.children].filter(isRow).forEach((row, i) => {
+      const rank = i + 1; row.classList.toggle("r1", rank === 1); row.classList.toggle("r2", rank === 2); row.classList.toggle("r3", rank === 3);
+      if (!row.style.animationDelay) row.style.animationDelay = Math.min(i, 14) * 45 + "ms";
+      const cell = row.querySelector(".rank"); if (!cell) return; const o = rankOld[list.id]?.[row.dataset.name];
+      const mv = !o || o === rank ? "" : o > rank ? `<span class="mv up">▲${o - rank}</span>` : `<span class="mv down">▼${rank - o}</span>`;
+      const changed = cell.dataset.rank && +cell.dataset.rank !== rank;
+      cell.innerHTML = (rank <= 3 ? `<span class="medal m${rank}">${rank}</span>` : rank) + mv; cell.dataset.rank = rank;
+      if (changed) cell.animate([{ transform: "rotateX(90deg) scale(.5)", opacity: 0 }, { transform: "rotateX(-12deg) scale(1.25)", opacity: 1, offset: 0.6 }, { transform: "none", opacity: 1 }], { duration: 650, easing: "ease-out" });
+    });
+  }
+  // The row that just gained climbs to its new place: it lifts and glides up past the rows it has overtaken, which shuffle down
+  // with a little wobble; rank numbers flip over, and a "▲ 2" tag pops beside its name ("New No.1" in gold if it takes the lead).
+  // a rank tag sits beside the name without squashing it (it may overlap the start of the bar for a moment)
+  function addTag(cell, t, ms) { cell.classList.add("tagged"); cell.appendChild(t); setTimeout(() => { t.remove(); if (!cell.querySelector(".climbtag,.droptag")) cell.classList.remove("tagged"); }, ms); }
+  function resort(list, mover) {
+    const rows = [...list.children].filter(isRow); const before = new Map(rows.map((r, i) => [r, { top: r.offsetTop, i }]));
+    const sorted = rows.slice().sort(cmpRows); if (sorted.every((r, i) => r === rows[i])) return 0;
+    sorted.forEach((r) => list.appendChild(r)); applyRanks(list);
+    const places = before.get(mover).i - sorted.indexOf(mover);
+    sorted.forEach((r) => {
+      const b = before.get(r), dy = b.top - r.offsetTop; if (Math.abs(dy) < 2) return;
+      if (r === mover) {
+        r.classList.add("overtake");
+        r.animate([{ transform: `translateY(${dy}px) scale(1.012)` }, { transform: "translateY(0) scale(1.012)" }], { duration: 1150, easing: "cubic-bezier(.3,1.3,.45,1)" }).onfinish = () => {
+          r.animate([{ transform: "scale(1.012)" }, { transform: "scale(.985)" }, { transform: "none" }], { duration: 420, easing: "ease-out" }); setTimeout(() => r.classList.remove("overtake"), 500);
+        };
+      } else {
+        r.animate([{ transform: `translateY(${dy}px)` }, { transform: "none" }], { duration: 850, delay: 160, easing: "cubic-bezier(.16,.84,.24,1)", fill: "backwards" }).onfinish = () => {
+          r.animate([{ transform: "none" }, { transform: "translateX(.4rem)" }, { transform: "translateX(-.22rem)" }, { transform: "none" }], { duration: 420, easing: "ease-out" });
+        };
+        const cell = r.querySelector(".name"); if (cell && dy < 0) { const t = document.createElement("span"); t.className = "droptag"; t.textContent = "▼" + Math.max(1, sorted.indexOf(r) - b.i); addTag(cell, t, 2300); }
+      }
+    });
+    if (places > 0) {
+      const lead = sorted[0] === mover; const cell = mover.querySelector(".name");
+      if (cell) { const t = document.createElement("span"); t.className = "climbtag" + (lead ? " top" : ""); t.textContent = lead ? "★ New No.1" : `▲ ${places}`; addTag(cell, t, 4200); }
+      if (lead) { chimeFull(); if (list.id === "board") confetti(140, true); }
+    }
+    return places;
+  }
+  let showing = false, showSeq = 0, showSince = 0;
+  async function showcase() {
+    const tok = showSeq + 1;
+    try { await showcaseInner(); }
+    catch (e) { logChange("board", "Display", "an animation failed and was skipped: " + (e?.message || e)); }
+    finally { if (showSeq === tok) { showing = false; [$("board"), $("ops")].forEach((l) => { delete l.dataset.show; l.querySelectorAll(".row.pend").forEach((r) => { try { reveal(r); } catch (_) {} }); }); } }
+  }
+  async function showcaseInner() {
+    const tok = ++showSeq; const stale = () => tok !== showSeq; // newer figures arrived: that render starts again with everything still waiting, so nothing is lost
+    const lists = [$("board"), $("ops")];
+    const rows = lists.flatMap((l) => [...l.querySelectorAll(".row.pend")]); // screen order: clients first, then office staff
+    if (!rows.length) { showing = false; lists.forEach((l) => delete l.dataset.show); return; }
+    showing = true; showSince = Date.now(); lists.forEach((l) => (l.dataset.show = "1")); // pauses the slow auto-scroll, and holds back the roundup / target pop-ups
+    const clientRows = rows.filter((r) => r.closest("#board")), total = clientRows.reduce((s, r) => s + (+r.dataset.gain || 0), 0);
+    // everyone gets their own turn; with a long queue each turn is shorter so it still finishes before the next update
+    const dwell = Math.max(900, Math.min(1900, 22000 / rows.length - 650));
+    await wait(1300); // let rows finish gliding to their new places
+    for (const row of rows) {
+      if (stale()) return;
+      const list = row.closest(".board");
+      list.scrollTo({ top: Math.max(0, row.offsetTop - list.clientHeight / 2 + row.clientHeight / 2), behavior: "smooth" });
+      await wait(650); if (stale()) return;
+      reveal(row); chime(true);
+      await wait(Math.min(850, dwell * 0.5)); if (stale()) return; // let the "+£" land before the row moves
+      const places = resort(list, row);
+      if (list.id === "board" && podiumFn) { podiumFn(); countUp(); }
+      if (places) { list.scrollTo({ top: Math.max(0, row.offsetTop - list.clientHeight / 2 + row.clientHeight / 2), behavior: "smooth" }); await wait(1350); if (stale()) return; }
+      await wait(Math.max(350, dwell * 0.5));
+    }
+    if (stale()) return;
+    if (clientRows.length > 1) { const q = $("quiet"); q.innerHTML = `<b style="color:var(--green)">+${/£/.test(clientRows[0].dataset.gaintxt) ? fmtGBP(total) : fmtN(total)}</b> added across ${clientRows.length} ${grouped() ? "clients" : "contracts"}`; q.classList.add("on"); clearTimeout(quietNote.t); quietNote.t = setTimeout(() => q.classList.remove("on"), 7000); }
+    await wait(900); if (stale()) return;
+    showing = false; lists.forEach((l) => { delete l.dataset.show; document.dispatchEvent(new CustomEvent("board-reset", { detail: l.id })); });
+  }
+  const memo = { key: "", w: {}, m: {}, hi: {}, dip: {}, r: {}, txt: {}, cnt: {}, pod: [], first: true, ring: 0 };
+  const later = (fn) => requestAnimationFrame(() => requestAnimationFrame(fn));
+  const hue = (s) => { let h = 0; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
+  const initials = (n) => (person(n) || "?").split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase();
+  const avGrad = (n) => { const h = hue(person(n)); return `linear-gradient(135deg,hsl(${h} 72% 58%),hsl(${(h + 45) % 360} 70% 36%))`; };
+  const avatar = (n) => `<span class="av" style="background:${avGrad(n)}">${esc(initials(n))}</span>`;
+  const tops = (c) => { const m = {}; c.querySelectorAll("[data-key]").forEach((e) => (m[e.dataset.key] = e.offsetTop)); return m; };
+  // FLIP: rows start where they used to be and glide to their new rank
+  function flip(c, old) {
+    c.querySelectorAll("[data-key]").forEach((e) => {
+      const o = old[e.dataset.key]; if (o == null) return; const dy = o - e.offsetTop; if (Math.abs(dy) < 2) return;
+      e.style.transition = "none"; e.style.transform = `translateY(${dy}px)`; if (dy > 0) e.classList.add("climb");
+      later(() => { e.classList.add("moving"); e.style.transition = ""; e.style.transform = ""; setTimeout(() => e.classList.remove("moving", "climb"), 1400); });
+    });
+  }
+
+  // animate numbers from their previous value (e.g. 2,731 → 2,733, £1.2m → £1.3m)
+  function countUp() {
+    document.querySelectorAll("[data-count][data-from]").forEach((el) => {
+      const to = el.dataset.count, from = el.dataset.from; el.removeAttribute("data-from"); if (!from || from === to || !/^[^0-9]*[\d,]+(\.\d+)?[^0-9]*$/.test(to)) return;
+      const n = (s) => parseFloat(String(s).replace(/[^0-9.\-]/g, "")) || 0; const a = n(from), b = n(to); if (!isFinite(a) || !isFinite(b) || a === b) return;
+      const pre = (to.match(/^[^0-9\-]*/) || [""])[0], suf = (to.match(/[^0-9.]*$/) || [""])[0]; if (from !== "0" && (from.match(/[^0-9.]*$/) || [""])[0] !== suf) return;
+      const dec = (String(to).split(".")[1] || "").replace(/[^0-9]/g, "").length;
+      const t0 = performance.now(), dur = from === "0" ? 1800 : 1400;
+      (function f(t) { const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 4); el.textContent = pre + (a + (b - a) * e).toLocaleString("en-GB", { minimumFractionDigits: dec, maximumFractionDigits: dec }) + suf; if (k < 1) requestAnimationFrame(f); else el.textContent = to; })(t0);
+    });
+  }
+  function drawDaily(mi, src) {
+    const el = $("daily"); const W = el.clientWidth || 500, H = Math.max(120, el.clientHeight || 200);
+    const fs = Math.max(10, parseFloat(getComputedStyle(document.documentElement).fontSize) * 0.68);
+    const pad = { l: fs * 3.6, r: 8, t: fs * 1.6, b: fs * 1.9 };
+    const money = !!src.hasValue && !!src.byDayV && Object.keys(src.byDayV).length > 0;
+    const jobsOn = (i) => D(src.byDay?.[i + 1]);
+    const vals = Array.from({ length: mi.days }, (_, i) => (money ? Math.round(DV(src.byDayV[i + 1])) : jobsOn(i)));
+    $("dailyTitle").textContent = money ? "Revenue completed per day" : "Jobs completed per day";
+    const short = (v) => (!money ? Math.round(v) : v >= 1e6 ? "£" + (v / 1e6).toFixed(1) + "m" : v >= 1000 ? "£" + Math.round(v / 1000) + "k" : "£" + Math.round(v));
+    const sig = vals.join(","); el.classList.toggle("grow", drawDaily.sig !== sig); drawDaily.sig = sig;
+    const max = Math.max(1, ...vals); const step = [1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000, 2500, 5000, 10000, 20000, 25000, 50000, 100000, 200000, 250000, 500000].find((s) => s * 4 >= max) || Math.ceil(max / 4); const nice = step * 4;
+    const bw = (W - pad.l - pad.r) / mi.days, gap = Math.max(2, bw * 0.22);
+    const y = (v) => pad.t + (H - pad.t - pad.b) * (1 - v / nice);
+    const now = new Date(), isCur = now.getFullYear() === mi.y && now.getMonth() + 1 === mi.m, mon = new Date(mi.y, mi.m - 1, 1).toLocaleString("en-GB", { month: "short" });
+    let svg = `<svg width="${W}" height="${H}" role="img" aria-label="Jobs completed per day"><defs><linearGradient id="gb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#38e1ff"/><stop offset="1" stop-color="#2b63d9"/></linearGradient><linearGradient id="gt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe08a"/><stop offset="1" stop-color="#f0a93a"/></linearGradient></defs>`;
+    for (let g = 0; g <= 4; g++) { const v = (nice / 4) * g; svg += `<line x1="${pad.l}" x2="${W - pad.r}" y1="${y(v)}" y2="${y(v)}" stroke="rgba(255,255,255,${g ? 0.06 : 0.14})"/><text x="${pad.l - 8}" y="${y(v) + fs * 0.35}" fill="#6f7a94" font-size="${fs}" text-anchor="end">${short(v)}</text>`; }
+    vals.forEach((v, i) => {
+      const x = pad.l + i * bw + gap / 2, w = Math.max(1, bw - gap), top = y(v), h = H - pad.b - top, rr = Math.min(w / 2, 5, h);
+      const future = i + 1 > mi.day, today = isCur && i + 1 === mi.day;
+      if (v > 0) svg += `<path class="col${today ? " today" : ""}" style="animation-delay:${i * 22}ms" d="M${x},${H - pad.b} V${top + rr} q0,-${rr} ${rr},-${rr} h${Math.max(0, w - 2 * rr)} q${rr},0 ${rr},${rr} V${H - pad.b} Z" fill="url(#${today ? "gt" : "gb"})"/>`;
+      if (today && v > 0) svg += `<text x="${x + w / 2}" y="${top - fs * 0.45}" fill="#ffcf5c" font-size="${fs * 1.1}" font-weight="700" text-anchor="middle">${short(v)}</text>`;
+      svg += `<rect x="${x - gap / 2}" y="${pad.t}" width="${bw}" height="${H - pad.t - pad.b}" fill="transparent" data-tip="${i + 1} ${mon}: ${future ? "–" : (money ? fmtGBP(v) + " · " : "") + jobsOn(i) + " jobs"}"/>`;
+      if ((((i + 1) % 5 === 0 || i === 0) && !(isCur && Math.abs(i + 1 - mi.day) < 3)) || today) svg += `<text x="${x + w / 2}" y="${H - fs * 0.45}" fill="${today ? "#ffcf5c" : "#6f7a94"}" font-size="${fs}" font-weight="${today ? 700 : 400}" text-anchor="middle">${today ? "Today" : i + 1}</text>`;
+    });
+    el.innerHTML = svg + "</svg>";
+  }
+
+  // ---- tooltips (hover) ----
+  const tip = $("tip");
+  document.addEventListener("mousemove", (e) => {
+    const t = e.target.closest?.("[data-tip]");
+    if (!t) { tip.style.display = "none"; return; }
+    tip.textContent = t.getAttribute("data-tip"); tip.style.display = "block";
+    tip.style.left = Math.min(innerWidth - tip.offsetWidth - 10, e.clientX + 14) + "px"; tip.style.top = e.clientY + 14 + "px";
+  });
+
+  // ---- controls ----
+  $("btnGroup").onclick = async () => { prefs.groupBy = grouped() ? "contract" : "client"; await chrome.storage.local.set({ "dash:prefs": prefs }); page = 0; render(); };
+  $("btnMonth").onclick = () => { viewPrev = !viewPrev; page = 0; render(); };
+  $("btnFull").onclick = () => (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen());
+  $("btnTable").onclick = () => { tableMode = !tableMode; $("btnTable").textContent = tableMode ? "Leaderboard view" : "Table view"; render(); };
+  $("btnNow").onclick = async () => {
+    if (window.BoardSync?.role() === "view") { $("btnNow").textContent = "Checking…"; await window.BoardSync.pullNow(); setTimeout(() => ($("btnNow").textContent = "Update now"), 1500); return; } // this board shows the shared one
+    $("btnNow").textContent = "Updating…"; await chrome.runtime.sendMessage({ type: "collectNow" }); setTimeout(() => ($("btnNow").textContent = "Update now"), 8000); };
+  function allStatuses() { const s = new Set(DEFAULT_COUNT); for (const src of [data, ...Object.values(data?.history || {})]) Object.keys(src?.statuses || {}).forEach((k) => s.add(k)); return [...s]; }
+  function fillTargets() {
+    const T = tgtStore();
+    const prevSrc = data?.history?.[prevKey()]?.byContract || {};
+    const prev = rollup(prevSrc, true).rows, cur = rollup(data?.byContract, true).rows;
+    $("tgtTitle").textContent = grouped() ? "Monthly targets per client" : "Monthly targets per contract";
+    $("tgtCol").textContent = grouped() ? "Client" : "Contract"; 
+    const names = [...new Set([...(Object.values(T).some((t) => t.misc) ? [MISC] : []), ...Object.keys(cur), ...Object.keys(prev), ...Object.keys(T)])].sort((a, b) => (b === MISC) - (a === MISC) || V(prev[b]) - V(prev[a]) || J(prev[b]) - J(prev[a]) || a.localeCompare(b));
+    const f = ($("filterC").value || "").toLowerCase();
+    $("prevHint").textContent = data?.running ? "Loading: " + (data.running.log?.slice(-1)[0] || "starting…") : data?.ok === false ? "Last load failed: " + data.error : Object.keys(prevSrc).length ? `${Object.keys(prevSrc).length} contracts loaded from last month` : "Press “Load last month from MRI” to list every active contract";
+    $("tgtBody").innerHTML = names.filter((n) => !f || n.toLowerCase().includes(f)).map((n) => `<tr><td>${esc(n)}</td><td class="hint">${prev[n] ? fmtGBP(V(prev[n])) + " · " + fmtN(J(prev[n])) + " jobs" : "–"}</td><td><input type="number" min="0" data-c="${esc(n)}" data-k="value" value="${T[n]?.value ?? ""}"></td><td><input type="number" min="0" data-c="${esc(n)}" data-k="jobs" value="${T[n]?.jobs ?? ""}"></td><td>${n === MISC ? "" : `<input type="checkbox" style="width:auto" data-c="${esc(n)}" data-k="misc" ${T[n]?.misc ? "checked" : ""}>`}</td><td><input type="checkbox" style="width:auto" data-c="${esc(n)}" data-k="hidden" ${T[n]?.hidden ? "checked" : ""}></td></tr>`).join("") || `<tr><td colspan="6" class="hint">No contracts yet – press “Load last month from MRI”, or add one below.</td></tr>`;
+    // groups: client code → display name, with member counts
+    const codes = {}; for (const c of new Set([...Object.keys(data?.byContract || {}), ...Object.keys(prevSrc)])) (codes[codeOf(c)] ||= []).push(c);
+    fillGroups();
+  }
+  // ---- client groups: drag a contract onto another client, onto "new client", or back to where MRI has it ----
+  function fillGroups() {
+    const prevSrc = data?.history?.[prevKey()]?.byContract || {};
+    const all = [...new Set([...Object.keys(data?.byContract || {}), ...Object.keys(prevSrc), ...Object.keys(data?.contractClient || {})])];
+    const groups = {}; for (const c of all) (groups[groupOf(c)] ||= []).push(c);
+    const rev = (c) => V(data?.byContract?.[c]) || 0, gRev = (list) => list.reduce((s, c) => s + rev(c), 0);
+    const f = ($("grpFilter").value || "").toLowerCase();
+    const names = Object.keys(groups).sort((a, b) => gRev(groups[b]) - gRev(groups[a]) || a.localeCompare(b));
+    $("grpBoard").innerHTML = names.map((g) => {
+      const list = groups[g].sort((a, b) => rev(b) - rev(a) || a.localeCompare(b)); const hit = !f || g.toLowerCase().includes(f) || list.some((c) => c.toLowerCase().includes(f));
+      return `<div class="gcard${hit ? "" : " dim"}" data-group="${esc(g)}"><div class="ghead"><input class="gname" data-old="${esc(g)}" value="${esc(g)}" title="Rename this client"><span class="hint">${list.length} contract${list.length === 1 ? "" : "s"}${data?.hasValue ? " · " + fmtGBP(gRev(list)) : ""}</span></div>
+        <div class="gchips">${list.map((c) => `<span class="gchip${prefs.groupOf?.[c] ? " moved" : ""}${f && c.toLowerCase().includes(f) ? " match" : ""}" draggable="true" data-contract="${esc(c)}" title="${prefs.groupOf?.[c] ? "Moved here by you · MRI has it under " + esc(groupName(codeOf(c))) : "Drag to another client"}">${esc(c)}</span>`).join("")}</div></div>`;
+    }).join("") || `<div class="hint">No contracts yet – press “Update now” or “Load last month from MRI” first.</div>`;
+  }
+  function moveContract(c, target) {
+    harvest(); prefs.groupOf = { ...(prefs.groupOf || {}) };
+    if (target == null) delete prefs.groupOf[c]; else prefs.groupOf[c] = target;
+    // if that puts it back where MRI has it anyway, there's nothing to remember
+    if (target != null) { const keep = prefs.groupOf[c]; delete prefs.groupOf[c]; if (groupOf(c) !== keep) prefs.groupOf[c] = keep; }
+    buildGroupDisplay(); fillTargets();
+  }
+  function renameGroup(oldName, newName) {
+    newName = newName.trim(); if (!newName || newName === oldName) return;
+    harvest(); prefs.groupOf = { ...(prefs.groupOf || {}) }; prefs.groupNames = { ...(prefs.groupNames || {}) };
+    const all = [...new Set([...Object.keys(data?.byContract || {}), ...Object.keys(data?.history?.[prevKey()]?.byContract || {}), ...Object.keys(data?.contractClient || {})])];
+    for (const c of all.filter((c) => groupOf(c) === oldName)) { if (prefs.groupOf[c]) prefs.groupOf[c] = newName; else prefs.groupNames[codeOf(c)] = newName; }
+    if (gtargets[oldName] && !gtargets[newName]) { gtargets[newName] = gtargets[oldName]; delete gtargets[oldName]; } // keep its target
+    buildGroupDisplay(); fillTargets();
+  }
+  (() => {
+    const board = $("grpBoard"); let dragging = null;
+    const zone = (e) => e.target.closest?.(".gcard, .gz");
+    document.addEventListener("dragstart", (e) => { const ch = e.target.closest?.(".gchip"); if (!ch) return; dragging = ch.dataset.contract; e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", dragging); ch.classList.add("drag"); $("dlg").classList.add("dragging"); });
+    document.addEventListener("dragend", () => { dragging = null; $("dlg").classList.remove("dragging"); document.querySelectorAll(".over, .drag").forEach((x) => x.classList.remove("over", "drag")); });
+    document.addEventListener("dragover", (e) => { const z = dragging && zone(e); if (!z) return; e.preventDefault(); document.querySelectorAll(".over").forEach((x) => x !== z && x.classList.remove("over")); z.classList.add("over"); });
+    document.addEventListener("drop", (e) => {
+      const z = dragging && zone(e); if (!z) return; e.preventDefault(); const c = dragging;
+      if (z.id === "gzAuto") moveContract(c, null);
+      else if (z.id === "gzNew") { const n = (prompt(`New client name for "${c}"`, "") || "").trim(); if (n) moveContract(c, n); }
+      else if (z.dataset.group !== groupOf(c)) moveContract(c, z.dataset.group);
+    });
+    board.addEventListener("change", (e) => { if (e.target.classList.contains("gname")) renameGroup(e.target.dataset.old, e.target.value); });
+    $("grpFilter").oninput = fillGroups;
+  })();
+  // keep unsaved edits when filtering / reloading the list
+  function harvest() {
+    const T = tgtStore();
+    document.querySelectorAll("#tgtBody input[data-c]").forEach((i) => { const c = i.dataset.c, k = i.dataset.k; const t = (T[c] ||= {}); if (k === "hidden" || k === "misc") t[k] = i.checked; else { const v = i.value.trim(); if (v === "") delete t[k]; else t[k] = Number(v); } if (!t.jobs && !t.value && !t.hidden && !t.misc) delete T[c]; });
+    prefs.groupOf = { ...(prefs.groupOf || {}) };
+    prefs.groupNames = { ...(prefs.groupNames || {}) };
+  }
+  $("btnSettings").onclick = () => {
+    $("stBox").innerHTML = allStatuses().map((s) => `<label><input type="checkbox" style="width:auto" data-st="${esc(s)}" ${counted().includes(s) ? "checked" : ""}> ${esc(s)}</label>`).join("");
+    fillTargets();
+    $("sEn").checked = !!schedule.enabled; $("sEvery").value = schedule.everySecs || 30; $("sStart").value = schedule.startHour ?? 7; $("sEnd").value = schedule.endHour ?? 19; $("sWk").checked = !!schedule.weekdaysOnly;
+    $("exBy").value = (prefs.excludeBy ?? ["Mobile", "administrator"]).join(", ");
+    $("sHide").checked = schedule.hiddenWindow !== false; $("sAwake").checked = schedule.awake !== false;
+    insState(); $("insMsg").textContent = "";
+    { const g = window.BoardSync?.get() || {}; $("syRepo").value = g.repo || ""; $("syToken").value = ""; $("syToken").placeholder = g.hasToken ? "saved – leave blank to keep it" : "github_pat_…"; $("syRole").value = g.role || "off"; $("syName").value = g.name || ""; }
+    vlFill(); $("vlState").textContent = vlStatus();
+    { const W = ptCfg(); for (const k of ["r", "b", "k", "p", "c", "x", "u4"]) $("pt_" + k).value = W[k]; $("pt_bonus").checked = W.bonus !== false; const sn = contribPending() ? contribResetAt : contrib?.since; $("ptSince").textContent = sn ? new Date(sn).toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "the next update"; $("ptResetMsg").textContent = ""; }
+    $("sAct").value = schedule.activitySecs || 20;
+    $("sLive").checked = !!schedule.live; $("sLiveMins").value = schedule.pollSecs || 20; $("sChime").checked = !!prefs.chime; $("sTotal").value = prefs.totalTarget || ""; $("sRound").value = prefs.roundMins ?? 15; $("sCards").checked = !!prefs.cards;
+    fillDiag(); clearInterval(fillDiag.t); fillDiag.t = setInterval(() => { if ($("dlg").open) fillDiag(); else clearInterval(fillDiag.t); }, 3000);
+    $("dlg").showModal();
+  };
+  // plain-text health report, so problems can be copied into a chat
+  async function fillDiag() {
+    const d = (await chrome.storage.local.get("dash:data"))["dash:data"] || {}; const al = await chrome.alarms?.getAll?.().catch(() => []) || [];
+    const t = (x) => (x ? new Date(x).toLocaleTimeString("en-GB") + ` (${Math.round((Date.now() - x) / 1000)}s ago)` : "never");
+    const w = d.watch || {};
+    $("diag").textContent = [
+      `MRI Assist ${chrome.runtime.getManifest().version} · ${new Date().toLocaleString("en-GB")}`,
+      `Schedule: ${schedule.enabled ? "on" : "OFF"}, full month every ${Math.max(15, schedule.everySecs || 30)}s, live ${schedule.live ? "on, every " + (schedule.pollSecs || 20) + "s" : "OFF"}, hours ${schedule.startHour ?? 7}–${schedule.endHour ?? 19}${schedule.weekdaysOnly ? ", weekdays only" : ""}, hidden window ${schedule.hiddenWindow !== false ? "yes" : "no"}, screen kept awake ${!chrome.power ? "NO (this browser doesn't allow it)" : schedule.awake !== false ? "yes" : "no (switched off)"}`,
+      `Timers: ${al.map((a) => a.name + " next " + new Date(a.scheduledTime).toLocaleTimeString("en-GB")).join(", ") || "none"}`,
+      (() => { const y = window.BoardSync?.status(); if (!y || !y.on) return "Shared between boards: no (⚙ → Share between boards)";
+        const head = `Shared through GitHub (${y.repo}) as "${y.name}": `;
+        const tail = `${y.rateLeft != null ? ` · ${y.rateLeft} GitHub requests left this hour` : ""}${y.err ? " · PROBLEM: " + y.err : ""}`;
+        const sets = ` · settings checked ${t(y.setCheck)}${y.setBy ? ` (last changed on ${y.setBy}${y.setAt ? " " + new Date(y.setAt).toLocaleString("en-GB") : ""})` : ""}`;
+        if (y.role === "publish") return head + `this PC reads MRI and shares the board · last shared ${t(y.pubAt)}${y.pubKB ? ` (${y.pubKB} KB)` : ""}${y.pubN ? ` · ${y.pubN} shares since the board opened` : ""}` + sets + tail;
+        const f = y.from || {}; return head + `showing the board shared by "${f.name || "–"}"${f.version ? ` (MRI Assist ${f.version}${f.version !== y.version ? ` – this PC has ${y.version}, update it to match` : ""})` : ""} · shared ${t(y.snapAt)} · checked ${t(y.boardCheck)}${y.note ? " · " + y.note : ""}` + sets + tail; })(),
+      `View-only link: ${vlStatus() || "off"}`,
+      `Last change to figures: ${t(d.updatedAt)} · put on screen ${t(drawnAt)}${hold ? ` · HELD by pop-ups since ${t(holdSince)}` : ""}`,
+      `Last full month refresh: ${t(d.fullAt)}${d.total != null ? ` · ${d.total} rows` : ""}`,
+      `Last live check: ${t(d.liveAt)}${d.todayRows != null ? ` · ${d.todayRows} rows today` : ""}`,
+      `Live watcher: ${w.at ? `${t(w.at)} · ${w.checks ?? 0} quick checks this page · ${w.fails || 0} failed${w.tookMs ? " · took " + w.tookMs + "ms" : ""}${w.fullAtWatch ? " · last in-place full " + t(w.fullAtWatch) + " (" + w.fullRows + " rows in " + Math.round(w.fullMs / 1000) + "s)" : ""}${w.gridSignal === false ? " · no grid signal" : ""}${w.hidden != null ? " · window " + (w.hidden ? "hidden" : "visible") : ""}${w.stopped ? " · STOPPED: " + w.stopped : ""}${w.lastErr ? " · last error: " + w.lastErr : ""}` : "not started"}`,
+      `Running now: ${d.running ? (d.running.live ? "live" : "full") + " since " + t(d.running.at) + " · " + (d.running.log || []).slice(-1)[0] : "no"}`,
+      `Last result: ${d.ok === false ? "FAILED – " + d.error + " at " + t(d.errorAt) : "ok"}`,
+      "Last run log:", ...(d.lastLog || []).slice(-10).map((l) => "  " + l),
+      ...(() => {
+        const W = ptCfg(), st = contrib?.stats || {}, today = (() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; })();
+        const aud = contrib?.audit?.[today] || {}, sn = contribPending() ? contribResetAt : contrib?.since;
+        const jobsOf = (u) => { const a = aud[String(u).toLowerCase()] || {}; const parts = ["r", "b", "k", "p", "c", "x", "u"].filter((k) => a[k]?.length).map((k) => `${ACT_NAME[k]}: ${a[k].slice(0, 12).join(", ")}${a[k].length > 12 ? " +" + (a[k].length - 12) + " more" : ""}`); const bulk = ACTS.filter((k) => a.bulk?.[k]).map((k) => `${a.bulk[k]} ${a.bulk[k] === 1 ? ACT_ONE[k] || ACT_NAME[k] : ACT_NAME[k]}`); return (parts.length ? "\n       today – " + parts.join("; ") : "") + (bulk.length ? "\n       not counted (bulk: more than 20 jobs saved back to back within seconds): " + bulk.join(", ") : ""); };
+        return [
+          `Staff points since ${sn ? new Date(sn).toLocaleString("en-GB") : "not started"}${contribPending() ? " (reset waiting for the next update)" : ""}`,
+          `  Values: raise ${W.r} · book ${W.b} · letter/call ${W.k} · price ${W.p} · close ${W.c} · clear ${W.x} · 1 per ${W.u4} other updates${W.bonus ? " · +1 / +2 for jobs with 3–5 / 6+ sales lines" : ""}`,
+          ...(st.catchup ? [`  Re-reading today's jobs from ${new Date(contrib?.since || 0).toLocaleTimeString("en-GB")} so every board counts the same: ${st.catchup.left} jobs left (the board keeps its current scores until it's done)`] : []),
+          `  Quick check (every ${st.every || schedule.activitySecs || 20}s): ${st.overlay?.at ? "last revenue update from it " + t(st.overlay.at) + " (" + st.overlay.jobs + " jobs) · " : ""}jobs-touched search ${t(st.scanAt)}${st.scanRows != null ? ` · ${st.scanRows} jobs touched` : ""}${st.scanMs ? ` · MRI took ${(st.scanMs / 1000).toFixed(1)}s` : ""} · ${st.reads ?? 0} job logs read · ${st.queue ?? 0} waiting · MRI's clock ${Math.abs(st.clock || 0) < 1500 ? "matches this PC" : (st.clock > 0 ? "+" : "−") + Math.round(Math.abs(st.clock) / 1000) + "s vs this PC (allowed for)"}${st.err ? " · last problem: " + st.err : ""}`,
+          ...contribRows(d.month).slice(0, 60).map(([u, v], i) => `  ${String(i + 1).padStart(2)}. ${person(u)}: ${v.pts} = ${actFull(v.t)}${jobsOf(u)}`),
+          ...(() => { const pm = contrib?.months?.[prevKey()]; if (!pm) return []; return ["  Last month's final scores (kept for good):", ...monthRows(pm).slice(0, 10).map(([u, v], i) => `    ${i + 1}. ${person(u)}: ${v.pts}`)]; })(),
+        ];
+      })(),
+      `  Left off the staff list: ${excluded().join(", ") || "nobody"}`,
+      "Animations played on this board (newest first):", ...(() => { try { return JSON.parse(localStorage.getItem("changeLog") || "[]").slice(-25).reverse().map((l) => "  " + l); } catch (_) { return []; } })(),
+    ].join("\n");
+  }
+  // soft reset: everyone's staff points start again from now (revenue, clients and history aren't touched)
+  $("ptReset").onclick = async () => {
+    const shared = !!window.BoardSync && window.BoardSync.role() !== "off";
+    if (!confirm(shared ? "Reset everyone's staff points to zero on EVERY board, starting from now?\n\nRevenue, clients and the rest of the board aren't affected." : "Reset the staff points on THIS PC's board to zero, starting from now?\n\nThis board isn't sharing through GitHub, so other boards keep their scores. Revenue, clients and the rest of the board aren't affected.")) return;
+    const at = Date.now(); prefs = { ...prefs, pointsStart: at }; await chrome.storage.local.set({ "dash:prefs": prefs }); contribResetAt = at;
+    $("ptSince").textContent = new Date(at).toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+    let msg = shared ? "Done – every board starts again from now." : "Done – this board starts again from now.";
+    if (shared) { try { await window.BoardSync.pushSettings(); } catch (e) { msg = "Reset here, but it couldn't be shared: " + e.message; } }
+    $("ptResetMsg").textContent = msg; logChange("staff", "Everyone", "points reset to zero"); render();
+  };
+  // ---- private staff insights (insights.js): the board's data and helpers, and a click on a name opens that person's day ----
+  window.MRIBoard = {
+    contrib: () => contrib, prefs: () => prefs, ptsOf, weights: () => ptCfg(), person, isPerson, esc, fmtN, ACT_NAME, ACT_ONE,
+    counted, viewName, viewPrev: () => viewPrev, boardValue: (name) => { const v = rollup(source()?.byContract || {}).rows[name]; return v ? V(v) : null; },
+    boardValueOf: (byContract, name) => { const v = rollup(byContract || {}).rows[name]; return v ? V(v) : 0; },
+    topActs, boardRanks: () => Object.fromEntries(contribRows(source()?.month).map(([, v], i) => [String(v.key || "").toLowerCase(), i + 1])),
+    savePrefs: async (patch) => { prefs = { ...prefs, ...patch }; await chrome.storage.local.set({ "dash:prefs": prefs }); if (window.BoardSync && window.BoardSync.role() !== "off") await window.BoardSync.pushSettings(); },
+  };
+  window.Insights?.init(); window.ContractLog?.init();
+  $("board").addEventListener("click", (e) => { const row = e.target.closest(".row"); if (row?.dataset.name && window.ContractLog) window.ContractLog.open(row.dataset.name); }); // the value check (no PIN)
+  $("ops").addEventListener("click", (e) => { const row = e.target.closest(".row"); const key = (row?.dataset.key || "").replace(/^o:/, ""); if (key && window.Insights) window.Insights.open(key); });
+  const insState = async () => { $("insState").textContent = (await window.Insights.isOpen()) ? "Unlocked on this PC." : "Locked on this PC."; };
+  $("insChange").onclick = async () => { $("insMsg").textContent = ""; try { await window.Insights.changePin($("insCur").value, $("insNew").value); $("insCur").value = $("insNew").value = ""; $("insMsg").textContent = "PIN changed" + (window.BoardSync?.role() !== "off" ? " on every board." : "."); } catch (e) { $("insMsg").textContent = e.message; } insState(); };
+  $("insLockPc").onclick = async () => { await window.Insights.lock(); $("insMsg").textContent = "Locked."; insState(); };
+  // share between boards: connect this PC to the private GitHub repository
+  $("syGo").onclick = async () => {
+    const role = $("syRole").value, msg = $("syMsg");
+    if (role === "off") { await window.BoardSync.disconnect(); msg.textContent = "This board no longer shares. It keeps what it has, and reads MRI itself only if this PC's automatic updates are on."; return; }
+    $("syGo").disabled = true; msg.textContent = "Connecting to GitHub…";
+    try {
+      const r = await window.BoardSync.connect({ repo: $("syRepo").value, token: $("syToken").value, role, name: $("syName").value });
+      let note;
+      if (role === "view") { // it doesn't need to read MRI any more
+        await chrome.runtime.sendMessage({ type: "dashSchedule", schedule: { enabled: false } });
+        note = `Connected. This board now shows the one shared through GitHub${r.created ? " (nothing is shared yet – connect the TV and set it to share)" : ""}. This PC has stopped reading MRI itself.`;
+      } else note = `Connected. This PC shares the board with every other board${r.created ? ", and its settings are now the shared ones" : ", using the shared settings"}.`;
+      // the shared settings may have just replaced this PC's: show them, so Save doesn't put the old ones back
+      $("dlg").close(); await load(); $("btnSettings").onclick();
+      $("syMsg").textContent = note + (role === "publish" && !schedule.enabled ? " Tick “Update automatically” above and press Save, so it reads MRI." : "");
+    } catch (e) { msg.textContent = "Couldn't connect: " + e.message; }
+    finally { $("syGo").disabled = false; }
+  };
+  // ---- the view-only link for Teams (sync.js does the sharing, on the TV): any board can turn it on, copy it or make a new one ----
+  function vlFill() {
+    const vl = prefs.viewLink || {}, on = !!(vl.on && vl.repo && vl.key), link = on && window.BoardSync ? window.BoardSync.viewLink(vl) : "";
+    $("vlRepo").value = vl.repo || ""; $("vlToken").value = ""; $("vlToken").placeholder = vl.token ? "saved – leave blank to keep it" : "ghp_… (a token with no permissions)";
+    $("vlLinkRow").style.display = link ? "" : "none"; $("vlLink").value = link; $("vlOff").disabled = !on; $("vlGo").textContent = on ? "Save" : "Turn on";
+  }
+  function vlStatus() {
+    const vl = prefs.viewLink || {}, y = window.BoardSync?.status() || {}, v = y.role === "publish" ? y.view : y.from?.view, hm = (x) => new Date(x).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+    if (!vl.repo) return "";
+    if (!y.on) return "Connect the boards above first – the TV does the sharing.";
+    if (!vl.on) return `Off (was ${vl.repo}).`;
+    if (!v || v.repo !== vl.repo || (!v.at && !v.err)) return "On – the TV starts sharing it within a minute or two (it needs MRI Assist 2.29 or later).";
+    if (v.err) return "PROBLEM on the TV: " + v.err;
+    return `On · the TV last shared the figures at ${hm(v.at)}${v.kb ? ` (${v.kb} KB)` : ""}${v.pageAt ? ` · page put up ${new Date(v.pageAt).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}` : ""}. The first time, GitHub Pages can take a few minutes to show the page.`;
+  }
+  $("vlGo").onclick = async () => {
+    const st = $("vlState");
+    if (!window.BoardSync || window.BoardSync.role() === "off") { st.textContent = "Connect the boards above first (Share between boards) – the TV does the sharing."; return; }
+    const repo = String($("vlRepo").value || "").trim().replace(/^https?:\/\/github\.com\//i, "").replace(/\.git$/i, "").replace(/\/+$/, ""), mine = window.BoardSync.get().repo || "";
+    if (!/^[\w.-]+\/[\w.-]+$/.test(repo)) { st.textContent = "The repository should look like yourname/mri-board-view."; return; }
+    if (repo.toLowerCase() === mine.toLowerCase()) { st.textContent = "Use a separate PUBLIC repository – not the private one the boards share through."; return; }
+    const old = prefs.viewLink || {}, token = String($("vlToken").value || "").trim() || old.token || "";
+    if (!token) { st.textContent = "Paste the viewer key first: a GitHub token with no permissions at all."; return; }
+    // the viewer key goes in the link for everyone, so it must not be able to see anything private
+    $("vlGo").disabled = true; st.textContent = "Checking the viewer key…";
+    try {
+      const r = await fetch(`https://api.github.com/repos/${mine}`, { cache: "no-store", headers: { Authorization: "Bearer " + token, Accept: "application/vnd.github+json" } });
+      const scopes = (r.headers.get("x-oauth-scopes") || "").trim();
+      if (r.status === 401) { st.textContent = "GitHub doesn't accept that viewer key – check you copied all of it."; return; }
+      if (r.ok || scopes) { st.textContent = "That key can do more than read public pages – it will be in the link for everyone, so make one with NO permissions (see the steps) and paste that."; return; }
+      const vl = { on: true, repo, token, key: old.key || window.BoardSync.newViewKey(), at: Date.now() };
+      await window.MRIBoard.savePrefs({ viewLink: vl }); vlFill();
+      st.textContent = "Saved. The TV starts sharing within a minute or two – then copy the link into Teams.";
+    } catch (e) { st.textContent = "Couldn't save it: " + (e.message || e); }
+    finally { $("vlGo").disabled = false; }
+  };
+  $("vlOff").onclick = async () => { const vl = prefs.viewLink; if (!vl) return; await window.MRIBoard.savePrefs({ viewLink: { ...vl, on: false, at: Date.now() } }); vlFill(); $("vlState").textContent = "Turned off. Anyone with the link sees “turned off” within a minute."; };
+  $("vlNew").onclick = async () => {
+    const vl = prefs.viewLink; if (!vl?.on) return;
+    if (!confirm("Make a new link? The current link stops working within a minute, so everyone will need the new one.")) return;
+    await window.MRIBoard.savePrefs({ viewLink: { ...vl, key: window.BoardSync.newViewKey(), at: Date.now() } }); vlFill();
+    $("vlState").textContent = "New link made – copy it into Teams. The old one stops working once the TV next shares (within a minute).";
+  };
+  $("vlCopy").onclick = async () => { await navigator.clipboard.writeText($("vlLink").value); $("vlCopy").textContent = "Copied"; setTimeout(() => ($("vlCopy").textContent = "Copy link"), 1500); };
+  $("diagCopy").onclick = async () => { await fillDiag(); await navigator.clipboard.writeText($("diag").textContent); $("diagCopy").textContent = "Copied"; setTimeout(() => ($("diagCopy").textContent = "Copy"), 1500); };
+  $("filterC").oninput = () => { harvest(); fillTargets(); };
+  $("loadPrev").onclick = async () => { if (window.BoardSync?.role() === "view") { $("prevHint").textContent = "Do this on the PC that reads MRI – this board shows the shared one."; return; } harvest(); $("loadPrev").textContent = "Loading from MRI… (about a minute)"; await chrome.runtime.sendMessage({ type: "collectNow", offset: 1 }); const t0 = Date.now(); const iv = setInterval(async () => { const s = (await chrome.storage.local.get("dash:data"))["dash:data"]; data = s; fillTargets(); if (s?.history?.[prevKey()]?.updatedAt > t0 || (s?.ok === false && s.errorAt > t0) || Date.now() - t0 > 360000) { clearInterval(iv); $("loadPrev").textContent = "Load last month from MRI"; fillTargets(); } }, 2000); };
+  $("usePrev").onclick = () => { harvest(); const T = tgtStore(); const prev = rollup(data?.history?.[prevKey()]?.byContract || {}, true).rows; for (const [n, v] of Object.entries(prev)) { const j = J(v); if (j > 0 && !T[n]?.jobs) (T[n] ||= {}).jobs = j; const val = Math.round(V(v)); if (val > 0 && !T[n]?.value) T[n].value = val; } fillTargets(); };
+  $("addC").onclick = () => { const n = $("newC").value.trim(); if (!n) return; harvest(); const T = tgtStore(); (T[n] ||= {}).jobs = T[n].jobs || 0; $("newC").value = ""; fillTargets(); };
+  $("dlgCancel").onclick = async () => { $("dlg").close(); await load(); };
+  $("dlgSave").onclick = async () => {
+    harvest();
+    const sts = [...document.querySelectorAll("#stBox input")].filter((i) => i.checked).map((i) => i.dataset.st);
+    await chrome.storage.local.set({ "dash:targets": targets, "dash:gtargets": gtargets, "dash:prefs": { ...prefs, statuses: sts.length ? sts : DEFAULT_COUNT, chime: $("sChime").checked, totalTarget: Math.max(0, Number(String($("sTotal").value).replace(/[£,\s]/g, "")) || 0), roundMins: Math.max(0, Number($("sRound").value) || 0), cards: $("sCards").checked, excludeBy: $("exBy").value.split(",").map((s) => s.trim()).filter(Boolean), points: (() => { const o = { bonus: $("pt_bonus").checked }; for (const k of ["r", "b", "k", "p", "c", "x"]) o[k] = Math.max(0, Number($("pt_" + k).value) || 0); o.u4 = Math.max(1, Math.round(Number($("pt_u4").value) || 4)); return o; })() } });
+    await chrome.runtime.sendMessage({ type: "dashSchedule", schedule: { enabled: $("sEn").checked && window.BoardSync?.role() !== "view", everySecs: Math.max(15, Number($("sEvery").value) || 30), startHour: Number($("sStart").value) || 0, endHour: Number($("sEnd").value) || 24, weekdaysOnly: $("sWk").checked, live: $("sLive").checked, hiddenWindow: $("sHide").checked, awake: $("sAwake").checked, pollSecs: Math.max(10, Number($("sLiveMins").value) || 20), activitySecs: Math.max(15, Number($("sAct").value) || 20) } });
+    schedule = (await chrome.storage.local.get("dash:schedule"))["dash:schedule"] || {}; keepAwake();
+    if (window.BoardSync && window.BoardSync.role() !== "off") window.BoardSync.pushSettings().catch(() => {}); // problems show in Health check
+    $("dlg").close(); render();
+  };
+
+  // full lists scroll; on the TV they glide down slowly, pause, and return to the top. Any wheel/touch/drag pauses it for 30s.
+  for (const id of ["board", "ops"]) {
+    const el = $(id); let pauseUntil = Date.now() + 8000, hold = 0, pos = 0;
+    const userMoved = () => { pauseUntil = Date.now() + 30000; pos = el.scrollTop; };
+    ["wheel", "touchstart", "mousedown", "keydown"].forEach((ev) => el.addEventListener(ev, userMoved, { passive: true }));
+    document.addEventListener("board-reset", (e) => { if (e.detail && e.detail !== id) return; el.scrollTo({ top: 0, behavior: "smooth" }); pos = 0; hold = 0; pauseUntil = Date.now() + 15000; }); // show the top of the list while the new figures animate in
+    setInterval(() => {
+      const max = el.scrollHeight - el.clientHeight;
+      if (max <= 2 || Date.now() < pauseUntil || el.dataset.show || document.querySelector(".celebrate.on, #roundup.on, #hit.on")) return;
+      if (Math.abs(el.scrollTop - pos) > 3) pos = el.scrollTop;
+      if (pos >= max) { if (++hold > 80) { hold = 0; pos = 0; el.scrollTo({ top: 0, behavior: "smooth" }); pauseUntil = Date.now() + 6000; } return; }
+      pos = Math.min(max, pos + 0.6); el.scrollTop = pos;
+    }, 50);
+  }
+  const clock = () => { const d = new Date(); $("clock").innerHTML = `${d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}<small>${d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" })}</small>`; };
+  clock(); setInterval(clock, 5000);
+  let idleT; const wake = () => { document.body.classList.remove("idle"); clearTimeout(idleT); idleT = setTimeout(() => { if (!$("dlg").open) document.body.classList.add("idle"); }, 6000); };
+  ["mousemove", "mousedown", "keydown", "touchstart"].forEach((e) => addEventListener(e, wake, { passive: true })); wake();
+  setInterval(renderStatus, 5000);
+  setInterval(() => { try { tickRound(); } catch (_) {} }, 1000); // keep "updated x min ago" fresh (no redraw)
+  setTimeout(() => document.body.classList.add("settled"), 2500); // row entrance animation only on first load
+  addEventListener("resize", () => render());
+  // the chart is drawn to fit its box, so redraw it whenever the box changes size (e.g. when the Latest strip appears)
+  let chartBox = ""; new ResizeObserver(() => { const el = $("daily"), k = el.clientWidth + "x" + el.clientHeight; if (k === chartBox) return; chartBox = k; const src = source(); if (src?.byContract) { const g = drawDaily.sig; drawDaily(monthInfo(src.month), src); drawDaily.sig = g; el.classList.remove("grow"); } }).observe($("daily"));
+  load();
+})();
+</script>
+</body>
+</html>
