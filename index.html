@@ -671,7 +671,7 @@
   <p class="hint" id="insPinMsg" style="color:#ff9a9a"></p>
   <div class="row2" style="justify-content:flex-end"><button class="btn ghost" id="insPinCancel">Cancel</button><button class="btn" id="insPinGo">Open</button></div>
 </dialog>
-<script>window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin","version":"2.34.0"};
+<script>window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin","version":"2.34.1"};
 // MRI Assist – the VIEW-ONLY board: the leaderboard as a normal web page that anyone with the link can watch – nothing to
 // install, no sign-in, nothing to click into. The PC that reads MRI (the TV) puts this page on a GitHub Pages site together
 // with the board's figures, ENCRYPTED. The key is in the link, after the "#", which a browser never sends anywhere, so the
@@ -1862,6 +1862,20 @@
     box.style.display = ""; vwT = setTimeout(vlWatch, 10000);
   }
   $("vlWatchBtn").onclick = () => window.Insights.unlock(() => vlWatch());
+  // the Firebase address on its own (⚙'s Save, or Enter in the box): a new address gets a new pair of keys for locking names
+  async function vlPresenceSave() {
+    const vl = prefs.viewLink || {}, presence = String($("vlPres").value || "").trim().replace(/\/+$/, "");
+    if (!vl.repo || !vl.key || presence === String(vl.presence || "").replace(/\/+$/, "")) return "";
+    if (presence && !window.BoardSync?.okPresence(presence)) return "The Firebase address should look like https://your-project-default-rtdb.europe-west1.firebasedatabase.app (or leave it empty).";
+    const { presence: _p, namePub: _a, namePriv: _b, ...rest } = vl, next = { ...rest, at: Date.now() };
+    if (presence) { const nk = await window.BoardSync.newNameKeys(); Object.assign(next, { presence, namePub: nk.pub, namePriv: nk.priv }); }
+    await window.MRIBoard.savePrefs({ viewLink: next }); vlFill(); vlWatchOpen(); return "";
+  }
+  $("vlPres").addEventListener("keydown", async (e) => {
+    if (e.key !== "Enter") return; e.preventDefault();
+    const bad = await vlPresenceSave().catch((x) => "Couldn't save it: " + (x.message || x));
+    $("vlState").textContent = bad || (prefs.viewLink?.presence ? "Firebase address saved. People who pick their name show under Who's watching now within a minute or two." : "Firebase address removed – nobody is named any more.");
+  });
   $("vlGo").onclick = async () => {
     const st = $("vlState");
     if (!window.BoardSync || window.BoardSync.role() === "off") { st.textContent = "Connect the boards above first (Share between boards) – the TV does the sharing."; return; }
@@ -1901,6 +1915,9 @@
   $("addC").onclick = () => { const n = $("newC").value.trim(); if (!n) return; harvest(); const T = tgtStore(); (T[n] ||= {}).jobs = T[n].jobs || 0; $("newC").value = ""; fillTargets(); };
   $("dlgCancel").onclick = async () => { $("dlg").close(); await load(); };
   $("dlgSave").onclick = async () => {
+    // the Firebase address is saved by ⚙'s own Save too, not only by the View-only link's button
+    try { const bad = await vlPresenceSave(); if (bad) { $("vlState").textContent = bad; $("vlState").scrollIntoView({ block: "center" }); $("vlPres").focus(); return; } }
+    catch (e) { $("vlState").textContent = "Couldn't save the Firebase address: " + (e.message || e); $("vlState").scrollIntoView({ block: "center" }); return; }
     harvest();
     const sts = [...document.querySelectorAll("#stBox input")].filter((i) => i.checked).map((i) => i.dataset.st);
     await chrome.storage.local.set({ "dash:targets": targets, "dash:gtargets": gtargets, "dash:prefs": { ...prefs, statuses: sts.length ? sts : DEFAULT_COUNT, chime: $("sChime").checked, totalTarget: Math.max(0, Number(String($("sTotal").value).replace(/[£,\s]/g, "")) || 0), roundMins: Math.max(0, Number($("sRound").value) || 0), cards: $("sCards").checked, excludeBy: $("exBy").value.split(",").map((s) => s.trim()).filter(Boolean), points: (() => { const o = { bonus: $("pt_bonus").checked }; for (const k of ["r", "b", "k", "p", "c", "x"]) o[k] = Math.max(0, Number($("pt_" + k).value) || 0); o.u4 = Math.max(1, Math.round(Number($("pt_u4").value) || 4)); return o; })() } });
