@@ -379,7 +379,7 @@
   .ins-listhead{display:flex;justify-content:space-between;align-items:center;margin:4px 0 6px}
   dialog .ins-listhead input{width:auto}
   .ins-list{max-height:34vh;overflow:auto;border:1px solid rgba(255,255,255,.08);border-radius:10px}
-  .ins-line{display:grid;grid-template-columns:5.5rem 11.5rem 7.5rem minmax(0,1fr) 5.8rem 10.5rem;gap:10px;padding:5px 10px;border-bottom:1px solid rgba(255,255,255,.05);font-size:13px;color:#8fa0c3;align-items:baseline}
+  .ins-line{display:grid;grid-template-columns:5.5rem 11.5rem var(--jw,7.5rem) minmax(0,1fr) 5.8rem 10.5rem;gap:10px;padding:5px 10px;border-bottom:1px solid rgba(255,255,255,.05);font-size:13px;color:#8fa0c3;align-items:baseline}
   .ins-line .o{color:#8fa0c3;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .ins-line .v{text-align:right;font-family:Consolas,monospace;font-size:12.5px}.ins-line .v.up{color:#5fe0a0}.ins-line .v.down{color:#ff9a9a}
   .ins-line.named{color:var(--text-primary)}
@@ -404,6 +404,7 @@
   .cv-line .w{color:#8fa0c3}.cv-line .r{text-align:right;font-family:Consolas,monospace}
   .cv-line .up{color:#5fe0a0}.cv-line .down{color:#ff9a9a}
   #board .row{cursor:pointer}
+  .watchpill{display:inline-flex;align-items:center;gap:6px;background:#132238;color:#9cc8ff;border:1px solid rgba(156,200,255,.3);border-radius:999px;padding:4px 11px;font-size:13px;font-weight:600;margin-right:10px;cursor:default}.watchpill svg{width:15px;height:15px}.watchpill b{color:#fff}
   /* the client pop-up: Value check | Change log */
   #cv [hidden]{display:none!important}
   dialog#cv.insd{width:min(1320px,96vw)}
@@ -416,7 +417,7 @@
   .cv-line .j[data-job],.cv-cl .j[data-job]{cursor:pointer;text-decoration:underline dotted rgba(255,255,255,.35);text-underline-offset:3px}
   .ins-line .p,.cv-cl .p{text-align:right;font-family:Consolas,monospace;font-size:12.5px;color:#ffd36a;white-space:nowrap}
   .ins-line .p.zero,.cv-cl .p.zero{color:#6f7d9c}
-  .cv-cl{display:grid;grid-template-columns:5.3rem 9.5rem 11.5rem 7.4rem minmax(0,1fr) 5.8rem 10.5rem;gap:10px;padding:5px 10px;border-bottom:1px solid rgba(255,255,255,.05);font-size:13px;color:#8fa0c3;align-items:baseline}
+  .cv-cl{display:grid;grid-template-columns:5.3rem 9.5rem 11.5rem var(--jw,7.4rem) minmax(0,1fr) 5.8rem 10.5rem;gap:10px;padding:5px 10px;border-bottom:1px solid rgba(255,255,255,.05);font-size:13px;color:#8fa0c3;align-items:baseline}
   .cv-cl.named{color:var(--text-primary)}
   .cv-cl.cv-h{position:sticky;top:0;z-index:2;background:#0f1526;color:#8fa0c3;font-size:11px;text-transform:uppercase;letter-spacing:.05em;font-weight:700}
   .cv-cl .t,.cv-cl .j{font-family:Consolas,monospace;font-size:12.5px}
@@ -426,6 +427,21 @@
   .cv-cl .v{text-align:right;font-family:Consolas,monospace;font-size:12.5px}.cv-cl .v.up{color:#5fe0a0}.cv-cl .v.down{color:#ff9a9a}
   .cv-day{position:sticky;top:1.75rem;z-index:1;background:#16203a;color:#d6e0f5;font-size:12px;font-weight:800;padding:5px 10px;border-bottom:1px solid rgba(255,255,255,.08);cursor:pointer}
   dialog .btn:disabled{opacity:.4;cursor:default}
+  /* the logs: job number + address on one line, never cut short (addresses.js sizes the column to the widest) */
+  .cv-cl .jc,.ins-line .jc{min-width:0;white-space:nowrap}
+  .cv-cl .jw,.ins-line .jw{display:inline-flex;gap:8px;align-items:baseline;width:max-content;white-space:nowrap}
+  .cv-cl .ad,.ins-line .ad{font-size:12px;color:#9fb0d0;font-family:system-ui,sans-serif}
+  .ins-line .j{font-family:Consolas,monospace}
+  /* click a line for everything that save did */
+  .cv-cl[data-i],.ins-line[data-i]{cursor:pointer}.cv-cl[data-i]:hover,.ins-line[data-i]:hover{background:rgba(255,255,255,.035)}
+  .cv-cl.open,.ins-line.open{background:rgba(111,143,216,.14)!important}
+  .cv-more{padding:10px 16px 12px 24px;background:#101830;border-bottom:1px solid rgba(255,255,255,.08);border-left:3px solid #6f8fd8;font-size:13px;color:#d6e0f5;cursor:default}
+  .cv-more .mh2{margin-bottom:6px;font-size:14px}
+  .cv-more .mrow{display:grid;grid-template-columns:9rem minmax(0,1fr);gap:12px;margin:4px 0}
+  .cv-more .k{color:#8fa0c3;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;padding-top:2px}
+  .cv-more ul{margin:0;padding-left:18px}.cv-more li{margin:1px 0}
+  .cv-more a{color:#9cc8ff;margin-left:10px;text-decoration:none}.cv-more a:hover{text-decoration:underline}
+  .cv-more .ctx div{color:#b9c6e0}.cv-more .ctx div.me{color:#fff;font-weight:700}.cv-more .ctx .t{font-family:Consolas,monospace;color:#8fa0c3}
   .cv-chip.pick{cursor:pointer}.cv-chip.pick:hover{border-color:rgba(255,255,255,.3)}.cv-chip.on{background:#2a3a66;border-color:#6f8fd8}
   .cv-sub{font-size:12px;font-weight:700;color:#8fa0c3;text-transform:uppercase;letter-spacing:.05em;margin:4px 0 6px}
   .cv-rank{max-height:28vh;overflow:auto;border:1px solid rgba(255,255,255,.08);border-radius:10px;margin-bottom:12px}
@@ -460,10 +476,18 @@
   @media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important}}
 </style>
 <meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><meta name="viewport" content="width=1500">
-<style>#btnGroup,#btnMonth,#btnTable,#btnNow,#btnSettings{display:none!important}#board .row,#ops .row{cursor:default!important}
+<style>#btnGroup,#btnMonth,#btnTable,#btnNow,#btnSettings,#watchers{display:none!important}#board .row,#ops .row{cursor:default!important}
 .vo{background:#1d2a4a;color:#9cc8ff;border:1px solid rgba(156,200,255,.35);border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-right:10px}
 #mrivBanner{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:99;display:none;background:#2a1f12;border:1px solid rgba(255,180,90,.55);color:#ffd9a0;border-radius:10px;padding:10px 16px;font:600 15px/1.3 system-ui,sans-serif}
-#mrivBanner.on{display:block}#mrivBanner.bad{background:#3a1515;border-color:rgba(255,120,120,.6);color:#ffc4c4}</style>
+#mrivBanner.on{display:block}#mrivBanner.bad{background:#3a1515;border-color:rgba(255,120,120,.6);color:#ffc4c4}
+.mepill{background:#2a2410;color:#ffe3a0;border:1px solid rgba(255,211,106,.5);border-radius:999px;padding:4px 12px;font:600 13px system-ui,sans-serif;margin-right:10px;cursor:pointer}.mepill b{background:#ffd36a;color:#2a1f00;border-radius:5px;padding:0 5px;margin-right:6px;font-size:11px;letter-spacing:.05em}
+#ops .row.me{outline:2px solid #ffd36a;outline-offset:-2px;background:rgba(255,211,106,.10)!important}.youb{background:#ffd36a;color:#2a1f00;border-radius:6px;padding:1px 7px;font-size:.62em;font-weight:900;letter-spacing:.06em;margin-left:10px;vertical-align:middle}
+#mrivMenu{position:fixed;top:76px;right:24px;z-index:98;width:340px;background:#121a30;border:1px solid rgba(255,211,106,.45);border-radius:14px;padding:14px 16px;box-shadow:0 20px 60px rgba(0,0,0,.6);font:14px/1.45 system-ui,sans-serif;color:#e8eefc}
+#mrivMenu .mh{display:flex;justify-content:space-between;align-items:baseline;font-size:16px}#mrivMenu .mh span{color:#ffd36a;font-weight:800}
+#mrivMenu .mbig{font-size:30px;font-weight:800;margin:4px 0}#mrivMenu .mbig small{font-size:13px;color:#8fa0c3;font-weight:600}
+#mrivMenu .ml{color:#c9d5ee;margin:3px 0}#mrivMenu .mn{color:#8fa0c3;font-size:12px;margin:8px 0 0}
+#mrivMenu .mpick{display:block;margin-top:10px;color:#c9d5ee}#mrivMenu select{margin-top:4px;width:100%;background:#182039;color:#e8eefc;border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:6px}
+#mrivMenu .mclear{margin-top:8px;background:none;border:1px solid rgba(255,255,255,.2);color:#c9d5ee;border-radius:8px;padding:5px 10px;cursor:pointer}</style>
 </head>
 <body><div class="bg"><i class="a1"></i><i class="a2"></i><i class="a3"></i><i class="a4"></i></div><div id="busybar"></div>
 <svg width="0" height="0" style="position:absolute"><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#38e1ff"/><stop offset="1" stop-color="#4c9dff"/></linearGradient></defs></svg>
@@ -479,7 +503,7 @@
       <button class="iconbtn" id="btnSettings">⚙ Targets &amp; schedule</button>
       <button class="iconbtn" id="btnFull">⛶</button></div>
       <span id="rcount" style="display:none"></span>
-      <span id="updated"><span class="dot"></span>Waiting for first update…</span>
+      <span id="watchers" class="watchpill" style="display:none"></span><span id="updated"><span class="dot"></span>Waiting for first update…</span>
       <div class="clock" id="clock"></div></div>
   </header>
   <div>
@@ -586,6 +610,10 @@
     <button class="btn ghost" id="vlGo">Turn on</button>
     <button class="btn ghost" id="vlOff">Turn off</button>
   </div>
+  <div class="row2">
+    <label>Who's watching, by name (optional) <input id="vlPres" placeholder="https://your-project-default-rtdb.europe-west1.firebasedatabase.app" style="width:440px" autocomplete="off" spellcheck="false"></label>
+    <span class="hint">a free Firebase database: people who press Find me and pick their name check in there once a minute (encrypted), so this board can show who's watching</span>
+  </div>
   <div class="row2" id="vlLinkRow" style="display:none">
     <input id="vlLink" readonly style="flex:1;min-width:320px;font:12px Consolas,monospace">
     <button class="btn ghost" id="vlCopy">Copy link</button>
@@ -638,7 +666,7 @@
   <p class="hint" id="insPinMsg" style="color:#ff9a9a"></p>
   <div class="row2" style="justify-content:flex-end"><button class="btn ghost" id="insPinCancel">Cancel</button><button class="btn" id="insPinGo">Open</button></div>
 </dialog>
-<script>window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin","version":"2.29.1"};
+<script>window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin","version":"2.33.0"};
 // MRI Assist – the VIEW-ONLY board: the leaderboard as a normal web page that anyone with the link can watch – nothing to
 // install, no sign-in, nothing to click into. The PC that reads MRI (the TV) puts this page on a GitHub Pages site together
 // with the board's figures, ENCRYPTED. The key is in the link, after the "#", which a browser never sends anywhere, so the
@@ -668,7 +696,90 @@
     const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: bytes.slice(4, 16) }, key, bytes.slice(16));
     return JSON.parse(await new Response(new Blob([plain]).stream().pipeThrough(new DecompressionStream("gzip"))).text());
   }
+  // ---- "Find me": pick your name once (this browser remembers it) to see it highlighted with a YOU badge, and your own numbers.
+  // It isn't a sign-in – anyone could pick any name – so it only ever shows what the board already shows everyone.
+  const ME = "mriv:me"; let me = ""; try { me = localStorage.getItem(ME) || ""; } catch (_) {}
+  let snapNow = null;
+  const person = (n) => { let t = String(n || "").replace(/[._]+/g, " ").replace(/\s+/g, " ").trim(); if (t === t.toLowerCase() || t === t.toUpperCase()) t = t.toLowerCase().replace(/(^|[\s'-])\p{L}/gu, (m) => m.toUpperCase()); return t; };
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
+  const W = () => ({ r: 2, b: 2, k: 1, p: 2, c: 2, x: 1, u4: 4, bonus: true, ...(snapNow?.prefs?.points || {}) });
+  const ptsOf = (t, w = W()) => Math.round(w.r * (t.r || 0) + w.b * (t.b || 0) + w.k * (t.k || 0) + w.p * (t.p || 0) + w.c * (t.c || 0) + w.x * (t.x || 0) + (w.bonus ? (t.p1 || 0) + 2 * (t.p2 || 0) + (t.c1 || 0) + 2 * (t.c2 || 0) : 0)) + Math.ceil((t.u || 0) / Math.max(1, Number(w.u4) || 4));
+  const nameOf = (u) => person(snapNow?.contrib?.names?.[u] || u);
+  function standings() { // the staff board, worked out the way the board does it
+    const c = snapNow?.contrib; if (!c) return [];
+    const ex = new Set((snapNow.prefs?.excludeBy ?? ["Mobile", "administrator"]).map((x) => String(x).trim().toLowerCase()));
+    const month = {}; for (const users of Object.values(c.days || {})) for (const [u, t] of Object.entries(users || {})) { const o = (month[u] ||= {}); for (const [k, n] of Object.entries(t)) o[k] = (o[k] || 0) + n; }
+    return Object.entries(month).filter(([u]) => u && !ex.has(u.toLowerCase())).map(([u, t]) => ({ u, t, pts: ptsOf(t), sortName: c.names?.[u] || u })).filter((x) => x.pts > 0).sort((a, b) => b.pts - a.pts || a.sortName.localeCompare(b.sortName));
+  }
+  const ACT = [["r", "raised"], ["b", "booked"], ["k", "letters/calls"], ["p", "priced"], ["c", "closed"], ["x", "cleared"], ["u", "other updates"]];
+  const breakdown = (t) => ACT.filter(([k]) => t[k] > 0).map(([k, n]) => `${n} ${t[k]}`).join(" · ") || "nothing yet";
+  function mark() { // the YOU badge on your row (the board redraws its rows, so this runs after every redraw)
+    const ops = document.getElementById("ops"); if (!ops) return;
+    for (const r of ops.querySelectorAll(".row.me")) { r.classList.remove("me"); r.querySelector(".youb")?.remove(); }
+    if (!me) return; const row = ops.querySelector(`.row[data-key="o:${CSS.escape(me.toLowerCase())}"]`); if (!row) return;
+    row.classList.add("me"); const nm = row.querySelector(".nm"); if (nm && !row.querySelector(".youb")) nm.insertAdjacentHTML("afterend", `<span class="youb">YOU</span>`);
+  }
+  function pill() { // in the header: "YOU #3 · 214 pts · +12 today", or "Find me"
+    let b = document.getElementById("mrivMe"); const u = document.getElementById("updated"); if (!u) return;
+    if (!b) { b = document.createElement("button"); b.id = "mrivMe"; b.className = "mepill"; u.before(b); b.onclick = () => menu(); }
+    const rows = standings(), i = rows.findIndex((x) => x.u === me);
+    if (!me || i < 0) { b.innerHTML = me ? `<b>YOU</b> no points yet` : "Find me"; b.title = "Pick your name to highlight it and see your own numbers"; return; }
+    const today = ptsOf(snapNow?.contrib?.today?.[me] || {});
+    b.innerHTML = `<b>YOU</b> #${i + 1} · ${rows[i].pts.toLocaleString("en-GB")} pts${today ? ` · +${today} today` : ""}`; b.title = "Your numbers – click for more";
+  }
+  function menu(force) {
+    let m = document.getElementById("mrivMenu");
+    if (m && !force) { m.remove(); return; }
+    if (!m) { m = document.createElement("div"); m.id = "mrivMenu"; document.body.appendChild(m); }
+    const rows = standings(), i = rows.findIndex((x) => x.u === me), mine = i >= 0 ? rows[i] : null, all = Object.keys(snapNow?.contrib?.names || {}).filter((u) => rows.some((x) => x.u === u) || u === me);
+    const pickList = [...new Set([...rows.map((x) => x.u), ...all])].sort((a, b) => nameOf(a).localeCompare(nameOf(b)));
+    const today = me ? snapNow?.contrib?.today?.[me] || {} : {}, tp = ptsOf(today);
+    let html = "";
+    if (mine) {
+      const up = rows[i - 1], down = rows[i + 1];
+      html += `<div class="mh"><b>${esc(nameOf(me))}</b><span>#${i + 1} of ${rows.length}</span></div>
+        <div class="mbig">${mine.pts.toLocaleString("en-GB")} <small>pts this month</small></div>
+        <div class="ml">${esc(breakdown(mine.t))}</div>
+        <div class="ml">Today: <b>${tp ? "+" + tp + " pts" : "nothing yet"}</b>${tp ? ` – ${esc(breakdown(today))}` : ""}</div>
+        ${up ? `<div class="ml">${(up.pts - mine.pts).toLocaleString("en-GB")} pts to catch ${esc(nameOf(up.u))} (#${i})</div>` : `<div class="ml">You're top of the board 🏆</div>`}
+        ${down ? `<div class="ml">${(mine.pts - down.pts).toLocaleString("en-GB")} pts ahead of ${esc(nameOf(down.u))} (#${i + 2})</div>` : ""}
+        <div class="mn">Points count the same way as on the board – nothing here is private.</div>`;
+    } else if (me) html += `<div class="mh"><b>${esc(nameOf(me))}</b></div><div class="ml">No points on the board yet this month.</div>`;
+    html += `<label class="mpick">${me ? "Not you? " : "Who are you? "}<select id="mrivPick"><option value="">– pick your name –</option>${pickList.map((u) => `<option value="${esc(u)}"${u === me ? " selected" : ""}>${esc(nameOf(u))}</option>`).join("")}</select></label>
+      ${me ? `<button class="mclear" id="mrivClear">Stop highlighting me</button>` : ""}<p class="mn">Saved in this browser only. It isn't a sign-in, so it can't show anything the board doesn't already show everyone.${snapNow?.presence ? " While this page is open with your name picked, the office boards show you as watching." : ""}</p>`;
+    m.innerHTML = html;
+    m.querySelector("#mrivPick").onchange = (e) => setMe(e.target.value);
+    m.querySelector("#mrivClear")?.addEventListener("click", () => setMe(""));
+  }
+  // ---- checking in by name: only once you've picked your name, and only if the office has set it up. Once a minute this page
+  // tells the office boards "<your name> is watching" – encrypted with the link's key, under a place only the link leads to.
+  // Picking "Stop highlighting me" or closing the page checks out.
+  let sid = ""; try { sid = sessionStorage.getItem("mriv:sid") || ""; if (!sid) { sid = Math.random().toString(36).slice(2, 12); sessionStorage.setItem("mriv:sid", sid); } } catch (_) { sid = Math.random().toString(36).slice(2, 12); }
+  let encKey = null, spot = "", beatT = null;
+  const b64 = (u8) => { let s = ""; for (let i = 0; i < u8.length; i++) s += String.fromCharCode(u8[i]); return btoa(s); };
+  async function seal(text) {
+    encKey ||= await crypto.subtle.importKey("raw", unb64u(KEY), "AES-GCM", false, ["encrypt"]); const iv = crypto.getRandomValues(new Uint8Array(12));
+    const ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, encKey, new TextEncoder().encode(text))), out = new Uint8Array(16 + ct.length);
+    out.set(new TextEncoder().encode("MRV1"), 0); out.set(iv, 4); out.set(ct, 16); return b64(out);
+  }
+  const sha = async (t) => [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)))].map((b) => b.toString(16).padStart(2, "0")).join("");
+  async function beat() {
+    clearTimeout(beatT); beatT = setTimeout(beat, 60000);
+    const url = snapNow?.presence; if (!url || !me) return;
+    spot ||= (await sha(KEY + "|presence")).slice(0, 24);
+    try { await fetch(`${url}/mriv/${spot}/${sid}.json`, { method: "PUT", body: JSON.stringify({ n: await seal(me), t: { ".sv": "timestamp" } }) }); } catch (_) {}
+  }
+  function leave() { const url = snapNow?.presence; if (!url || !spot) return; try { fetch(`${url}/mriv/${spot}/${sid}.json`, { method: "DELETE", keepalive: true }); } catch (_) {} }
+  addEventListener("pagehide", leave);
+  function setMe(u) { const was = me; me = u || ""; try { if (me) localStorage.setItem(ME, me); else localStorage.removeItem(ME); } catch (_) {} if (!me && was) leave(); else if (me) beat(); mark(); pill(); if (document.getElementById("mrivMenu")) menu(true); }
+  addEventListener("DOMContentLoaded", () => {
+    const ops = document.getElementById("ops"); if (ops) new MutationObserver(() => { if (!ops.querySelector(".row.me") && me) mark(); }).observe(ops, { childList: true });
+    document.addEventListener("click", (e) => { const m = document.getElementById("mrivMenu"); if (m && !m.contains(e.target) && !e.target.closest("#mrivMe")) m.remove(); });
+  });
+  const meRefresh = () => { pill(); mark(); if (document.getElementById("mrivMenu") && !document.activeElement?.closest?.("#mrivMenu")) menu(true); };
   function apply(snap) {
+    const firstPres = !snapNow?.presence && snap.presence; snapNow = snap; setTimeout(meRefresh, 50);
+    if (firstPres && me) beat(); // (checking in starts with the first figures, if you've picked your name)
     const next = {
       "dash:data": snap.data ? { ...snap.data, shared: { from: snap.from || "the office", at: snap.at || Date.now() } } : null,
       "dash:contrib": snap.contrib || null, "dash:events": snap.events || { seq: 0, list: [] },
@@ -1122,7 +1233,8 @@
     let wdTotal = 0, wdDone = 0;
     for (let d = 1; d <= days; d++) { const dt = new Date(y, m - 1, d); if (!isWorkDay(dt)) continue; wdTotal++; if (isCurrent && d < now.getDate()) wdDone++; }
     if (!isCurrent) return { pace: 1, wdTotal, wdDone: wdTotal, wdNow: wdTotal, paceBasis: "" };
-    const st = schedule.startHour ?? 7, en = schedule.endHour ?? 19;
+    const ph = data?.paceHours; // a board showing the shared one uses the working hours of the PC that reads MRI, so every board says the same
+    const st = ph?.start ?? schedule.startHour ?? 7, en = ph?.end ?? schedule.endHour ?? 19;
     const part = isWorkDay(now) ? Math.max(0, Math.min(1, (now.getHours() + now.getMinutes() / 60 - st) / Math.max(1, en - st))) : 0;
     const x = wdTotal ? (wdDone + part) / wdTotal : 0; // how far through the month's working time we are
     let pace = x, paceBasis = "working days";
@@ -1157,6 +1269,15 @@
       const mins = Math.round((Date.now() - data.updatedAt) / 60000);
       upd.innerHTML = `<span class="dot${data.ok === false ? " err" : ""}"></span>${schedule.enabled ? `${schedule.live ? "LIVE" : "AUTO"} · checked ${secs < 90 ? secs + "s" : Math.round(secs / 60) + " min"} ago${data.todayRows != null ? ` · ${fmtN(data.todayRows)} rows today` : ""} · last change ` : `Updated ${mins < 1 ? "just now" : mins + " min ago"} · `}${new Date(data.updatedAt).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}${schedule.enabled ? "" : " · auto-update off"}`;
     }
+    // how many have the view-only link open (worked out by the TV; not shown on the view-only page itself)
+    { const wEl = $("watchers"), y = window.BoardSync?.status?.(), v = y?.role === "publish" ? y.view : y?.from?.view, w = v?.watch && Date.now() - v.watch.at < 15 * 60e3 ? v.watch : null;
+      const named = (v?.names?.list && Date.now() - v.names.at < 5 * 60e3 ? v.names.list : []).map((u) => person(contrib?.names?.[u] || u)), n = Math.max(w?.n || 0, named.length);
+      const show = !!(wEl && prefs.viewLink?.on && (w || named.length));
+      if (wEl) wEl.style.display = show ? "" : "none";
+      if (show) { const pk = v.peak?.n != null ? ` The most at once today: ${v.peak.n}, at ${new Date(v.peak.at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}.` : "", others = Math.max(0, n - named.length);
+        const who = named.length ? `: ${esc(named.slice(0, 2).join(", "))}${named.length > 2 || others ? ` +${named.length - Math.min(2, named.length) + others}` : ""}` : "";
+        wEl.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 5C6.5 5 2.7 9.1 1.5 12c1.2 2.9 5 7 10.5 7s9.3-4.1 10.5-7C21.3 9.1 17.5 5 12 5zm0 11.5a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9zm0-2.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg><b>${fmtN(n)}</b> watching${who}`;
+        wEl.title = `${named.length ? `Watching now: ${named.join(", ")}${others ? `, and ${others} more who haven't picked their name` : ""}.` : `About ${n} ${n === 1 ? "page has" : "pages have"} the view-only link open right now.`}${pk} The total is worked out from GitHub's count of downloads, so it's an estimate. Names show for people who pressed Find me and picked their name.`; } }
     const al = $("alert");
     al.style.background = ""; al.style.borderColor = ""; al.style.color = "";
     const busy = !!(data?.running && Date.now() - data.running.at < 300000);
@@ -1677,7 +1798,7 @@
   // ---- the view-only link for Teams (sync.js does the sharing, on the TV): any board can turn it on, copy it or make a new one ----
   function vlFill() {
     const vl = prefs.viewLink || {}, on = !!(vl.on && vl.repo && vl.key), link = on && window.BoardSync ? window.BoardSync.viewLink(vl) : "";
-    $("vlRepo").value = vl.repo || ""; $("vlToken").value = ""; $("vlToken").placeholder = vl.token ? "saved – leave blank to keep it" : "ghp_… (a token with no permissions)";
+    $("vlRepo").value = vl.repo || ""; $("vlPres").value = vl.presence || ""; $("vlToken").value = ""; $("vlToken").placeholder = vl.token ? "saved – leave blank to keep it" : "ghp_… (a token with no permissions)";
     $("vlLinkRow").style.display = link ? "" : "none"; $("vlLink").value = link; $("vlOff").disabled = !on; $("vlGo").textContent = on ? "Save" : "Turn on";
   }
   function vlStatus() {
@@ -1687,7 +1808,7 @@
     if (!vl.on) return `Off (was ${vl.repo}).`;
     if (!v || v.repo !== vl.repo || (!v.at && !v.err)) return "On – the TV starts sharing it within a minute or two (it needs MRI Assist 2.29 or later).";
     if (v.err) return "PROBLEM on the TV: " + v.err;
-    return `On · the TV last shared the figures at ${hm(v.at)}${v.kb ? ` (${v.kb} KB)` : ""}${v.pageAt ? ` · page put up ${new Date(v.pageAt).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}` : ""}. The first time, GitHub Pages can take a few minutes to show the page.`;
+    return `On · the TV last shared the figures at ${hm(v.at)}${v.kb ? ` (${v.kb} KB)` : ""}${v.pageAt ? ` · page put up ${new Date(v.pageAt).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}` : ""}${v.watch ? ` · about ${v.watch.n} watching now` : " · counting who's watching (takes a few minutes)"}${v.peak?.n != null ? `, most today ${v.peak.n} at ${hm(v.peak.at)}` : ""}${vl.presence ? (v.names?.err ? ` · names: PROBLEM – ${v.names.err}` : v.names?.list ? ` · by name: ${v.names.list.length ? v.names.list.map((u) => person(contrib?.names?.[u] || u)).join(", ") : "nobody has picked their name yet"}` : " · names: waiting for the TV (it needs MRI Assist 2.32 or later)") : ""}. The first time, GitHub Pages can take a few minutes to show the page.`;
   }
   $("vlGo").onclick = async () => {
     const st = $("vlState");
@@ -1697,6 +1818,8 @@
     if (repo.toLowerCase() === mine.toLowerCase()) { st.textContent = "Use a separate PUBLIC repository – not the private one the boards share through."; return; }
     const old = prefs.viewLink || {}, token = String($("vlToken").value || "").trim() || old.token || "";
     if (!token) { st.textContent = "Paste the viewer key first: a GitHub token with no permissions at all."; return; }
+    const presence = String($("vlPres").value || "").trim().replace(/\/+$/, ""); // optional: who's watching, by name
+    if (presence && !window.BoardSync.okPresence(presence)) { st.textContent = "The Firebase address should look like https://your-project-default-rtdb.europe-west1.firebasedatabase.app (or leave it empty)."; return; }
     // the viewer key goes in the link for everyone, so it must not be able to see anything private
     $("vlGo").disabled = true; st.textContent = "Checking the viewer key…";
     try {
@@ -1704,7 +1827,7 @@
       const scopes = (r.headers.get("x-oauth-scopes") || "").trim();
       if (r.status === 401) { st.textContent = "GitHub doesn't accept that viewer key – check you copied all of it."; return; }
       if (r.ok || scopes) { st.textContent = "That key can do more than read public pages – it will be in the link for everyone, so make one with NO permissions (see the steps) and paste that."; return; }
-      const vl = { on: true, repo, token, key: old.key || window.BoardSync.newViewKey(), at: Date.now() };
+      const vl = { on: true, repo, token, key: old.key || window.BoardSync.newViewKey(), at: Date.now(), ...(presence ? { presence } : {}) };
       await window.MRIBoard.savePrefs({ viewLink: vl }); vlFill();
       st.textContent = "Saved. The TV starts sharing within a minute or two – then copy the link into Teams.";
     } catch (e) { st.textContent = "Couldn't save it: " + (e.message || e); }
