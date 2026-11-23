@@ -472,7 +472,7 @@
   #board .row{cursor:pointer}
   .vlwatch{margin:0 0 12px;padding:10px 14px;background:#0f1a2e;border:1px solid rgba(156,200,255,.25);border-radius:10px;font-size:13px;color:#c9d6ee}
   .vlwatch .vwh{font-size:15px;color:#e8f1ff;margin-bottom:6px}.vlwatch .vwh span{font-size:12px;color:#8ea3c4}
-  .vlwatch ul{margin:4px 0 6px;padding-left:18px;columns:2;column-gap:28px}.vlwatch li{margin:2px 0;break-inside:avoid}.vlwatch p{margin:4px 0}.vlwatch .vwn{font-size:11.5px;color:#8ea3c4}
+  .vlwatch ul{margin:4px 0 6px;padding-left:18px;columns:2;column-gap:28px}.vlwatch li{margin:2px 0;break-inside:avoid}.vlwatch p{margin:4px 0}.vlwatch .vwn{font-size:11.5px;color:#8ea3c4}.vlwatch .vwt{font-size:11px;color:#ffd9a0;background:#2a1f12;border:1px solid rgba(255,180,90,.45);border-radius:999px;padding:0 7px}
   .watchpill{display:inline-flex;align-items:center;gap:6px;background:#132238;color:#9cc8ff;border:1px solid rgba(156,200,255,.3);border-radius:999px;padding:4px 11px;font-size:13px;font-weight:600;margin-right:10px;cursor:default}.watchpill svg{width:15px;height:15px}.watchpill b{color:#fff}
   /* the client pop-up: Value check | Change log */
   #cv [hidden]{display:none!important}
@@ -556,7 +556,25 @@
 #mrivMenu .mbig{font-size:30px;font-weight:800;margin:4px 0}#mrivMenu .mbig small{font-size:13px;color:#8fa0c3;font-weight:600}
 #mrivMenu .ml{color:#c9d5ee;margin:3px 0}#mrivMenu .mn{color:#8fa0c3;font-size:12px;margin:8px 0 0}
 #mrivMenu .mpick{display:block;margin-top:10px;color:#c9d5ee}#mrivMenu select{margin-top:4px;width:100%;background:#182039;color:#e8eefc;border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:6px}
-#mrivMenu .mclear{margin-top:8px;background:none;border:1px solid rgba(255,255,255,.2);color:#c9d5ee;border-radius:8px;padding:5px 10px;cursor:pointer}</style>
+#mrivMenu .mclear{margin-top:8px;background:none;border:1px solid rgba(255,255,255,.2);color:#c9d5ee;border-radius:8px;padding:5px 10px;cursor:pointer}
+#mrivGate{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:rgba(6,10,22,.6);backdrop-filter:blur(10px) saturate(.8);-webkit-backdrop-filter:blur(10px) saturate(.8);animation:mgIn .35s ease}
+#mrivGate.out{animation:mgOut .26s ease forwards;pointer-events:none}@keyframes mgIn{from{opacity:0}}@keyframes mgOut{to{opacity:0}}
+#mrivGate .gcard{position:relative;width:640px;max-width:92vw;max-height:84vh;display:flex;flex-direction:column;box-sizing:border-box;background:linear-gradient(180deg,#151f3a,#0f1629);border:1px solid rgba(255,211,106,.45);border-radius:22px;padding:26px 28px 18px;box-shadow:0 30px 90px rgba(0,0,0,.65);color:#e8eefc;font:15px/1.4 system-ui,"Segoe UI",sans-serif;animation:mgPop .5s cubic-bezier(.34,1.45,.64,1)}
+#mrivGate.out .gcard{animation:none;transform:scale(.97);transition:transform .26s}@keyframes mgPop{from{transform:translateY(16px) scale(.95);opacity:0}}
+#mrivGate .gh{display:flex;align-items:center;gap:14px;margin-bottom:16px}#mrivGate .gi{font-size:36px;animation:mgWave 1.6s ease .4s 2;transform-origin:70% 70%}@keyframes mgWave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(16deg)}40%,80%{transform:rotate(-8deg)}}
+#mrivGate .gh b{display:block;font-size:25px;font-weight:800;letter-spacing:-.01em}#mrivGate .gh span{color:#8fa0c3;font-size:14px}
+#mrivGate .gq,#mrivGate .gt input{width:100%;box-sizing:border-box;background:#182039;color:#e8eefc;border:1px solid rgba(255,255,255,.16);border-radius:12px;padding:11px 14px;font:inherit;outline:none;transition:border-color .15s,box-shadow .15s}
+#mrivGate .gq:focus,#mrivGate .gt input:focus{border-color:#ffd36a;box-shadow:0 0 0 3px rgba(255,211,106,.18)}
+#mrivGate .gl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0 8px;overflow:auto;padding:2px;min-height:60px}
+#mrivGate .gn{background:#1a2342;color:#e8eefc;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px;font:600 14px system-ui,"Segoe UI",sans-serif;cursor:pointer;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:transform .12s,background .12s,border-color .12s}
+#mrivGate .gn:hover,#mrivGate .gn:focus-visible{background:#243058;border-color:#ffd36a;transform:translateY(-1px);outline:none}#mrivGate .gn.on{border-color:#ffd36a;background:rgba(255,211,106,.14)}
+#mrivGate .gw{grid-column:1/-1;color:#8fa0c3;text-align:center;padding:16px 0;margin:0}
+#mrivGate .gspin{display:inline-block;width:14px;height:14px;margin-right:8px;vertical-align:-2px;border:2px solid rgba(255,211,106,.25);border-top-color:#ffd36a;border-radius:50%;animation:mgSpin .8s linear infinite}@keyframes mgSpin{to{transform:rotate(360deg)}}
+#mrivGate .glink{background:none;border:0;color:#9cc8ff;font:600 13.5px system-ui,"Segoe UI",sans-serif;cursor:pointer;padding:6px 0;text-align:left}#mrivGate .glink:hover{text-decoration:underline}
+#mrivGate .gt{display:block;color:#c9d5ee;font-size:13px;margin:2px 0 0}#mrivGate .gt input{margin-top:6px}
+#mrivGate .gb{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+#mrivGate .ggo{background:#ffd36a;color:#2a1f00;border:0;border-radius:10px;padding:10px 20px;font:800 14px system-ui,"Segoe UI",sans-serif;cursor:pointer;transition:opacity .15s}#mrivGate .ggo:disabled{opacity:.4;cursor:default}
+#mrivGate .gnote{color:#8fa0c3;font-size:12.5px;margin:10px 0 0}</style>
 </head>
 <body><div class="bg"><i class="a1"></i><i class="a2"></i><i class="a3"></i><i class="a4"></i></div><div id="busybar"></div>
 <svg width="0" height="0" style="position:absolute"><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#38e1ff"/><stop offset="1" stop-color="#4c9dff"/></linearGradient></defs></svg>
@@ -770,7 +788,7 @@
   <p class="hint" id="insPinMsg" style="color:#ff9a9a"></p>
   <div class="row2" style="justify-content:flex-end"><button class="btn ghost" id="insPinCancel">Cancel</button><button class="btn" id="insPinGo">Open</button></div>
 </dialog>
-<script>window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin","version":"2.45.1"};
+<script>window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin","version":"2.46.0"};
 // MRI Assist – the VIEW-ONLY board: the leaderboard as a normal web page that anyone with the link can watch – nothing to
 // install, no sign-in, nothing to click into. The PC that reads MRI (the TV) puts this page on a GitHub Pages site together
 // with the board's figures, ENCRYPTED. The key is in the link, after the "#", which a browser never sends anywhere, so the
@@ -809,7 +827,8 @@
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
   const W = () => ({ r: 2, b: 2, k: 1, p: 2, c: 2, x: 1, u4: 4, bonus: true, ...(snapNow?.prefs?.points || {}) });
   const ptsOf = (t, w = W()) => Math.round(w.r * (t.r || 0) + w.b * (t.b || 0) + w.k * (t.k || 0) + w.p * (t.p || 0) + w.c * (t.c || 0) + w.x * (t.x || 0) + (w.bonus ? (t.p1 || 0) + 2 * (t.p2 || 0) + (t.c1 || 0) + 2 * (t.c2 || 0) : 0)) + Math.ceil((t.u || 0) / Math.max(1, Number(w.u4) || 4));
-  const nameOf = (u) => person(snapNow?.contrib?.names?.[u] || u);
+  const TYPED = "~"; // a name typed in (not on the board's list) – the boards show it as typed
+  const nameOf = (u) => (String(u || "").startsWith(TYPED) ? String(u).slice(1).trim() : person(snapNow?.contrib?.names?.[u] || u));
   function standings() { // the staff board, worked out the way the board does it
     const c = snapNow?.contrib; if (!c) return [];
     const ex = new Set((snapNow.prefs?.excludeBy ?? ["Mobile", "administrator"]).map((x) => String(x).trim().toLowerCase()));
@@ -828,7 +847,7 @@
     let b = document.getElementById("mrivMe"); const u = document.getElementById("updated"); if (!u) return;
     if (!b) { b = document.createElement("button"); b.id = "mrivMe"; b.className = "mepill"; u.before(b); b.onclick = () => menu(); }
     const rows = standings(), i = rows.findIndex((x) => x.u === me);
-    if (!me || i < 0) { b.innerHTML = me ? `<b>YOU</b> no points yet` : "Find me"; b.title = "Pick your name to highlight it and see your own numbers"; return; }
+    if (!me || i < 0) { b.innerHTML = me ? (me.startsWith(TYPED) ? `<b>YOU</b> ${esc(nameOf(me))}` : `<b>YOU</b> no points yet`) : "Find me"; b.title = me ? "Your name – click to change it" : "Pick your name to highlight it and see your own numbers"; return; }
     const today = ptsOf(snapNow?.contrib?.today?.[me] || {});
     b.innerHTML = `<b>YOU</b> #${i + 1} · ${rows[i].pts.toLocaleString("en-GB")} pts${today ? ` · +${today} today` : ""}`; b.title = "Your numbers – click for more";
   }
@@ -850,10 +869,10 @@
         ${down ? `<div class="ml">${(mine.pts - down.pts).toLocaleString("en-GB")} pts ahead of ${esc(nameOf(down.u))} (#${i + 2})</div>` : ""}
         <div class="mn">Points count the same way as on the board – nothing here is private.</div>`;
     } else if (me) html += `<div class="mh"><b>${esc(nameOf(me))}</b></div><div class="ml">No points on the board yet this month.</div>`;
-    html += `<label class="mpick">${me ? "Not you? " : "Who are you? "}<select id="mrivPick"><option value="">– pick your name –</option>${pickList.map((u) => `<option value="${esc(u)}"${u === me ? " selected" : ""}>${esc(nameOf(u))}</option>`).join("")}</select></label>
+    html += `<div class="mpick">${me ? `Not ${esc(nameOf(me))}? ` : ""}<button class="mclear" id="mrivChange">Change name</button></div>
       <p class="mn">Saved in this browser only – if it ever forgets you (a private window, or after clearing your history), just pick your name again. It isn't a sign-in, so it can't show anything the board doesn't already show everyone.${snapNow?.presence ? " While this page is open with your name picked, whoever runs the board can see you're watching (nobody else can)." : ""}</p>`;
     m.innerHTML = html;
-    m.querySelector("#mrivPick").onchange = (e) => setMe(e.target.value);
+    m.querySelector("#mrivChange").onclick = () => { m.remove(); gate(true, { cancel: !!me }); };
   }
   // ---- checking in by name: only once you've picked your name, and only if the office has set it up. Every 30 seconds this
   // page says "<your name> is watching", under a place only the link leads to, with the name locked by the boards' public key –
@@ -882,11 +901,75 @@
   }
   function leave() { const url = snapNow?.presence; if (!url || !spot) return; try { fetch(`${url}/mriv/${spot}/${sid}.json`, { method: "DELETE", keepalive: true }); } catch (_) {} }
   addEventListener("pagehide", leave);
-  function setMe(u) { const was = me; me = u || ""; try { if (me) localStorage.setItem(ME, me); else localStorage.removeItem(ME); } catch (_) {} if (!me && was) leave(); else if (me) beat(); mark(); pill(); if (document.getElementById("mrivMenu")) menu(true); F.pause = 0; F.glanceEnd = 0; F.glanceAt = 0; }
+  function setMe(u) { const was = me; me = u || ""; if (!me) setTimeout(() => gate(true), 0); try { if (me) localStorage.setItem(ME, me); else localStorage.removeItem(ME); } catch (_) {} if (!me && was) leave(); else if (me) beat(); mark(); pill(); if (document.getElementById("mrivMenu")) menu(true); F.pause = 0; F.glanceEnd = 0; F.glanceAt = 0; }
   addEventListener("DOMContentLoaded", () => {
     const ops = document.getElementById("ops"); if (ops) new MutationObserver(() => { if (!ops.querySelector(".row.me") && me) mark(); }).observe(ops, { childList: true });
     document.addEventListener("click", (e) => { const m = document.getElementById("mrivMenu"); if (m && !m.contains(e.target) && !e.target.closest("#mrivMe")) m.remove(); });
   });
+  // ---- everyone picks their name first (Jake, 23 Nov): the board waits behind a "Who's watching?" card until a name is picked –
+  // one of the office staff the board knows, or typed in when it isn't on the list ("~" in front tells the boards it was typed) –
+  // so whoever runs the board can see who's watching (⚙ → View-only link → Who's watching now). Saved in this browser, so it's
+  // asked once; "Change name" in the YOU menu brings the card back. It isn't a sign-in: anyone can pick any name.
+  let gateQ = "", gateTyping = false, gateCancel = false;
+  function staffList() {
+    const c = snapNow?.contrib; if (!c) return [];
+    const ex = new Set((snapNow.prefs?.excludeBy ?? ["Mobile", "administrator"]).map((x) => String(x).trim().toLowerCase()));
+    const us = new Set(Object.keys(c.names || {})); for (const users of [c.today, ...Object.values(c.days || {})]) for (const u of Object.keys(users || {})) us.add(u);
+    return [...us].filter((u) => u && !ex.has(u.toLowerCase()) && !/^(administrator|mobile|interface|system)$/i.test(u)).sort((a, b) => nameOf(a).localeCompare(nameOf(b)));
+  }
+  function gate(open, opts = {}) {
+    let g = document.getElementById("mrivGate");
+    if (!open) { if (g && !g.classList.contains("out")) { g.classList.add("out"); setTimeout(() => g.remove(), 260); } return; }
+    if (g && g.classList.contains("out")) { g.remove(); g = null; }
+    if (!document.body) return;
+    gateCancel = !!opts.cancel; gateTyping = false; gateQ = "";
+    if (!g) { g = document.createElement("div"); g.id = "mrivGate"; g.setAttribute("role", "dialog"); g.setAttribute("aria-modal", "true"); g.setAttribute("aria-label", "Who's watching?"); document.body.appendChild(g); g.addEventListener("click", gateClick); g.addEventListener("input", gateInput); g.addEventListener("keydown", gateKey);
+      g.addEventListener("mousedown", (e) => { if (!e.target.closest(".gcard") && !matchMedia("(pointer: coarse)").matches) { e.preventDefault(); gateField()?.focus(); } }); } // a click beside the card: back to its box
+    gateDraw();
+  }
+  function gateDraw() {
+    const g = document.getElementById("mrivGate"); if (!g) return;
+    g.innerHTML = `<div class="gcard">
+      <div class="gh"><span class="gi">👋</span><div><b>Who's watching?</b><span>${gateCancel ? "Pick your name" : "Pick your name to open the board"}</span></div></div>
+      ${gateTyping
+        ? `<label class="gt">Your name<input id="mrivGateName" maxlength="40" placeholder="First and last name" autocomplete="off"></label>
+           <div class="gb"><button class="glink" data-g="list">← Back to the list</button><button class="ggo" data-g="typed" disabled>Continue</button></div>`
+        : `<input id="mrivGateQ" class="gq" placeholder="Search names…" autocomplete="off" value="${esc(gateQ)}"><div class="gl"></div>
+           <button class="glink" data-g="type">Not on the list? Type your name</button>`}
+      <p class="gnote">Saved in this browser, so you're only asked once. It isn't a sign-in – it highlights your row, and lets whoever runs the board see who's watching.</p>
+      ${gateCancel ? `<div class="gb"><span></span><button class="glink" data-g="cancel">Cancel</button></div>` : ""}</div>`;
+    gateList();
+    const f = g.querySelector(gateTyping ? "#mrivGateName" : "#mrivGateQ"); if (f && !matchMedia("(pointer: coarse)").matches) setTimeout(() => f.focus(), 30);
+  }
+  function gateList() { // just the names, so typing in the search box keeps its place
+    const g = document.getElementById("mrivGate"), box = g && g.querySelector(".gl"); if (!box) return;
+    const list = staffList(), q = gateQ.trim().toLowerCase(), shown = list.filter((u) => !q || nameOf(u).toLowerCase().includes(q));
+    box.innerHTML = !snapNow ? `<p class="gw"><span class="gspin"></span>Loading the board…</p>`
+      : shown.map((u) => `<button class="gn${u === me ? " on" : ""}" data-u="${esc(u)}">${esc(nameOf(u))}</button>`).join("") || `<p class="gw">${list.length ? `No names match “${esc(gateQ)}”.` : "No names on the board yet."} <button class="glink" data-g="type">Type your name</button></p>`;
+  }
+  function gateClick(e) {
+    const n = e.target.closest("[data-u]"); if (n) { setMe(n.dataset.u); gate(false); return; }
+    const a = e.target.closest("[data-g]")?.dataset.g; if (!a) return;
+    if (a === "type" || a === "list") { gateTyping = a === "type"; gateDraw(); }
+    else if (a === "typed") gateTyped();
+    else if (a === "cancel" && gateCancel && me) gate(false);
+  }
+  function gateTyped() { const i = document.getElementById("mrivGateName"), v = String(i?.value || "").replace(/\s+/g, " ").trim(); if (v.length < 2) return; setMe(TYPED + v); gate(false); }
+  function gateInput(e) {
+    if (e.target.id === "mrivGateQ") { gateQ = e.target.value; gateList(); }
+    else if (e.target.id === "mrivGateName") { const b = document.querySelector('#mrivGate [data-g="typed"]'); if (b) b.disabled = String(e.target.value).trim().length < 2; }
+  }
+  function gateKey(e) {
+    if (e.key === "Escape") { e.preventDefault(); if (gateCancel && me) gate(false); return; }
+    if (e.key !== "Enter") return;
+    if (e.target.id === "mrivGateName") { e.preventDefault(); gateTyped(); }
+    else if (e.target.id === "mrivGateQ") { const only = document.querySelectorAll("#mrivGate .gn"); if (only.length === 1) { e.preventDefault(); only[0].click(); } }
+  }
+  // the card stays in front: nothing behind it takes a click, and typing anywhere goes into its box
+  const gateField = () => document.querySelector("#mrivGate #mrivGateName, #mrivGate #mrivGateQ");
+  addEventListener("DOMContentLoaded", () => { if (!me) gate(true); });
+  document.addEventListener("keydown", (e) => { const g = document.getElementById("mrivGate"); if (!g || g.classList.contains("out") || g.contains(e.target)) return; if (e.key === "Escape" || e.key === "Tab") e.preventDefault(); gateField()?.focus(); }, true);
+
   // ---- following you: once you've picked your name, the staff board keeps your row in the middle. Other people's changes
   // still play first (the board goes to each one as it lands), then it comes back to you; about once a minute it glances at
   // the top of the board for a few seconds. Scrolling yourself pauses it for 30 seconds. With no name picked (or no points
@@ -908,7 +991,7 @@
   setInterval(follow, 1000);
   document.addEventListener("board-reset", (e) => { if (!e.detail || e.detail === "ops") F.pause = Math.max(F.pause, Date.now() + 2500); }); // the new figures have played: a moment, then back to you
   addEventListener("DOMContentLoaded", () => { const ops = document.getElementById("ops"); if (ops) ["wheel", "touchstart", "mousedown", "keydown"].forEach((ev) => ops.addEventListener(ev, () => { F.pause = Date.now() + 30000; F.glanceEnd = 0; }, { passive: true })); });
-  const meRefresh = () => { pill(); mark(); if (document.getElementById("mrivMenu") && !document.activeElement?.closest?.("#mrivMenu")) menu(true); };
+  const meRefresh = () => { pill(); mark(); if (document.getElementById("mrivGate") && !gateTyping) gateList(); if (document.getElementById("mrivMenu") && !document.activeElement?.closest?.("#mrivMenu")) menu(true); };
   function apply(snap) {
     const firstPres = !snapNow?.presence && snap.presence; snapNow = snap; setTimeout(meRefresh, 50);
     if (firstPres && me) beat(); // (checking in starts with the first figures, if you've picked your name)
@@ -2212,11 +2295,12 @@
     const w = v?.watch && Date.now() - v.watch.at < 15 * 60e3 ? v.watch : null, pk = v?.peak?.n != null ? v.peak : null;
     let names = null; if (vl.presence) { try { names = await window.BoardSync.namesNow(vl); } catch (e) { names = { err: e.message || String(e) }; } }
     const list = names?.list || [], n = Math.max(w?.n || 0, list.length), others = Math.max(0, (w?.n || 0) - list.length);
-    const who = list.map((x) => `<li><b>${esc(person(contrib?.names?.[x.u] || x.u))}</b> – since ${hm(x.since)}${x.pages > 1 ? ` (${x.pages} pages)` : ""}</li>`).join("");
+    const typed = (u) => String(u || "").startsWith("~");
+    const who = list.map((x) => `<li><b>${esc(typed(x.u) ? String(x.u).slice(1).trim() : person(contrib?.names?.[x.u] || x.u))}</b>${typed(x.u) ? ` <span class="vwt" title="Not on the board's staff list – they typed this name in">typed their own name</span>` : ""} – since ${hm(x.since)}${x.pages > 1 ? ` (${x.pages} pages)` : ""}</li>`).join("");
     box.innerHTML = `<div class="vwh"><b>${n ? fmtN(n) : "Nobody"} watching now</b>${w ? "" : n ? "" : " <span>(the number takes a few minutes after the TV starts)</span>"}${pk ? `<span> · most today ${fmtN(pk.n)}, at ${hm(pk.at)}</span>` : ""}</div>
-      ${!vl.presence ? `<p>Add the Firebase address above to see who they are – only the people who press Find me and pick their name are named.</p>`
+      ${!vl.presence ? `<p>Add the Firebase address above to see who they are – everyone picks their name when they open the link.</p>`
         : names?.err ? `<p>Names: couldn't read Firebase – ${esc(names.err)}.</p>`
-        : `${who ? `<ul>${who}</ul>` : `<p>Nobody with their name picked is watching right now.</p>`}${others ? `<p>+ about ${fmtN(others)} more who haven't picked their name.</p>` : ""}`}
+        : `${who ? `<ul>${who}</ul>` : `<p>Nobody with their name picked is watching right now.</p>`}${others ? `<p>+ about ${fmtN(others)} more without a name (pages opened before everyone had to pick one, or an estimate running ahead).</p>` : ""}`}
       <p class="vwn">Only shown here, with the PIN. Names update every 10 seconds while this window is open${names?.at ? ` (last ${new Date(names.at).toLocaleTimeString("en-GB")})` : ""}; the total is an estimate from GitHub's count of downloads.</p>`;
     box.style.display = ""; vwT = setTimeout(vlWatch, 10000);
   }
