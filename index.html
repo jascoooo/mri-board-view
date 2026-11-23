@@ -557,16 +557,17 @@
 #mrivMenu .ml{color:#c9d5ee;margin:3px 0}#mrivMenu .mn{color:#8fa0c3;font-size:12px;margin:8px 0 0}
 #mrivMenu .mpick{display:block;margin-top:10px;color:#c9d5ee}#mrivMenu select{margin-top:4px;width:100%;background:#182039;color:#e8eefc;border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:6px}
 #mrivMenu .mclear{margin-top:8px;background:none;border:1px solid rgba(255,255,255,.2);color:#c9d5ee;border-radius:8px;padding:5px 10px;cursor:pointer}
-#mrivGate{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:rgba(6,10,22,.6);backdrop-filter:blur(10px) saturate(.8);-webkit-backdrop-filter:blur(10px) saturate(.8);animation:mgIn .35s ease}
+#mrivGate{color-scheme:dark;position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:rgba(6,10,22,.6);backdrop-filter:blur(10px) saturate(.8);-webkit-backdrop-filter:blur(10px) saturate(.8);animation:mgIn .35s ease}
 #mrivGate.out{animation:mgOut .26s ease forwards;pointer-events:none}@keyframes mgIn{from{opacity:0}}@keyframes mgOut{to{opacity:0}}
 #mrivGate .gcard{position:relative;width:640px;max-width:92vw;max-height:84vh;display:flex;flex-direction:column;box-sizing:border-box;background:linear-gradient(180deg,#151f3a,#0f1629);border:1px solid rgba(255,211,106,.45);border-radius:22px;padding:26px 28px 18px;box-shadow:0 30px 90px rgba(0,0,0,.65);color:#e8eefc;font:15px/1.4 system-ui,"Segoe UI",sans-serif;animation:mgPop .5s cubic-bezier(.34,1.45,.64,1)}
 #mrivGate.out .gcard{animation:none;transform:scale(.97);transition:transform .26s}@keyframes mgPop{from{transform:translateY(16px) scale(.95);opacity:0}}
-#mrivGate .gh{display:flex;align-items:center;gap:14px;margin-bottom:16px}#mrivGate .gi{font-size:36px;animation:mgWave 1.6s ease .4s 2;transform-origin:70% 70%}@keyframes mgWave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(16deg)}40%,80%{transform:rotate(-8deg)}}
-#mrivGate .gh b{display:block;font-size:25px;font-weight:800;letter-spacing:-.01em}#mrivGate .gh span{color:#8fa0c3;font-size:14px}
+#mrivGate .gh{display:flex;align-items:center;gap:14px;margin-bottom:16px}#mrivGate .gh .gi{font-size:38px;line-height:1;animation:mgWave 1.6s ease .4s 2;transform-origin:70% 70%}@keyframes mgWave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(16deg)}40%,80%{transform:rotate(-8deg)}}
+#mrivGate .gh b{display:block;font-size:25px;font-weight:800;letter-spacing:-.01em}#mrivGate .gh .gsub{color:#8fa0c3;font-size:14px}
 #mrivGate .gq,#mrivGate .gt input{width:100%;box-sizing:border-box;background:#182039;color:#e8eefc;border:1px solid rgba(255,255,255,.16);border-radius:12px;padding:11px 14px;font:inherit;outline:none;transition:border-color .15s,box-shadow .15s}
 #mrivGate .gq:focus,#mrivGate .gt input:focus{border-color:#ffd36a;box-shadow:0 0 0 3px rgba(255,211,106,.18)}
-#mrivGate .gl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0 8px;overflow:auto;padding:2px;min-height:60px}
-#mrivGate .gn{background:#1a2342;color:#e8eefc;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px;font:600 14px system-ui,"Segoe UI",sans-serif;cursor:pointer;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:transform .12s,background .12s,border-color .12s}
+#mrivGate .gl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:max-content;align-content:start;gap:8px;margin:12px 0 8px;overflow:auto;padding:2px 6px 2px 2px;flex:1 1 auto;min-height:60px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.22) transparent}
+#mrivGate .gl::-webkit-scrollbar{width:8px}#mrivGate .gl::-webkit-scrollbar-thumb{background:rgba(255,255,255,.22);border-radius:8px}#mrivGate .gl::-webkit-scrollbar-track{background:transparent}
+#mrivGate .gn{min-height:44px;box-sizing:border-box;line-height:1.25;background:#1a2342;color:#e8eefc;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px;font:600 14px system-ui,"Segoe UI",sans-serif;cursor:pointer;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:transform .12s,background .12s,border-color .12s}
 #mrivGate .gn:hover,#mrivGate .gn:focus-visible{background:#243058;border-color:#ffd36a;transform:translateY(-1px);outline:none}#mrivGate .gn.on{border-color:#ffd36a;background:rgba(255,211,106,.14)}
 #mrivGate .gw{grid-column:1/-1;color:#8fa0c3;text-align:center;padding:16px 0;margin:0}
 #mrivGate .gspin{display:inline-block;width:14px;height:14px;margin-right:8px;vertical-align:-2px;border:2px solid rgba(255,211,106,.25);border-top-color:#ffd36a;border-radius:50%;animation:mgSpin .8s linear infinite}@keyframes mgSpin{to{transform:rotate(360deg)}}
@@ -788,7 +789,7 @@
   <p class="hint" id="insPinMsg" style="color:#ff9a9a"></p>
   <div class="row2" style="justify-content:flex-end"><button class="btn ghost" id="insPinCancel">Cancel</button><button class="btn" id="insPinGo">Open</button></div>
 </dialog>
-<script>window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin","version":"2.46.0"};
+<script>window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin","version":"2.46.1"};
 // MRI Assist – the VIEW-ONLY board: the leaderboard as a normal web page that anyone with the link can watch – nothing to
 // install, no sign-in, nothing to click into. The PC that reads MRI (the TV) puts this page on a GitHub Pages site together
 // with the board's figures, ENCRYPTED. The key is in the link, after the "#", which a browser never sends anywhere, so the
@@ -915,7 +916,7 @@
     const c = snapNow?.contrib; if (!c) return [];
     const ex = new Set((snapNow.prefs?.excludeBy ?? ["Mobile", "administrator"]).map((x) => String(x).trim().toLowerCase()));
     const us = new Set(Object.keys(c.names || {})); for (const users of [c.today, ...Object.values(c.days || {})]) for (const u of Object.keys(users || {})) us.add(u);
-    return [...us].filter((u) => u && !ex.has(u.toLowerCase()) && !/^(administrator|mobile|interface|system)$/i.test(u)).sort((a, b) => nameOf(a).localeCompare(nameOf(b)));
+    return [...us].filter((u) => u && !ex.has(u.toLowerCase()) && !/^(administrator|mobile|interface|system)$/i.test(u) && !/(^|[._ -])(update|updates|import|interface|system|admin|api|batch|service|auto|test)([._ -]|$)/i.test(u)).sort((a, b) => nameOf(a).localeCompare(nameOf(b)));
   }
   function gate(open, opts = {}) {
     let g = document.getElementById("mrivGate");
@@ -930,7 +931,7 @@
   function gateDraw() {
     const g = document.getElementById("mrivGate"); if (!g) return;
     g.innerHTML = `<div class="gcard">
-      <div class="gh"><span class="gi">👋</span><div><b>Who's watching?</b><span>${gateCancel ? "Pick your name" : "Pick your name to open the board"}</span></div></div>
+      <div class="gh"><span class="gi">👋</span><div><b>Who's watching?</b><span class="gsub">${gateCancel ? "Pick your name" : "Pick your name to open the board"}</span></div></div>
       ${gateTyping
         ? `<label class="gt">Your name<input id="mrivGateName" maxlength="40" placeholder="First and last name" autocomplete="off"></label>
            <div class="gb"><button class="glink" data-g="list">← Back to the list</button><button class="ggo" data-g="typed" disabled>Continue</button></div>`
