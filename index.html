@@ -452,6 +452,14 @@
   .cv-tag{background:#103a2c;color:#9ff0cf}
   .ins-tile.warn{border-color:rgba(255,180,90,.55);background:#2a1f12}
   .cv-people{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+  .cv-vdays{display:flex;gap:3px;align-items:stretch;height:76px;margin:2px 0 10px;padding:6px 6px 3px;background:#10172b;border:1px solid rgba(255,255,255,.06);border-radius:12px;overflow-x:auto}
+  .cv-vday{flex:1 0 20px;min-width:20px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;background:none;border:0;border-radius:6px;padding:2px 0 1px;cursor:pointer;color:#8fa0c3;font:inherit}
+  .cv-vday i{display:block;width:70%;border-radius:3px 3px 1px 1px;background:linear-gradient(180deg,#5ee0a0,#2f9e6e);transition:height .3s ease}
+  .cv-vday.zero i{background:rgba(255,255,255,.12)}.cv-vday.neg i{background:linear-gradient(180deg,#ef8a8a,#c44d4d)}
+  .cv-vday span{font-size:10.5px;line-height:1}.cv-vday.we span{opacity:.5}
+  .cv-vday:hover{background:rgba(255,255,255,.06)}.cv-vday.on{background:rgba(94,224,160,.14);box-shadow:inset 0 0 0 1.5px #5ee0a0}.cv-vday.on span{color:#e8eefb;font-weight:700}
+  .cv-dayhead{margin:0 0 10px;padding:9px 12px;border-radius:12px;background:rgba(94,224,160,.08);border:1px solid rgba(94,224,160,.25)}
+  .cv-dayhead>b{display:block;font-size:15px;color:#e8eefb}.cv-dayhead .s{display:block;font-size:12.5px;color:#b9c6e0;margin:2px 0 7px}.cv-dayhead .cv-people{margin:0}
   .cv-chip{background:#141c33;border:1px solid rgba(255,255,255,.08);border-radius:999px;padding:4px 10px;font-size:12.5px;color:#b9c6e0}
   .cv-chip b{color:var(--text-primary);font-weight:700}
   .cv-list{max-height:46vh;overflow:auto;border:1px solid rgba(255,255,255,.08);border-radius:10px}
@@ -762,7 +770,7 @@
   <p class="hint" id="insPinMsg" style="color:#ff9a9a"></p>
   <div class="row2" style="justify-content:flex-end"><button class="btn ghost" id="insPinCancel">Cancel</button><button class="btn" id="insPinGo">Open</button></div>
 </dialog>
-<script>window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin","version":"2.43.0"};
+<script>window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin","version":"2.45.1"};
 // MRI Assist – the VIEW-ONLY board: the leaderboard as a normal web page that anyone with the link can watch – nothing to
 // install, no sign-in, nothing to click into. The PC that reads MRI (the TV) puts this page on a GitHub Pages site together
 // with the board's figures, ENCRYPTED. The key is in the link, after the "#", which a browser never sends anywhere, so the
