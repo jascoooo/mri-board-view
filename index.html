@@ -91,6 +91,15 @@
   .tile.t0 .big{font-size:3.9rem;background:linear-gradient(180deg,#fff 35%,#9cc8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
   .tgain{position:absolute;right:8.4rem;top:1.9rem;font:700 1.5rem var(--display);color:var(--green);text-shadow:0 0 1rem rgba(62,233,138,.7);pointer-events:none;animation:tgain 2.5s var(--out) forwards;z-index:2}
   .tgain.adj{color:#9cc8ff;text-shadow:0 0 1rem rgba(76,157,255,.7)}
+  /* the pace tile is knocked back by every "+£": a green chip with how much, the tile jolts and its number flashes green */
+  .pknock{position:absolute;right:1.2rem;top:.8rem;font:700 1.35rem var(--display);color:var(--green);text-shadow:0 0 1rem rgba(62,233,138,.7);pointer-events:none;animation:pknock 2.6s var(--out) forwards;z-index:2;white-space:nowrap}
+  .pknock small{font:700 .62rem var(--body);letter-spacing:.14em;text-transform:uppercase;color:#bff5d5;text-shadow:none;margin-left:.45rem}
+  @keyframes pknock{0%{opacity:0;transform:translateY(.6rem) scale(.6)}14%{opacity:1;transform:translateY(0) scale(1.15)}28%{transform:scale(1)}78%{opacity:1}100%{opacity:0;transform:translateY(-.5rem)}}
+  .tile.t2.knock{animation:knock .75s var(--spring)}
+  @keyframes knock{0%{transform:none}16%{transform:translateX(.7rem) rotate(.6deg) scale(.985)}42%{transform:translateX(-.3rem) rotate(-.2deg)}100%{transform:none}}
+  /* the number keeps its own colour (red behind, green ahead) – it just takes the hit: squashes and glows, then settles */
+  .tile.t2.knock .big{animation:knockhit 1s var(--spring)}
+  @keyframes knockhit{0%{transform:none}18%{transform:scale(.93) translateX(.3rem);filter:brightness(1.45)}100%{transform:none;filter:none}}
   @keyframes tgain{0%{opacity:0;transform:translateY(.8rem) scale(.6)}15%{opacity:1;transform:translateY(0) scale(1.2)}30%{transform:scale(1)}75%{opacity:1}100%{opacity:0;transform:translateY(-2.2rem)}}
   .tile.up .big{color:var(--green);text-shadow:0 0 1.6rem rgba(62,233,138,.35)}
   .tile.down .big{color:var(--red);text-shadow:0 0 1.6rem rgba(255,93,108,.3)}
@@ -303,6 +312,34 @@
   #rays{position:fixed;left:50%;top:50%;width:150vmax;height:150vmax;margin:-75vmax 0 0 -75vmax;z-index:19;pointer-events:none;opacity:0;transition:opacity .8s;background:repeating-conic-gradient(from 0deg,rgba(255,207,92,.09) 0 7deg,transparent 7deg 20deg);-webkit-mask-image:radial-gradient(circle,#000 0,transparent 55%);mask-image:radial-gradient(circle,#000 0,transparent 55%);animation:spin 60s linear infinite}
   body:has(.celebrate.on) #rays{opacity:1}
   #confetti{position:fixed;inset:0;pointer-events:none;z-index:30}
+  .xsw{display:flex;align-items:center;gap:.6rem;cursor:pointer;font-weight:600}.xsw input{position:absolute;opacity:0;width:1px;height:1px}
+  .xtrack{position:relative;width:2.6rem;height:1.45rem;border-radius:99px;background:rgba(255,255,255,.18);transition:background .25s;flex:none}.xtrack i{position:absolute;top:.15rem;left:.15rem;width:1.15rem;height:1.15rem;border-radius:50%;background:#fff;transition:transform .25s}
+  .xsw input:checked+.xtrack{background:repeating-linear-gradient(135deg,#d62839 0 .35rem,#fff7f4 .35rem .7rem)}.xsw input:checked+.xtrack i{transform:translateX(1.15rem)}.xsw input:focus-visible+.xtrack{outline:2px solid #4c9dff;outline-offset:2px}
+  .xsub{font-weight:400;font-size:.85em;opacity:.7}
+  /* ---------- Christmas theme (⚙ → Theme) ---------- */
+  #snow{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:6}
+  #snowcaps{position:fixed;inset:0;pointer-events:none;z-index:5}
+  #snowcaps .snowcap{position:absolute;height:20px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='20' viewBox='0 0 240 20'%3E%3Cpath d='M0 16L0 10C8 7 20 5 34 6S56 10 66 8S84 3 96 4S120 9 132 8S150 4 162 5S186 9 198 8S222 6 240 10L240 16Z' fill='%23f3f8ff'/%3E%3Cpath d='M0 15.4H240' stroke='%23c3d7ec' stroke-width='1.3'/%3E%3Cpath d='M44 16q2 4.6 4.4 0zM150 16q1.6 3.4 3.2 0z' fill='%23f3f8ff'/%3E%3C/svg%3E") repeat-x;background-size:240px 20px;filter:drop-shadow(0 1px 1.2px rgba(0,0,0,.45));opacity:.92}
+  #snowcaps .snowcap.b{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='20' viewBox='0 0 200 20'%3E%3Cpath d='M0 16L0 9C10 6 18 6 28 7S46 11 58 9S78 4 92 5S110 10 124 9S146 3 160 5S184 8 200 9L200 16Z' fill='%23f3f8ff'/%3E%3Cpath d='M0 15.4H200' stroke='%23c3d7ec' stroke-width='1.3'/%3E%3Cpath d='M70 16q2.2 5 4.6 0zM171 16q1.5 3.2 3 0z' fill='%23f3f8ff'/%3E%3C/svg%3E");background-size:200px 20px}
+  #snowcaps .snowcap::before,#snowcaps .snowcap::after{content:"";position:absolute;bottom:4px;width:12px;height:6px;background:#f3f8ff;border-radius:8px 8px 2px 2px;box-shadow:inset 0 -1.3px 0 #c3d7ec}
+  #snowcaps .snowcap::before{left:-5px}#snowcaps .snowcap::after{right:-5px}
+  body.xmas .fill{background:repeating-linear-gradient(135deg,#d62839 0 .55rem,#fff7f4 .55rem 1.1rem) 0 0/calc(100% + 1.5556rem) 100% no-repeat;box-shadow:0 0 .8rem rgba(214,40,57,.45),inset 0 -.15rem .3rem rgba(0,0,0,.18);animation:cane 2.6s linear infinite}
+  body.xmas .fill.over{background:repeating-linear-gradient(135deg,#d62839 0 .55rem,#fff7f4 .55rem 1.1rem) 0 0/calc(100% + 1.5556rem) 100% no-repeat;box-shadow:0 0 1rem rgba(255,207,92,.7),inset 0 -.15rem .3rem rgba(0,0,0,.18)}
+  body.xmas .tm-bar i{background:repeating-linear-gradient(135deg,#d62839 0 .8rem,#fff7f4 .8rem 1.6rem) 0 0/calc(100% + 2.2627rem) 100% no-repeat;box-shadow:0 0 1.4rem rgba(214,40,57,.55),inset 0 -.2rem .35rem rgba(0,0,0,.2);animation:cane2 3.2s linear infinite}
+  body.xmas .tm-bar i::before{display:none}
+  body.xmas .mprog i{background:repeating-linear-gradient(135deg,#d62839 0 .3rem,#fff7f4 .3rem .6rem)}
+  @keyframes cane{from{background-position:-1.5556rem 0}to{background-position:0 0}}@keyframes cane2{from{background-position:-2.2627rem 0}to{background-position:0 0}}
+  .cv-mria{display:inline-block;margin-left:.35rem;padding:.05rem .45rem;border-radius:99px;font-size:.72em;font-weight:700;letter-spacing:.02em;color:#bfe9ff;background:linear-gradient(90deg,rgba(56,189,248,.22),rgba(139,92,246,.22));box-shadow:inset 0 0 0 1px rgba(56,189,248,.45);white-space:nowrap;vertical-align:1px;cursor:help}
+  .cv-mrid{margin:.35rem 0 .2rem;font-size:.9em;color:#cfe1f7}.cv-mrid div{margin:.15rem 0}
+  #santa{position:fixed;inset:0;pointer-events:none;z-index:24;overflow:hidden}#santa canvas{position:absolute;inset:0;width:100%;height:100%}
+  #santa .sleigh{position:absolute;left:0;top:0;width:27rem;will-change:transform;filter:drop-shadow(0 .45rem .7rem rgba(0,0,0,.5))}#santa .sleigh svg{display:block;width:100%;height:auto;overflow:visible}
+  #santa .deer{animation:rbob .62s ease-in-out infinite}#santa .deer.d2{animation-delay:-.31s}#santa .deer.far{animation-delay:-.16s}#santa .deer.far.d2{animation-delay:-.47s}
+  #santa .lf,#santa .lh{transform-box:fill-box;animation:swingF .31s ease-in-out infinite alternate}#santa .lf{transform-origin:0% 50%}#santa .lh{transform-origin:100% 50%;animation-name:swingH}
+  #santa .lf.b,#santa .lh.b{animation-delay:-.15s}#santa .arm{transform-box:fill-box;transform-origin:15% 90%;animation:wave .55s ease-in-out infinite alternate}#santa .cab{animation:cab .62s ease-in-out infinite}
+  @keyframes rbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}@keyframes cab{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+  @keyframes swingF{from{transform:rotate(-14deg)}to{transform:rotate(12deg)}}@keyframes swingH{from{transform:rotate(12deg)}to{transform:rotate(-14deg)}}@keyframes wave{from{transform:rotate(-16deg)}to{transform:rotate(14deg)}}
+  body.xmas .crown svg,body.xmas .wcrown svg{filter:drop-shadow(0 .15rem .3rem rgba(0,0,0,.45))}
+  @media (prefers-reduced-motion:reduce){body.xmas .fill,body.xmas .tm-bar i{animation:none}}
   .celebrate{position:fixed;left:50%;top:50%;transform:translate(-50%,-46%) scale(.82);opacity:0;z-index:21;min-width:36rem;max-width:80vw;text-align:center;padding:2rem 2.8rem 1.9rem;border-radius:1.8rem;border:2px solid transparent;pointer-events:none;
     background:linear-gradient(170deg,#152240,#0a101e) padding-box,conic-gradient(from var(--ang),#3ee98a,#38e1ff,#4c9dff,#ffcf5c,#3ee98a) border-box;
     box-shadow:0 2.5rem 6rem rgba(0,0,0,.7),0 0 5rem rgba(62,233,138,.25);transition:opacity .35s,transform .6s var(--spring);animation:angspin 5s linear infinite}
@@ -354,6 +391,27 @@
   .ru-sub{color:var(--text-secondary);font-size:1rem}
 
   /* ---------- settings dialog ---------- */
+  dialog.sx{width:min(1080px,96vw);height:min(820px,90vh);max-height:90vh;padding:0;overflow:hidden}
+  dialog.sx[open]{display:flex;flex-direction:column}
+  .sx-head{display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.08);font-size:17px}
+  .sx-sp{flex:1}.sx-x{background:none;border:0;color:var(--text-secondary);font-size:17px;cursor:pointer;padding:4px 9px;border-radius:8px}.sx-x:hover{background:#182039;color:#fff}
+  .sx-body{flex:1;min-height:0;display:grid;grid-template-columns:190px 1fr}
+  .sx-nav{display:flex;flex-direction:column;gap:2px;padding:12px 10px;border-right:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.02);overflow:auto}
+  .sx-nav button{all:unset;cursor:pointer;padding:9px 12px;border-radius:8px;color:var(--text-secondary);font-weight:600;font-size:14px;line-height:1.25}
+  .sx-nav button small{display:block;font-weight:400;font-size:11px;opacity:.7}
+  .sx-nav button:hover{background:#182039;color:#fff}.sx-nav button.on{background:#1d2a4a;color:#fff;box-shadow:inset 3px 0 0 var(--blue)}
+  .sx-nav button:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
+  .sx-main{overflow:auto;padding:16px 20px}
+  .sx-tab{display:none}.sx-tab.on{display:block}
+  .sx-card{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px 16px 4px;margin-bottom:12px}
+  .sx-card h4{margin:0 0 10px;font-size:12.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--text-secondary);display:flex;align-items:center;gap:10px}
+  .sx-card .row2{margin:6px 0 12px}
+  .sx-card>.hint{margin:-4px 0 12px}
+  .sx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px 22px;margin:4px 0 12px}
+  .sx-grid label{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .sx-lock{font-size:10.5px;letter-spacing:.06em;background:#2a1f12;color:#ffd9a0;border:1px solid rgba(255,180,90,.4);border-radius:99px;padding:1px 8px}
+  .sx-foot{display:flex;justify-content:flex-end;gap:10px;padding:12px 20px;border-top:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.15)}
+  dialog.sx .scroll{max-height:none}
   dialog{background:#0f1526;color:var(--text-primary);border:1px solid rgba(255,255,255,.12);border-radius:1rem;width:min(860px,94vw);max-height:88vh;padding:20px 24px;font-size:14px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
   dialog::backdrop{background:rgba(3,5,10,.75)}
   /* ---------- private staff insights ---------- */
@@ -534,101 +592,134 @@
 <div class="roundup" id="roundup"></div>
 <div id="quiet"></div>
 
-<dialog id="dlg">
-  <h3>What counts as "completed"</h3>
-  <div class="row2" id="stBox"></div>
-  <p class="hint">MRI's Completed Date also catches cancelled and other closed jobs. Tick the statuses that should count. The board updates straight away.</p>
-  <h3>Office staff leaderboard</h3>
-  <div class="row2"><label>Don't count these "Completed By" names <input id="exBy" style="width:320px" placeholder="Mobile"></label></div>
-  <p class="hint">Comma-separated (MRI user names, e.g. Mobile, administrator, HECKMANM). They're left out of the staff leaderboard, the celebrations and the ticker; their jobs still count towards contract totals.</p>
-  <h3>Staff points</h3>
-  <div class="row2">
-    <label>Raise a job <input type="number" id="pt_r" min="0" step="1" style="width:56px"></label>
-    <label>Book a visit <input type="number" id="pt_b" min="0" step="1" style="width:56px"></label>
-    <label>Letter or call <input type="number" id="pt_k" min="0" step="1" style="width:56px"></label>
-    <label>Price a job <input type="number" id="pt_p" min="0" step="1" style="width:56px"></label>
-    <label>Close a job <input type="number" id="pt_c" min="0" step="1" style="width:56px"></label>
-    <label>Clear to invoice <input type="number" id="pt_x" min="0" step="1" style="width:56px"></label>
-    <label>1 point per <input type="number" id="pt_u4" min="1" step="1" style="width:56px"> other updates</label>
+<dialog id="dlg" class="sx">
+  <div class="sx-head"><b>Settings</b><span class="sx-sp"></span><button class="sx-x" id="dlgX" title="Close without saving">✕</button></div>
+  <div class="sx-body">
+    <nav class="sx-nav" id="sxNav">
+      <button data-t="board" class="on">Board</button>
+      <button data-t="targets">Targets</button>
+      <button data-t="clients">Client groups</button>
+      <button data-t="staff">Staff &amp; points</button>
+      <button data-t="updates">Updates<small>this PC</small></button>
+      <button data-t="sharing">Sharing</button>
+      <button data-t="health">Health check</button>
+    </nav>
+    <div class="sx-main">
+      <section class="sx-tab on" data-t="board">
+        <div class="sx-card"><h4>Theme</h4>
+          <label class="xsw"><input type="checkbox" id="sXmas"><span class="xtrack"><i></i></span> 🎄 Christmas <span class="xsub">snow · tinsel · candy-cane bars · Santa hats – on every board</span></label>
+        </div>
+        <div class="sx-card"><h4>What counts as completed</h4>
+          <div class="row2" id="stBox"></div>
+          <p class="hint">Ticked statuses count towards revenue and the leaderboards.</p>
+        </div>
+        <div class="sx-card"><h4>Celebrations</h4>
+          <div class="row2"><label>Roundup every <input type="number" id="sRound" min="0" step="5" style="width:64px"> minutes</label><span class="hint">0 = off</span></div>
+          <div class="row2"><label><input type="checkbox" id="sCards" style="width:auto"> Pop up a card for each job closed</label><label><input type="checkbox" id="sChime" style="width:auto"> Play a chime</label></div>
+        </div>
+      </section>
+      <section class="sx-tab" data-t="targets">
+        <div class="sx-card"><h4>Overall monthly revenue target</h4>
+          <div class="row2"><label>£ <input id="sTotal" inputmode="numeric" placeholder="e.g. 2146800" style="width:160px"></label><span class="hint">Leave blank to add up the targets below.</span></div>
+        </div>
+        <div class="sx-card"><h4 id="tgtTitle">Monthly targets per client</h4>
+          <div class="row2"><button class="btn ghost" id="loadPrev">Load last month from MRI</button><button class="btn ghost" id="usePrev">Use last month as targets</button><input id="filterC" placeholder="Filter…" style="width:180px"><span class="hint" id="prevHint"></span></div>
+          <div class="scroll"><table><thead><tr><th id="tgtCol">Client</th><th>Last month</th><th>Revenue target (£)</th><th>Jobs target <span style="font-weight:400">(optional)</span></th><th title="Tick to fold this one into a single combined 'Other (Misc)' row on the board">Other (Misc)</th><th>Hide</th></tr></thead><tbody id="tgtBody"></tbody></table></div>
+          <div class="row2"><input id="newC" placeholder="Add contract name" style="width:280px"><button class="btn ghost" id="addC">Add</button></div>
+        </div>
+      </section>
+      <section class="sx-tab" data-t="clients">
+        <div class="sx-card"><h4>Client groups</h4>
+          <p class="hint" style="margin-top:0">Drag a contract onto another client, or onto a box. Click a client's name to rename it.</p>
+          <div class="row2" style="margin-bottom:8px"><input id="grpFilter" placeholder="Find a contract or client…" style="width:220px"><span class="gz" id="gzNew">＋ New client</span><span class="gz" id="gzAuto">↺ Back to MRI's client</span></div>
+          <div id="grpBoard"></div>
+        </div>
+      </section>
+      <section class="sx-tab" data-t="staff">
+        <div class="sx-card"><h4>Who counts</h4>
+          <div class="row2"><label>Leave out these logins <input id="exBy" style="width:300px" placeholder="Mobile, administrator"></label></div>
+          <div class="row2"><label>Same person, two MRI logins <input id="aliasBy" style="width:300px" placeholder="STAINESA = ALICE.STAINES"></label></div>
+        </div>
+        <div class="sx-card"><h4>Points</h4>
+          <div class="sx-grid">
+            <label>Raise a job <input type="number" id="pt_r" min="0" step="1" style="width:60px"></label>
+            <label>Book a visit <input type="number" id="pt_b" min="0" step="1" style="width:60px"></label>
+            <label>Letter or call <input type="number" id="pt_k" min="0" step="1" style="width:60px"></label>
+            <label>Price a job <input type="number" id="pt_p" min="0" step="1" style="width:60px"></label>
+            <label>Close a job <input type="number" id="pt_c" min="0" step="1" style="width:60px"></label>
+            <label>Clear to invoice <input type="number" id="pt_x" min="0" step="1" style="width:60px"></label>
+            <label>Other updates per point <input type="number" id="pt_u4" min="1" step="1" style="width:60px"></label>
+          </div>
+          <div class="row2"><label><input type="checkbox" id="pt_bonus" style="width:auto"> Bigger jobs earn more for pricing and closing <span class="hint">(+1 with 3–5 sales lines, +2 with 6+)</span></label></div>
+          <div class="row2"><button class="btn ghost" id="ptReset">Reset this board's points</button><span class="hint">Counting since <b id="ptSince">–</b></span><span class="hint" id="ptResetMsg"></span></div>
+        </div>
+        <div class="sx-card"><h4>Staff insights <span class="sx-lock">PIN</span></h4>
+          <div class="row2">
+            <label>Current PIN <input type="password" id="insCur" inputmode="numeric" maxlength="8" style="width:90px" autocomplete="off"></label>
+            <label>New PIN <input type="password" id="insNew" inputmode="numeric" maxlength="8" style="width:90px" autocomplete="off"></label>
+            <button class="btn ghost" id="insChange">Change PIN</button>
+            <button class="btn ghost" id="insLockPc">Lock on this PC</button>
+            <span class="hint" id="insMsg"></span>
+          </div>
+          <p class="hint"><b id="insState"></b></p>
+        </div>
+      </section>
+      <section class="sx-tab" data-t="updates">
+        <div class="sx-card"><h4>Reading MRI</h4>
+          <div class="row2">
+            <label><input type="checkbox" id="sEn" style="width:auto"> Update automatically</label>
+            <label>every <input type="number" id="sEvery" min="15" step="5" style="width:70px"> seconds</label>
+            <label>between <input type="number" id="sStart" min="0" max="23" style="width:60px">:00 and <input type="number" id="sEnd" min="1" max="24" style="width:60px">:00</label>
+            <label><input type="checkbox" id="sWk" style="width:auto"> weekdays only</label>
+          </div>
+          <div class="row2"><label>Quick check of today's jobs every <input type="number" id="sAct" min="15" step="5" style="width:70px"> seconds</label></div>
+          <div class="row2"><label><input type="checkbox" id="sLive" style="width:auto"> Live mode: check today's completions every <input type="number" id="sLiveMins" min="10" style="width:60px"> seconds</label></div>
+        </div>
+        <div class="sx-card"><h4>This PC</h4>
+          <div class="row2"><label><input type="checkbox" id="sHide" style="width:auto"> Run updates in a hidden window</label></div>
+          <div class="row2"><label><input type="checkbox" id="sAwake" style="width:auto"> Keep the screen awake while the board is open</label></div>
+        </div>
+      </section>
+      <section class="sx-tab" data-t="sharing">
+        <div class="sx-card"><h4>Share between boards</h4>
+          <div class="row2">
+            <label>Private repository <input id="syRepo" placeholder="yourname/mri-board-data" style="width:230px" autocomplete="off"></label>
+            <label>Token <input id="syToken" type="password" placeholder="github_pat_… (blank keeps the saved one)" style="width:290px" autocomplete="off"></label>
+          </div>
+          <div class="row2">
+            <label>This PC <select id="syRole" style="padding:6px 8px;border-radius:8px"><option value="off">doesn't share</option><option value="publish">reads MRI and shares (the TV)</option><option value="view">shows the shared board</option></select></label>
+            <label>Name <input id="syName" placeholder="e.g. Office TV" style="width:150px"></label>
+            <button class="btn ghost" id="syGo">Save &amp; connect</button>
+          </div>
+          <p class="hint" id="syMsg">The TV reads MRI and shares the board; every other board shows the same.</p>
+        </div>
+        <div class="sx-card"><h4>View-only link</h4>
+          <div class="row2">
+            <label>Public repository <input id="vlRepo" placeholder="yourname/mri-board-view" style="width:230px" autocomplete="off" spellcheck="false"></label>
+            <label>Viewer key <input id="vlToken" placeholder="ghp_… (no permissions)" style="width:230px" autocomplete="off" spellcheck="false"></label>
+            <button class="btn ghost" id="vlGo">Turn on</button>
+            <button class="btn ghost" id="vlOff">Turn off</button>
+          </div>
+          <div class="row2"><label>Who's watching (Firebase) <input id="vlPres" placeholder="https://your-project-default-rtdb.europe-west1.firebasedatabase.app" style="width:420px" autocomplete="off" spellcheck="false"></label></div>
+          <div class="row2" id="vlLinkRow" style="display:none">
+            <input id="vlLink" readonly style="flex:1;min-width:320px;font:12px Consolas,monospace">
+            <button class="btn ghost" id="vlCopy">Copy link</button>
+            <button class="btn ghost" id="vlNew" title="Makes a new link; the old one stops working within a minute">New link</button>
+          </div>
+          <p class="hint" id="vlMsg">A live, read-only copy of the board for anyone with the link.</p>
+          <p class="hint" id="vlState" style="color:#ffd9a0"></p>
+          <div class="row2" id="vlWatchRow" style="display:none"><button class="btn ghost" id="vlWatchBtn">🔒 Who's watching now</button></div>
+          <div id="vlWatch" class="vlwatch" style="display:none"></div>
+        </div>
+      </section>
+      <section class="sx-tab" data-t="health">
+        <div class="sx-card"><h4>Health check <button class="btn ghost" id="diagCopy" style="padding:3px 10px;font-size:12px;text-transform:none;letter-spacing:0">Copy</button></h4>
+          <pre id="diag" style="margin:0;padding:10px 12px;background:#0a0f1c;border:1px solid rgba(255,255,255,.1);border-radius:8px;font:12px/1.5 Consolas,monospace;color:#b9c6e0;white-space:pre-wrap;max-height:60vh;overflow:auto"></pre>
+        </div>
+      </section>
+    </div>
   </div>
-  <div class="row2"><label><input type="checkbox" id="pt_bonus" style="width:auto"> Bigger jobs earn more for pricing and closing: +1 with 3–5 sales lines, +2 with 6 or more</label></div>
-  <p class="hint">Read from MRI's own job history (who did what, to the second). Each action counts once per job, per person, per day. Pricing = adding or changing sales or cost items. Closing = whoever switches the job to Complete/Variation, whatever MRI's "Completed By" says. Other updates = any other save on a job. Only bulk uploads and bulk updates are limited: one action that saves more than 20 jobs back to back (each within 2 seconds of the last) counts as 20 jobs. Everything else counts in full, however fast someone works. Value doesn't matter, time between jobs earns nothing, and shared logins earn nobody points. Scores are always whole numbers. Counting since <b id="ptSince">–</b> – every board counts from the same moment unless Reset is pressed on one of them (it resets that PC's board only).</p>
-  <div class="row2"><button class="btn ghost" id="ptReset">Reset this board's points to zero now</button><span class="hint" id="ptResetMsg"></span></div>
-  <h3>Client groups</h3>
-  <p class="hint">Contracts are grouped under their MRI client automatically. <b>Drag a contract</b> onto another client to move it, or onto one of the two boxes below. Click a client's name to rename it. Changes apply when you press Save.</p>
-  <div class="row2" style="margin-bottom:8px"><input id="grpFilter" placeholder="Find a contract or client…" style="width:220px"><span class="gz" id="gzNew">＋ Drop here to start a new client</span><span class="gz" id="gzAuto">↺ Drop here to put it back where MRI has it</span></div>
-  <div id="grpBoard"></div>
-  <h3>Overall monthly revenue target</h3>
-  <div class="row2"><label>£ <input id="sTotal" inputmode="numeric" placeholder="e.g. 2146800" style="width:160px"></label><span class="hint">Used for Revenue completed, the team challenge bar and "ahead / behind pace". Leave blank to add up the client targets below instead.</span></div>
-  <h3 id="tgtTitle">Monthly targets per client</h3>
-  <p class="hint">Tick <b>Other (Misc)</b> to fold smaller clients into one combined row on the board. That row uses the sum of their targets, or type its own target on the "Other (Misc)" line that appears at the top after saving.</p>
-  <div class="row2"><button class="btn ghost" id="loadPrev">Load last month from MRI</button><button class="btn ghost" id="usePrev">Use last month as targets</button><input id="filterC" placeholder="Filter contracts…" style="width:220px"><span class="hint" id="prevHint"></span></div>
-  <div class="scroll"><table><thead><tr><th id="tgtCol">Client</th><th>Last month</th><th>Revenue target (£)</th><th>Jobs target <span style="font-weight:400">(optional)</span></th><th title="Tick to fold this one into a single combined 'Other (Misc)' row on the board">Other (Misc)</th><th>Hide</th></tr></thead><tbody id="tgtBody"></tbody></table></div>
-  <div class="row2"><input id="newC" placeholder="Add contract name" style="width:280px"><button class="btn ghost" id="addC">Add</button></div>
-  <h3>Automatic updates (this PC)</h3>
-  <div class="row2">
-    <label><input type="checkbox" id="sEn" style="width:auto"> Update automatically</label>
-    <label>every <input type="number" id="sEvery" min="15" step="5" style="width:70px"> seconds</label>
-    <label>between <input type="number" id="sStart" min="0" max="23" style="width:60px">:00 and <input type="number" id="sEnd" min="1" max="24" style="width:60px">:00</label>
-    <label><input type="checkbox" id="sWk" style="width:auto"> weekdays only</label>
-  </div>
-  <div class="row2"><label>Quick check of every job touched today every <input type="number" id="sAct" min="15" step="5" style="width:70px"> seconds</label><span class="hint">Keeps revenue and staff points up to date between full reads (fastest 15; it automatically slows down if MRI is slow)</span></div>
-  <div class="row2">
-    <label><input type="checkbox" id="sLive" style="width:auto"> <b>Live mode</b>: re-check today's completions every <input type="number" id="sLiveMins" min="10" style="width:60px"> seconds and celebrate each new one</label>
-    <label><input type="checkbox" id="sChime" style="width:auto"> play a chime</label>
-  </div>
-  <p class="hint">Live checks re-run today's search inside the hidden MRI window without reloading it, so they take a few seconds and use no AI. 20 seconds is a good balance; 10 is the fastest allowed. The full month is re-read on the schedule above (30 seconds by default, 15 is the fastest) inside the hidden MRI window, without reloading it. Live mode adds quicker checks of today only in between, and is not needed at this speed.</p>
-  <div class="row2">
-    <label>Roundup pop-up every <input type="number" id="sRound" min="0" step="5" style="width:60px"> minutes, showing what each client gained (0 = off)</label>
-    <label><input type="checkbox" id="sCards" style="width:auto"> also pop up a card for each job closed</label>
-  </div>
-  <p class="hint">New revenue always goes straight onto the board: the client's bar grows and a green +£ appears on its row. The roundup runs on the clock (e.g. :00, :15, :30, :45) with a countdown in the header.</p>
-  <div class="row2"><label><input type="checkbox" id="sHide" style="width:auto"> Run updates in a hidden (minimised) window, so the MRI tab never shows</label></div>
-  <div class="row2"><label><input type="checkbox" id="sAwake" style="width:auto"> Keep this PC and its screen awake while the board is open</label><span class="hint">Stops Windows turning the screen off or sleeping, the way a video player does – no mouse wiggler needed. It stops as soon as the board is closed.</span></div>
-  <p class="hint">The hidden window is opened once, when Edge starts, and reused for every update after that. If you untick this, updates run in a background tab beside the leaderboard instead, which never shows while the board is full screen. Keep Edge open and signed in to MRI on this PC. If MRI signs out, this board shows a red notice until someone signs back in.</p>
-  <h3>Staff insights (private)</h3>
-  <p class="hint">Click a name on the board and enter the PIN to see that person's day in MRI: every action, roughly how long they were active and their pace against the team. Nothing shows on the board itself. <b id="insState"></b></p>
-  <div class="row2">
-    <label>Current PIN <input type="password" id="insCur" inputmode="numeric" maxlength="8" style="width:90px" autocomplete="off"></label>
-    <label>New PIN <input type="password" id="insNew" inputmode="numeric" maxlength="8" style="width:90px" autocomplete="off"></label>
-    <button class="btn ghost" id="insChange">Change PIN</button>
-    <button class="btn ghost" id="insLockPc">Lock on this PC</button>
-    <span class="hint" id="insMsg"></span>
-  </div>
-  <h3>Share between boards (GitHub)</h3>
-  <div class="row2">
-    <label>Private repository <input id="syRepo" placeholder="yourname/mri-board-data" style="width:230px" autocomplete="off"></label>
-    <label>Token <input id="syToken" type="password" placeholder="github_pat_… (leave blank to keep the saved one)" style="width:300px" autocomplete="off"></label>
-  </div>
-  <div class="row2">
-    <label>This PC <select id="syRole" style="padding:6px 8px;border-radius:8px"><option value="off">doesn't share</option><option value="publish">reads MRI and shares the board (one PC only, e.g. the TV)</option><option value="view">shows the shared board</option></select></label>
-    <label>Name <input id="syName" placeholder="e.g. Office TV" style="width:150px"></label>
-    <button class="btn ghost" id="syGo">Save &amp; connect</button>
-  </div>
-  <p class="hint" id="syMsg">One PC (the TV) reads MRI and shares the finished board; every other board shows exactly the same, without reading MRI itself. Settings changed on any board – point values, statuses, targets, client groups, a points reset – reach every board within a minute. Connect the TV first: its settings become the shared ones. Use a private repository and a token that can only reach that repository (Contents: read and write). Never shared: resident details, the Claude API key, this PC's own update schedule.</p>
-  <h3>View-only link (for Teams)</h3>
-  <div class="row2">
-    <label>Public repository <input id="vlRepo" placeholder="yourname/mri-board-view" style="width:230px" autocomplete="off" spellcheck="false"></label>
-    <label>Viewer key <input id="vlToken" placeholder="ghp_… (a token with no permissions)" style="width:250px" autocomplete="off" spellcheck="false"></label>
-    <button class="btn ghost" id="vlGo">Turn on</button>
-    <button class="btn ghost" id="vlOff">Turn off</button>
-  </div>
-  <div class="row2">
-    <label>Who's watching, by name (optional) <input id="vlPres" placeholder="https://your-project-default-rtdb.europe-west1.firebasedatabase.app" style="width:440px" autocomplete="off" spellcheck="false"></label>
-    <span class="hint">a free Firebase database: people who press Find me and pick their name check in there every 30 seconds, locked so only these boards can read it – shown below, with the PIN</span>
-  </div>
-  <div class="row2" id="vlLinkRow" style="display:none">
-    <input id="vlLink" readonly style="flex:1;min-width:320px;font:12px Consolas,monospace">
-    <button class="btn ghost" id="vlCopy">Copy link</button>
-    <button class="btn ghost" id="vlNew" title="Makes a new link; the old one stops working within a minute">New link</button>
-  </div>
-  <p class="hint" id="vlMsg">A copy of this board that anyone with the link can watch live in their browser (usually within half a minute of this board) – nothing to install, no sign-in, and nothing to click into (no names, contracts, change logs or settings). The TV puts it on a free GitHub Pages site; the figures there are encrypted, and the key to them is in the link itself, so only people with the link can see them. Needs the boards connected above.</p>
-  <p class="hint" id="vlState" style="color:#ffd9a0"></p>
-  <div class="row2" id="vlWatchRow" style="display:none"><button class="btn ghost" id="vlWatchBtn">🔒 Who's watching now</button><span class="hint">only shown here, and only with the PIN</span></div>
-  <div id="vlWatch" class="vlwatch" style="display:none"></div>
-  <h3>Health check <button class="btn ghost" id="diagCopy" style="margin-left:8px;padding:4px 10px;font-size:12px">Copy</button></h3>
-  <pre id="diag" style="margin:0 0 12px;padding:10px 12px;background:#0a0f1c;border:1px solid rgba(255,255,255,.1);border-radius:8px;font:12px/1.5 Consolas,monospace;color:#b9c6e0;white-space:pre-wrap;max-height:300px;overflow:auto"></pre>
-  <div class="row2" style="justify-content:flex-end"><button class="btn ghost" id="dlgCancel">Cancel</button><button class="btn" id="dlgSave">Save</button></div>
+  <div class="sx-foot"><button class="btn ghost" id="dlgCancel">Cancel</button><button class="btn" id="dlgSave">Save</button></div>
 </dialog>
 <dialog id="ins" class="insd">
   <div class="ins-head">
@@ -671,7 +762,7 @@
   <p class="hint" id="insPinMsg" style="color:#ff9a9a"></p>
   <div class="row2" style="justify-content:flex-end"><button class="btn ghost" id="insPinCancel">Cancel</button><button class="btn" id="insPinGo">Open</button></div>
 </dialog>
-<script>window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin","version":"2.34.1"};
+<script>window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin","version":"2.43.0"};
 // MRI Assist – the VIEW-ONLY board: the leaderboard as a normal web page that anyone with the link can watch – nothing to
 // install, no sign-in, nothing to click into. The PC that reads MRI (the TV) puts this page on a GitHub Pages site together
 // with the board's figures, ENCRYPTED. The key is in the link, after the "#", which a browser never sends anywhere, so the
@@ -877,7 +968,24 @@
   const isPerson = (n) => !!n && !excluded().includes(String(n).trim().toLowerCase());
   // jobs/value for an aggregate, counting only the chosen statuses (older data without a breakdown counts everything)
   // "jake.scott" / "JAKE.SCOTT" / "jake_scott" -> "Jake Scott"
-  const person = (n) => { let t = String(n || "").replace(/[._]+/g, " ").replace(/\s+/g, " ").trim(); if (t === t.toLowerCase() || t === t.toUpperCase()) t = t.toLowerCase().replace(/(^|[\s'-])\p{L}/gu, (m) => m.toUpperCase()); return t; };
+  const fmtPerson = (n) => { let t = String(n || "").replace(/[._]+/g, " ").replace(/\s+/g, " ").trim(); if (t === t.toLowerCase() || t === t.toUpperCase()) t = t.toLowerCase().replace(/(^|[\s'-])\p{L}/gu, (m) => m.toUpperCase()); return t; };
+  // ---- one person, two MRI logins: an older "surname + first initial" login (STAINESA) is the same person as FIRST.SURNAME
+  // (ALICE.STAINES) when exactly one such login is known; ⚙ prefs.aliases can add others ({ "oldlogin": "first.last" }).
+  // Points, the leaderboard rows, celebrations and the staff records all count both logins as the one person. ----
+  let aliasMap = null;
+  function aliases() {
+    if (aliasMap) return aliasMap;
+    const keys = new Set(Object.keys(contrib?.names || {}));
+    for (const users of Object.values(contrib?.days || {})) for (const u of Object.keys(users || {})) keys.add(u);
+    for (const m of Object.values(contrib?.months || {})) for (const u of Object.keys(m?.users || {})) keys.add(u);
+    const full = {}, map = {};
+    for (const k of keys) { const m = k.match(/^([a-z][a-z'’-]*)[._ ]+([a-z][a-z'’-]*)$/); if (m) (full[m[2] + "|" + m[1][0]] ||= []).push(k); }
+    for (const k of keys) { if (/[._ ]/.test(k)) continue; const m = k.match(/^([a-z][a-z'’-]+)([a-z])$/); const c = m && full[m[1] + "|" + m[2]]; if (c && c.length === 1) map[k] = c[0]; }
+    for (const [a, b] of Object.entries(prefs.aliases || {})) { const x = String(a).trim().toLowerCase(), y = String(b).trim().toLowerCase(); if (x && y && x !== y) map[x] = y; }
+    return (aliasMap = map);
+  }
+  const canon = (u) => { const k = String(u || "").trim().toLowerCase(); return aliases()[k] || k; };
+  const person = (n) => { const k = String(n || "").trim().toLowerCase(), c = aliases()[k]; return fmtPerson(c ? contrib?.names?.[c] || c : n); };
   const J = (o) => (o?.st ? counted().reduce((s, k) => s + (o.st[k]?.j || 0), 0) : o?.jobs || 0);
   const V = (o) => (o?.st ? counted().reduce((s, k) => s + (o.st[k]?.v || 0), 0) : o?.value || 0);
   const DV = (x) => counted().reduce((s, k) => s + (x?.[k] || 0), 0); // revenue on one day, counted statuses only
@@ -936,6 +1044,8 @@
     data = s["dash:data"] || null; targets = s["dash:targets"] || {}; gtargets = s["dash:gtargets"] || {};
     contrib = s["dash:contrib"] || null;
     prefs = s["dash:prefs"] || {}; schedule = s["dash:schedule"] || {}; keepAwake();
+    aliasMap = null; // logins seen may have changed
+    applyTheme();
     if (s["dash:pointsReset"]?.at) { if (!(prefs.pointsStart >= s["dash:pointsReset"].at)) { prefs = { ...prefs, pointsStart: s["dash:pointsReset"].at }; await chrome.storage.local.set({ "dash:prefs": prefs }); } await chrome.storage.local.remove("dash:pointsReset"); }
     contribResetAt = prefs.pointsStart || 0;
     // one-off: Compl-FOC used to be counted by default – take it out of saved settings once (it can be ticked again in ⚙ if ever wanted)
@@ -1002,14 +1112,16 @@
   const monthNow = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`; };
   function monthRows(m) {
     const W = { ...ptCfg(), ...(m.w || {}) };
-    return Object.entries(m.users || {}).filter(([u]) => isPerson(u)).map(([u, t]) => [contrib?.names?.[u] || u, { pts: ptsOf(t, W), t, key: u }]).filter(([, v]) => v.pts > 0).sort((a, b) => b[1].pts - a[1].pts || a[0].localeCompare(b[0]));
+    const per = {};
+    for (const [u0, t] of Object.entries(m.users || {})) { const u = canon(u0), o = (per[u] ||= { r: 0, b: 0, k: 0, p: 0, p1: 0, p2: 0, c: 0, c1: 0, c2: 0, x: 0, u: 0 }); for (const k in o) o[k] += t[k] || 0; }
+    return Object.entries(per).filter(([u]) => isPerson(u)).map(([u, t]) => [contrib?.names?.[u] || u, { pts: ptsOf(t, W), t, key: u }]).filter(([, v]) => v.pts > 0).sort((a, b) => b[1].pts - a[1].pts || a[0].localeCompare(b[0]));
   }
   function contribRows(month) {
     if (!contrib || contribPending()) return [];
     const per = {};
     for (const [day, users] of Object.entries(contrib.days || {})) {
       if (!day.startsWith(month || monthNow())) continue;
-      for (const [u, t] of Object.entries(users)) { const o = (per[u] ||= { r: 0, b: 0, k: 0, p: 0, p1: 0, p2: 0, c: 0, c1: 0, c2: 0, x: 0, u: 0 }); for (const k in o) o[k] += t[k] || 0; }
+      for (const [u0, t] of Object.entries(users)) { const u = canon(u0), o = (per[u] ||= { r: 0, b: 0, k: 0, p: 0, p1: 0, p2: 0, c: 0, c1: 0, c2: 0, x: 0, u: 0 }); for (const k in o) o[k] += t[k] || 0; }
     }
     return Object.entries(per).filter(([u]) => isPerson(u)).map(([u, t]) => [contrib.names?.[u] || u, { pts: ptsOf(t), t, key: u }]).filter(([, v]) => v.pts > 0).sort((a, b) => b[1].pts - a[1].pts || a[0].localeCompare(b[0]));
   }
@@ -1087,7 +1199,7 @@
         ${pct != null ? `<div><div class="prog"><i style="width:${Math.max(0, pct - (p.useV ? (val / p.target) * 100 : 100 / Math.max(1, p.target)))}%"></i></div><div class="progtxt">${esc(p.name)}: <b>${(p.useV ? fmtGBP : fmtN)(p.done)}</b> of ${(p.useV ? fmtGBP : fmtN)(p.target)} this month${p.done >= p.target ? " · 🏆 target hit!" : ""}</div></div>` : ""}`;
       setTimeout(() => { const bar = el.querySelector(".prog i"); if (bar) bar.style.width = pct + "%"; const v = el.querySelector(".cel-val[data-to]"); if (v) tick(v, +v.dataset.to, "+£", 1300); }, 500);
     } else {
-      const byOp = {}; list.forEach((e) => { const k = isPerson(e.op) ? e.op : ""; byOp[k] = (byOp[k] || 0) + 1; });
+      const byOp = {}; list.forEach((e) => { const k = isPerson(e.op) ? canon(e.op) : ""; byOp[k] = (byOp[k] || 0) + 1; });
       const sumV = list.reduce((s, e) => s + (+e.value || 0), 0), zero = list.filter((e) => !(+e.value)).length;
       el.innerHTML = `<div class="kicker">${list.length} jobs just closed</div><div class="who">${fmtN(list.length)} new jobs</div>
         ${data?.hasValue ? (sumV ? `<div class="cel-val" data-to="${Math.round(sumV)}">+£0</div>` : `<div class="cel-val zero">£0 so far – no sales items on these jobs yet</div>`) : ""}
@@ -1176,6 +1288,7 @@
     const pctOf = (v, j, x) => { const t = useV && x.tv ? x.tv : x.tj; const val = useV && x.tv ? v : j; return t ? Math.min(100, (val / t) * 100) : null; };
     el.innerHTML = `<div class="ru-head"><span class="ru-k">${roundMins() ? roundMins() + "-minute roundup" : "Roundup"}</span><span class="ru-t">${meta.from ? hhmm(meta.from) + " – " + hhmm(meta.to || Date.now()) : hhmm(Date.now())}</span></div><div class="ru-list"></div><div class="ru-total"></div>`;
     el.classList.add("on"); flashNames.clear(); diffs.forEach((x) => flashNames.add(x.name));
+    if (xmas()) setTimeout(() => santaGlide(el), 650);
     const list = el.querySelector(".ru-list");
     for (const x of show) {
       const p0 = pctOf(x.from.value || 0, x.from.jobs || 0, x.to), p1 = pctOf(x.to.value, x.to.jobs, x.to);
@@ -1223,10 +1336,59 @@
     if (!prefs.chime) return;
     try { const ctx = new AudioContext(); [660, 880, 1320].forEach((f, i) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.value = f; o.type = "sine"; g.gain.setValueAtTime(0.0001, ctx.currentTime + i * 0.12); g.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + i * 0.12 + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + i * 0.12 + 0.5); o.connect(g).connect(ctx.destination); o.start(ctx.currentTime + i * 0.12); o.stop(ctx.currentTime + i * 0.12 + 0.6); }); } catch (_) {}
   }
+  // ---- Christmas theme (⚙ → Theme): snow, tinsel instead of confetti, candy-cane bars (CSS), Santa hats instead of crowns ----
+  const xmas = () => prefs.theme === "christmas";
+  function applyTheme() { document.body.classList.toggle("xmas", xmas()); if (xmas()) snowStart(); else snowStop(); placeSnowCaps(); }
+  // a little settled snow along the top of some of the boxes (drawn in their own layer, as the boxes clip anything outside them)
+  function placeSnowCaps() {
+    let layer = $("snowcaps");
+    if (!xmas()) { if (layer) layer.innerHTML = ""; return; }
+    if (!layer) { layer = document.createElement("div"); layer.id = "snowcaps"; document.body.appendChild(layer); }
+    // which boxes, and how much of each top edge (from, to as fractions) – uneven, the way snow lands
+    const cards = [...document.querySelectorAll(".card")], tile = (k) => document.querySelector("#tiles .tile.t" + k);
+    const spots = [[tile(0), 0.05, 0.95, "a", 0], [tile(2), 0.3, 0.96, "b", 37], [cards[0], 0.03, 0.47, "a", 90], [cards[0], 0.69, 0.97, "b", 12], [cards[2], 0.1, 0.58, "b", 80]];
+    const html = spots.filter(([b]) => b && b.offsetWidth).map(([b, f, t, k, off]) => { const r = b.getBoundingClientRect(), x = r.left + r.width * f, w = r.width * (t - f); return `<i class="snowcap ${k}" style="left:${Math.round(x)}px;top:${Math.round(r.top - 13)}px;width:${Math.max(30, Math.round(w))}px;background-position-x:${off}px"></i>`; }).join("");
+    if (layer.innerHTML !== html) layer.innerHTML = html;
+  }
+  setInterval(() => { if (xmas()) placeSnowCaps(); }, 2000); addEventListener("resize", () => placeSnowCaps());
+  // Snow: three depths of soft flakes – far ones small, faint and slow; near ones bigger and a little faster – each swaying on
+  // its own, with a slow breeze that comes and goes. Drawn from one pre-rendered soft sprite, so it's light even on a TV PC.
+  const snow = { on: false, flakes: [], last: 0, sprite: null };
+  function snowStart() {
+    if (snow.on) return; snow.on = true;
+    let cv = $("snow"); if (!cv) { cv = document.createElement("canvas"); cv.id = "snow"; document.body.appendChild(cv); }
+    const ctx = cv.getContext("2d");
+    if (!snow.sprite) { const s = document.createElement("canvas"); s.width = s.height = 32; const g = s.getContext("2d"), r = g.createRadialGradient(16, 16, 0, 16, 16, 16); r.addColorStop(0, "rgba(255,255,255,1)"); r.addColorStop(0.35, "rgba(255,255,255,.85)"); r.addColorStop(1, "rgba(255,255,255,0)"); g.fillStyle = r; g.fillRect(0, 0, 32, 32); snow.sprite = s; }
+    const size = () => { const d = Math.min(2, devicePixelRatio || 1); cv.width = innerWidth * d; cv.height = innerHeight * d; ctx.setTransform(d, 0, 0, d, 0, 0); };
+    size(); addEventListener("resize", size);
+    const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const N = Math.round(Math.min(170, (innerWidth * innerHeight) / 12500) * (calm ? 0.4 : 1));
+    const mk = (top) => { const z = Math.pow(Math.random(), 1.6); return { x: Math.random() * innerWidth, y: top ? -10 - Math.random() * 40 : Math.random() * innerHeight, z, r: 1.1 + z * 3.4, vy: 0.22 + z * 0.75, sw: Math.random() * 6.28, ss: 0.006 + Math.random() * 0.012, amp: 0.25 + z * 0.9, a: 0.18 + z * 0.5 }; };
+    snow.flakes = Array.from({ length: N }, () => mk(false));
+    const frame = (t) => {
+      if (!snow.on) { ctx.clearRect(0, 0, cv.width, cv.height); return; }
+      const dt = Math.min(3, (t - (snow.last || t)) / 16.7 || 1); snow.last = t;
+      ctx.clearRect(0, 0, innerWidth, innerHeight);
+      const breeze = Math.sin(t / 11000) * 0.3 + Math.sin(t / 4300) * 0.12;
+      for (const f of snow.flakes) {
+        f.sw += f.ss * dt; f.y += f.vy * dt * (calm ? 0.6 : 1); f.x += (Math.sin(f.sw) * f.amp * 0.4 + breeze * (0.3 + f.z)) * dt;
+        if (f.y > innerHeight + 10) Object.assign(f, mk(true));
+        if (f.x > innerWidth + 10) f.x = -10; else if (f.x < -10) f.x = innerWidth + 10;
+        ctx.globalAlpha = f.a; const s = f.r * 2.6; ctx.drawImage(snow.sprite, f.x - s / 2, f.y - s / 2, s, s);
+      }
+      ctx.globalAlpha = 1; requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+  }
+  function snowStop() { snow.on = false; }
+  // a Santa hat in place of the crown: red, white fur, and a pompom in the place's colour (gold, silver, bronze)
+  const santaHat = (i) => `<svg viewBox="0 0 34 26"><path d="M4.5 19.5C6 11 11.5 4.5 19.5 3.2c5.2-.8 9.3 1.7 11.3 6.4-1.9-1.2-4.4-1.5-6.3-.2-2.2 1.6-2.4 5.3-2 10.1z" fill="#d62839"/><path d="M19.5 3.2c5.2-.8 9.3 1.7 11.3 6.4-1.9-1.2-4.4-1.5-6.3-.2-.9-3-2.6-5-5-6.2z" fill="#a81c2c"/><rect x="2.5" y="17.6" width="22.5" height="6.2" rx="3.1" fill="#fbfbff"/><path d="M5 19.4h17.5" stroke="#dfe6f0" stroke-width="1.2" stroke-linecap="round" stroke-dasharray=".1 2.6"/><circle cx="30.6" cy="10.3" r="3.3" fill="${["#ffcf5c", "#e3e8f0", "#d9945c"][i] || "#fbfbff"}"/><circle cx="29.6" cy="9.3" r="1.1" fill="#fff" opacity=".8"/></svg>`;
+
   function confetti(n, gold) {
     const cv = $("confetti"), ctx = cv.getContext("2d"); cv.width = innerWidth; cv.height = innerHeight;
-    const W = cv.width, H = cv.height, u = Math.max(0.7, W / 1920);
-    const cols = gold ? ["#ffe08a", "#ffcf5c", "#f0a93a", "#fff3c9", "#ffffff"] : ["#4c9dff", "#38e1ff", "#3ee98a", "#ffcf5c", "#ffffff", "#ff8a5c", "#b48cff"];
+    const W = cv.width, H = cv.height, u = Math.max(0.7, W / 1920), tinsel = xmas();
+    const cols = tinsel ? (gold ? ["#ffd36a", "#f5b83d", "#fff1b8", "#e6ecf3", "#d62839"] : ["#ffd36a", "#e6ecf3", "#b8c4d2", "#d62839", "#1fbf6b", "#f5b83d"]) : gold ? ["#ffe08a", "#ffcf5c", "#f0a93a", "#fff3c9", "#ffffff"] : ["#4c9dff", "#38e1ff", "#3ee98a", "#ffcf5c", "#ffffff", "#ff8a5c", "#b48cff"];
+    if (tinsel) return tinselFall(ctx, W, H, u, n, cols);
     const mk = (x, y, ang, sp) => ({ x, y, vx: Math.cos(ang) * sp * u, vy: Math.sin(ang) * sp * u, r: (Math.random() * 6 + 4) * u, c: cols[(Math.random() * cols.length) | 0], a: Math.random() * 6, va: (Math.random() - 0.5) * 0.5, f: Math.random() * 6, s: (Math.random() * 3) | 0 });
     const ps = [];
     for (let i = 0; i < n; i++) {
@@ -1246,6 +1408,144 @@
         ctx.restore();
       }
       if (el < DUR) requestAnimationFrame(frame); else ctx.clearRect(0, 0, W, H);
+    })(t0);
+  }
+  // tinsel: fluffy metallic garland pieces burst up from the bottom corners and the middle, then flutter down – turning, tumbling
+  // and glinting. Each piece is drawn once as a sprite (foil filaments round a thin core, with its own glow and a bright patch
+  // where it catches the light); while falling, the sprite whose bright patch matches the turn is used, plus the odd star glint.
+  const tinselCache = new Map();
+  function tinselSprites(col, u) {
+    const key = col + "|" + u.toFixed(2); if (tinselCache.has(key)) return tinselCache.get(key);
+    const rgb = [1, 3, 5].map((i) => parseInt(col.slice(i, i + 2), 16));
+    const tone = (k, a) => `rgba(${rgb.map((v) => Math.max(0, Math.min(255, Math.round(k >= 1 ? v + (255 - v) * Math.min(1, k - 1) : v * k)))).join(",")},${a})`;
+    const out = [];
+    for (let v = 0; v < 6; v++) {
+      const L = (v < 3 ? 74 : 112) * u, R = (v < 3 ? 8.5 : 10.5) * u, shine = (v % 3) / 2, pad = R + 8 * u;
+      const cv = document.createElement("canvas"); cv.width = Math.ceil(L + pad * 2); cv.height = Math.ceil(R * 2 + 16 * u);
+      const c = cv.getContext("2d"), cy = cv.height / 2, amp = (2.5 + Math.random() * 3) * u, ph = Math.random() * 6.28, wave = (x) => Math.sin((x / L) * 6.28 * 1.15 + ph) * amp;
+      const fil = []; // the same filaments for the glow pass and the sharp pass
+      for (let x = 0; x <= L; x += 1.05 * u) {
+        const taper = Math.pow(Math.sin(Math.PI * Math.min(1, x / L)), 0.4), lit = Math.max(0, 1 - Math.abs(x / L - shine) * 3.4);
+        for (const side of [-1, 1]) fil.push({ x, y: wave(x), len: R * taper * (0.5 + Math.random() * 0.5), ang: side * (Math.PI / 2) + (Math.random() - 0.5) * 1.2, k: 0.5 + Math.random() * 0.75 + lit * 1.25 });
+      }
+      const draw = (glow) => {
+        c.lineCap = "round";
+        for (const f of fil) { c.strokeStyle = tone(f.k, glow ? 0.55 : 0.95); c.lineWidth = (glow ? 2.4 : 0.95) * u; c.beginPath(); c.moveTo(pad + f.x, cy + f.y); c.lineTo(pad + f.x + Math.cos(f.ang) * f.len * 0.3, cy + f.y + Math.sin(f.ang) * f.len); c.stroke(); }
+        c.strokeStyle = tone(0.55, glow ? 0.6 : 1); c.lineWidth = (glow ? 4.5 : 1.9) * u; c.beginPath(); for (let x = 0; x <= L; x += 2 * u) c.lineTo(pad + x, cy + wave(x)); c.stroke();
+      };
+      c.filter = `blur(${(3.2 * u).toFixed(1)}px)`; draw(true); c.filter = "none"; draw(false);
+      out.push(cv);
+    }
+    tinselCache.set(key, out); return out;
+  }
+  const glintSprite = (() => { let s = null; return () => { if (s) return s; s = document.createElement("canvas"); s.width = s.height = 64; const g = s.getContext("2d"), r = g.createRadialGradient(32, 32, 0, 32, 32, 32); r.addColorStop(0, "rgba(255,255,255,1)"); r.addColorStop(0.18, "rgba(255,250,225,.75)"); r.addColorStop(1, "rgba(255,240,200,0)"); g.fillStyle = r; g.beginPath(); for (let i = 0; i < 8; i++) { const a = (i * Math.PI) / 4, rr = i % 2 ? 6 : 32; g.lineTo(32 + Math.cos(a) * rr, 32 + Math.sin(a) * rr); } g.closePath(); g.fill(); return s; }; })();
+  function tinselFall(ctx, W, H, u, n, cols) {
+    const sets = cols.map((c) => tinselSprites(c, u)), ps = [];
+    const mk = (x, y, ang, sp, i) => ({ x, y, vx: Math.cos(ang) * sp * u, vy: Math.sin(ang) * sp * u, set: sets[i % sets.length], big: Math.random() < 0.45, a: Math.random() * 6.28, va: (Math.random() - 0.5) * 0.09, f: Math.random() * 6.28, fs: 0.05 + Math.random() * 0.05, tw: 0.6 + Math.random() * 0.9, gp: Math.random() * 6.28, gx: (Math.random() - 0.5) * 60 * u });
+    for (let i = 0, N = Math.round(n * 0.45); i < N; i++) {
+      const k = i % 3;
+      if (k === 0) ps.push(mk(0, H * 0.92, -Math.PI / 3.2 + (Math.random() - 0.5) * 0.7, 16 + Math.random() * 20, i));
+      else if (k === 1) ps.push(mk(W, H * 0.92, Math.PI + Math.PI / 3.2 + (Math.random() - 0.5) * 0.7, 16 + Math.random() * 20, i));
+      else ps.push(mk(W / 2 + (Math.random() - 0.5) * 240 * u, H * 0.48, -Math.PI / 2 + (Math.random() - 0.5) * 2.6, 6 + Math.random() * 16, i));
+    }
+    const t0 = performance.now(), run = (confetti.run = (confetti.run || 0) + 1), DUR = 6800, gl = glintSprite();
+    (function frame(t) {
+      if (run !== confetti.run) return;
+      const el = t - t0, fade = el > DUR - 1500 ? Math.max(0, (DUR - el) / 1500) : 1; ctx.clearRect(0, 0, W, H);
+      for (const p of ps) {
+        p.vy += 0.27 * u; p.vx *= 0.976; p.vy *= 0.962; p.f += p.fs; p.a += p.va + Math.sin(p.f) * 0.018;
+        p.x += p.vx + Math.sin(p.f * 0.7) * 1.5 * u; p.y += p.vy;
+        const turn = Math.cos(p.f * p.tw), spr = p.set[(p.big ? 3 : 0) + Math.min(2, Math.floor(((Math.sin(p.f * 1.6) + 1) / 2) * 3))];
+        ctx.globalAlpha = fade; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.scale(1, 0.3 + 0.7 * Math.abs(turn)); ctx.drawImage(spr, -spr.width / 2, -spr.height / 2); ctx.restore();
+        const g = Math.sin(p.f * 2.2 + p.gp); // now and then the foil catches the light
+        if (g > 0.86) { const s = (14 + 22 * (g - 0.86) / 0.14) * u, gx = p.x + Math.cos(p.a) * p.gx, gy = p.y + Math.sin(p.a) * p.gx; ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = fade * Math.min(1, (g - 0.86) / 0.06); ctx.drawImage(gl, gx - s / 2, gy - s / 2, s, s); ctx.globalCompositeOperation = "source-over"; }
+      }
+      ctx.globalAlpha = 1;
+      if (el < DUR) requestAnimationFrame(frame); else ctx.clearRect(0, 0, W, H);
+    })(t0);
+  }
+  if (typeof requestIdleCallback === "function") requestIdleCallback(() => { try { if (xmas()) { const u = Math.max(0.7, innerWidth / 1920); for (const c of ["#ffd36a", "#e6ecf3", "#b8c4d2", "#d62839", "#1fbf6b", "#f5b83d"]) tinselSprites(c, u); } } catch (_) {} }, { timeout: 8000 });
+
+  // ---- Christmas: Santa's sleigh glides across the top of a roundup, pulled by two pairs of reindeer, trailing sparkle ----
+  function deer(x, y, far) {
+    const b = far ? "#6c4530" : "#8b5a3b", d = far ? "#55361f" : "#6e4630", belly = far ? "#8d6445" : "#b4835a", ant = far ? "#c9ab82" : "#e6c99f", hoof = "#2b1a12";
+    const leg = (cls, path, hx, hy, col) => `<g class="${cls}"><path d="${path}" stroke="${col}" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="${hx}" cy="${hy}" r="2.8" fill="${hoof}"/></g>`;
+    return `<g transform="translate(${x} ${y})"><g class="deer${far ? " far" : ""}${x > 380 ? " d2" : ""}">
+      ${leg("lf b", "M74 44C82 46 90 46 98 42C101 41 103 39 104 37", 104, 37, d)}${leg("lh b", "M34 44C26 46 18 46 10 42C7 41 5 39 4 37", 4, 37, d)}
+      <ellipse cx="16" cy="33" rx="5.5" ry="4.2" fill="#f3efe8"/>
+      <ellipse cx="52" cy="40" rx="36" ry="15" fill="${b}"/><ellipse cx="80" cy="37" rx="14" ry="13" fill="${b}"/><ellipse cx="54" cy="48" rx="25" ry="5.5" fill="${belly}" opacity=".85"/>
+      <path d="M80 32C88 22 92 14 96 6L106 11C101 21 97 32 91 42Z" fill="${b}"/>
+      <path d="M99 1C97-10 91-18 83-22M94-9C91-13 91-17 93-21M89-16C85-18 83-21 83-26M104 0C106-11 110-18 118-22M107-9C111-11 113-14 113-18" stroke="${ant}" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <ellipse cx="103" cy="8" rx="12" ry="7.5" fill="${b}" transform="rotate(18 103 8)"/><ellipse cx="112" cy="12" rx="6.5" ry="4.6" fill="${belly}"/><circle cx="117.5" cy="11.5" r="2.6" fill="#2b1a12"/>
+      <circle cx="103" cy="5" r="1.4" fill="#1b0f0a"/><path d="M96 2C92-2 88-2 85 0C89 3 93 4 96 4Z" fill="${d}"/>
+      <path d="M83 29C87 35 90 39 92 44" stroke="#b3122c" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="89" cy="40" r="2.7" fill="#ffd36a"/>
+      ${leg("lf", "M78 46C86 50 94 52 102 50C106 49 108 47 110 45", 110, 45, b)}${leg("lh", "M30 46C22 50 14 52 6 50C2 49 0 47-2 45", -2, 45, b)}
+    </g></g>`;
+  }
+  function sleighSVG() {
+    return `<svg viewBox="0 -30 600 220" aria-hidden="true">
+      <path d="M246 128Q300 140 352 130M366 124Q424 132 488 118" stroke="#f2c14e" stroke-width="2.2" fill="none" opacity=".9"/>
+      ${deer(272, 86, true)}${deer(282, 94, false)}${deer(408, 76, true)}${deer(418, 84, false)}
+      <path d="M170 110Q262 136 356 122" stroke="#7a1f1f" stroke-width="1.6" fill="none"/>
+      <g class="cab">
+        <path d="M70 124C60 100 68 74 92 70C112 68 124 92 116 124Z" fill="#8b5e34"/><path d="M76 120C70 104 74 86 88 78C80 92 80 108 84 122Z" fill="#6e4a28"/>
+        <rect x="80" y="56" width="16" height="15" rx="1.5" fill="#1f9d55"/><path d="M88 56V71M80 63H96" stroke="#ffd36a" stroke-width="2.4"/>
+        <rect x="97" y="61" width="13" height="11" rx="1.5" fill="#e6ecf3"/><path d="M103.5 61V72M97 66.5H110" stroke="#d62839" stroke-width="2.2"/>
+        <path d="M84 72C90 66 98 66 104 72" stroke="#ffd36a" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M114 126C110 96 126 76 150 74C174 76 190 96 186 126Z" fill="#d62839"/><path d="M150 88V124" stroke="#fbfbff" stroke-width="7" stroke-linecap="round"/>
+        <path d="M128 96C136 108 150 112 166 110" stroke="#b81d2f" stroke-width="11" fill="none" stroke-linecap="round"/><circle cx="168" cy="110" r="6.5" fill="#1d6b3c"/>
+        <circle cx="150" cy="58" r="16" fill="#f4c7a1"/><circle cx="140" cy="61" r="3.6" fill="#ef9a8a" opacity=".55"/><circle cx="160" cy="61" r="3.6" fill="#ef9a8a" opacity=".55"/>
+        <path d="M141 53Q144 50 147 53M153 53Q156 50 159 53" stroke="#3b2416" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+        <path d="M133 58C128 82 140 98 150 100C160 98 172 82 167 58C160 70 140 70 133 58Z" fill="#fbfbff"/><path d="M140 84C146 92 154 92 160 84" stroke="#dfe6f0" stroke-width="2" fill="none"/>
+        <path d="M140 66C144 61 149 62 150 65C151 62 156 61 160 66C156 69 152 68 150 66C148 68 144 69 140 66Z" fill="#fbfbff" stroke="#e5ebf3" stroke-width=".8"/><circle cx="150" cy="61" r="3.6" fill="#e9907e"/>
+        <path d="M134 41C134 24 146 14 160 16C170 18 172 30 168 41Z" fill="#d62839"/><path d="M147 18C135 12 121 14 113 26C119 22 131 22 141 28Z" fill="#b81d2f"/><circle cx="112" cy="28" r="6" fill="#fbfbff"/>
+        <rect x="131" y="38" width="38" height="10" rx="5" fill="#fbfbff"/>
+        <g class="arm"><path d="M172 92C182 84 190 72 196 60" stroke="#d62839" stroke-width="13" fill="none" stroke-linecap="round"/><circle cx="197" cy="57" r="7.5" fill="#fbfbff"/><circle cx="200" cy="48" r="7" fill="#1d6b3c"/></g>
+      </g>
+      <path d="M38 170Q28 178 44 180L226 180C258 180 266 154 248 148C236 145 234 160 247 161" stroke="#f2c14e" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <path d="M78 180L82 158M182 180L178 158" stroke="#e0a93a" stroke-width="5" stroke-linecap="round"/>
+      <path d="M54 160C42 132 42 98 64 88C80 82 92 94 86 106C82 114 86 124 100 124L200 124C218 124 228 116 236 106C244 96 260 100 258 114C254 142 230 162 198 162L70 162C62 162 57 162 54 160Z" fill="#c8102e"/>
+      <path d="M58 150C70 157 100 158 200 158C222 158 238 148 249 132C240 152 222 160 198 160L70 160Z" fill="#7d0a1d" opacity=".55"/>
+      <path d="M68 100C63 114 63 132 70 148" stroke="rgba(255,255,255,.28)" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M86 106C82 114 86 124 100 124L200 124C218 124 228 116 236 106" stroke="#ffd36a" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M64 88C54 92 52 106 62 110C70 112 74 104 68 100" stroke="#ffd36a" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <path d="M110 142C120 134 134 134 140 142C146 150 160 150 168 142C176 134 190 134 198 142" stroke="#ffd36a" stroke-width="2.5" fill="none" opacity=".85" stroke-linecap="round"/>
+    </svg>`;
+  }
+  const sparkSprite = (() => { const m = {}; return (rgb) => { if (m[rgb]) return m[rgb]; const s = document.createElement("canvas"); s.width = s.height = 24; const g = s.getContext("2d"), r = g.createRadialGradient(12, 12, 0, 12, 12, 12); r.addColorStop(0, `rgba(${rgb},1)`); r.addColorStop(0.3, `rgba(${rgb},.6)`); r.addColorStop(1, `rgba(${rgb},0)`); g.fillStyle = r; g.fillRect(0, 0, 24, 24); return (m[rgb] = s); }; })();
+  function santaGlide(card) {
+    if (!xmas() || document.hidden || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let lay = $("santa");
+    if (!lay) { lay = document.createElement("div"); lay.id = "santa"; lay.innerHTML = `<canvas></canvas><div class="sleigh">${sleighSVG()}</div>`; document.body.appendChild(lay); }
+    const run = (santaGlide.run = (santaGlide.run || 0) + 1), cv = lay.querySelector("canvas"), ctx = cv.getContext("2d"), sl = lay.querySelector(".sleigh");
+    lay.style.display = ""; sl.style.display = ""; sl.style.transform = "translate(-200vw,0)";
+    const dpr = Math.min(2, devicePixelRatio || 1); cv.width = innerWidth * dpr; cv.height = innerHeight * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const w = sl.offsetWidth, h = sl.offsetHeight || w * 0.37, runnerY = (180 + 30) / 220, backX = 40 / 600; // where the runners are, as fractions of the picture
+    // fly just above the roundup – it grows as its rows come in, so follow its top edge smoothly
+    const above = () => { const r = card && card.getBoundingClientRect(), top = r && r.height ? r.top : innerHeight * 0.3; return Math.max(6, top - 10 - h * runnerY); };
+    let y0 = above(); const x0 = -w - 30, x1 = innerWidth + 40, DUR = Math.max(6000, Math.min(8500, innerWidth * 3.6)), L = h * 0.22, sparks = [], t0 = performance.now(), gold = sparkSprite("255,210,110"), white = sparkSprite("255,255,255");
+    let last = t0;
+    (function frame(t) {
+      if (run !== santaGlide.run) return;
+      const k = (t - t0) / DUR, dt = Math.min(3, (t - last) / 16.7 || 1); last = t;
+      ctx.clearRect(0, 0, innerWidth, innerHeight);
+      if (k < 1) {
+        y0 += (above() - y0) * Math.min(1, 0.06 * dt);
+        const x = x0 + (x1 - x0) * k, y = y0 - Math.sin(k * Math.PI) * L + Math.sin(k * Math.PI * 4.4) * 5;
+        const slope = (-Math.cos(k * Math.PI) * Math.PI * L + Math.cos(k * Math.PI * 4.4) * Math.PI * 4.4 * 5) / (x1 - x0);
+        sl.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) rotate(${(Math.atan(slope) * 57.3).toFixed(2)}deg)`;
+        const bx = x + w * backX, by = y + h * runnerY;
+        for (let i = 0; i < 3 * dt; i++) sparks.push({ x: bx + Math.random() * 10, y: by + (Math.random() - 0.6) * 10, vx: -(0.4 + Math.random() * 1.3), vy: 0.1 + Math.random() * 0.55, life: 1, dec: 0.007 + Math.random() * 0.012, s: 3 + Math.random() * 7, ph: Math.random() * 6.28, g: Math.random() < 0.65 });
+      } else if (sl.style.display !== "none") sl.style.display = "none";
+      ctx.globalCompositeOperation = "lighter";
+      for (let i = sparks.length - 1; i >= 0; i--) {
+        const p = sparks[i]; p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= 0.985; p.vy += 0.008 * dt; p.life -= p.dec * dt;
+        if (p.life <= 0) { sparks.splice(i, 1); continue; }
+        ctx.globalAlpha = Math.max(0, p.life * (0.65 + 0.35 * Math.sin(t / 70 + p.ph))); const s = p.s * (0.6 + p.life * 0.6);
+        ctx.drawImage(p.g ? gold : white, p.x - s / 2, p.y - s / 2, s, s);
+      }
+      ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over";
+      if (k < 1 || sparks.length) requestAnimationFrame(frame); else lay.style.display = "none";
     })(t0);
   }
 
@@ -1268,7 +1568,7 @@
     if (!isCurrent) return { pace: 1, wdTotal, wdDone: wdTotal, wdNow: wdTotal, paceBasis: "" };
     const ph = data?.paceHours; // a board showing the shared one uses the working hours of the PC that reads MRI, so every board says the same
     const st = ph?.start ?? schedule.startHour ?? 7, en = ph?.end ?? schedule.endHour ?? 19;
-    const part = isWorkDay(now) ? Math.max(0, Math.min(1, (now.getHours() + now.getMinutes() / 60 - st) / Math.max(1, en - st))) : 0;
+    const part = isWorkDay(now) ? Math.max(0, Math.min(1, (now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600 - st) / Math.max(1, en - st))) : 0; // to the second, so the pace tile ticks
     const x = wdTotal ? (wdDone + part) / wdTotal : 0; // how far through the month's working time we are
     let pace = x, paceBasis = "working days";
     const pk = `${m === 1 ? y - 1 : y}-${String(m === 1 ? 12 : m - 1).padStart(2, "0")}`, last = data?.history?.[pk];
@@ -1280,6 +1580,53 @@
       if (tot > 0 && n > 3) { const pos = x * n, i = Math.min(n - 1, Math.floor(pos)), f = pos - i; pace = Math.max(0, Math.min(1, (pts[i] + (pts[Math.min(n, i + 1)] - pts[i]) * f) / tot)); paceBasis = "working days, following last month's pattern"; }
     }
     return { pace, wdTotal, wdDone, wdNow: wdDone + (isWorkDay(now) ? 1 : 0), paceBasis };
+  }
+  // ---- the pace tile, to the pound. It creeps up every second as the time-based "expected by now" rises (working hours
+  // only), and every "+£" that lands on the board knocks it back: the number drops, a chip shows by how much, the tile jolts.
+  const paceFmt = (v, useV) => (v >= 0 ? "+" : "−") + (useV ? fmtFull : fmtN)(Math.abs(v));
+  const paceSub = (mi, tgtM, useV) => `vs the <b>${(useV ? fmtFull : fmtN)(tgtM * mi.pace)}</b> expected by now<div class="basis">${Math.round(mi.pace * 100)}% of target · by ${esc(mi.paceBasis)}</div>`;
+  let paceLive = null, paceShown = null, paceAnim = null;
+  const paceNow = () => (paceLive ? paceLive.totM - paceLive.tgtM * monthInfo(paceLive.month).pace : null);
+  function paceDraw() {
+    const t = document.querySelector("#tiles .tile.t2"); if (!t || !paceLive || paceShown == null) return;
+    const v = paceShown, big = t.querySelector(".big"), lab = t.querySelector(".lab"), sub = t.querySelector(".sub");
+    const txt = paceFmt(v, paceLive.useV); if (big && big.textContent !== txt) big.textContent = txt;
+    const l = v >= 0 ? "Ahead of pace" : "Behind pace"; if (lab && lab.textContent !== l) lab.textContent = l;
+    t.classList.toggle("up", v >= 0); t.classList.toggle("down", v < 0);
+    const s = paceSub(monthInfo(paceLive.month), paceLive.tgtM, paceLive.useV); if (sub && sub.dataset.s !== s) { sub.innerHTML = s; sub.dataset.s = s; }
+  }
+  function paceStep() {
+    const target = paceNow(); if (target == null) return;
+    if (paceAnim) { const k = Math.min(1, (performance.now() - paceAnim.t0) / paceAnim.dur), e = 1 - Math.pow(1 - k, 3); paceShown = paceAnim.from + (target - paceAnim.from) * e; if (k >= 1) paceAnim = null; }
+    else paceShown = target;
+    paceDraw();
+    if (paceAnim) requestAnimationFrame(paceStep);
+  }
+  setInterval(() => { if (paceLive?.cur && !paceAnim) paceStep(); }, 1000);
+  // drawTotals calls this: totM = what's on the board now (each "+£" is held back until its row shows it), tgtM = the target
+  function paceUpdate(totM, tgtM, useV, mi, reset) {
+    if (!tgtM) { paceLive = null; paceShown = null; paceAnim = null; return; }
+    const month = `${mi.y}-${String(mi.m).padStart(2, "0")}`, d = new Date(), cur = !viewPrev && d.getFullYear() === mi.y && d.getMonth() + 1 === mi.m;
+    const same = !!paceLive && paceLive.month === month && paceLive.cur === cur && paceLive.useV === useV && paceLive.tgtM === tgtM;
+    const gain = same ? totM - paceLive.totM : 0;
+    paceLive = { totM, tgtM, useV, month, cur };
+    const target = paceNow();
+    if (reset || !same || paceShown == null) { paceShown = target; paceAnim = null; }
+    else if (Math.abs(gain) > 0.5) {
+      const before = paceShown;
+      paceAnim = { from: before, t0: performance.now(), dur: gain > 0 ? 1600 : 900 };
+      if (gain > 0) knock(gain, useV, before, target);
+      requestAnimationFrame(paceStep);
+    }
+    paceDraw();
+  }
+  function knock(gain, useV, before, after) {
+    const t = document.querySelector("#tiles .tile.t2"); if (!t) return;
+    const c = document.createElement("span"); c.className = "pknock";
+    const word = before < 0 ? (after >= 0 ? "back on pace!" : "knocked off") : "further ahead";
+    c.innerHTML = `${before < 0 ? "−" : "+"}${esc((useV ? fmtFull : fmtN)(gain))}<small>${word}</small>`;
+    t.appendChild(c); setTimeout(() => c.remove(), 2600);
+    t.classList.remove("knock"); void t.offsetWidth; t.classList.add("knock");
   }
   function status(done, target, frac, f = fmtN) {
     if (!target) return null;
@@ -1362,11 +1709,13 @@
     const tiles = [
       { l: "Revenue completed", b: useV ? fmtFull(totV) : "–", s: tgtV ? `of ${totalTarget() ? fmtFull(tgtV) : fmtGBP(tgtV)} target` : useV ? "sales value · set targets in ⚙" : "no value column", x: ring },
       { l: "Jobs completed", b: fmtN(totJ), s: "for information" },
-      { l: pace == null ? "Ahead or behind pace" : pace >= 0 ? "Ahead of pace" : "Behind pace", b: pace == null ? "–" : (pace >= 0 ? "+" : "−") + fm(Math.abs(pace)), s: pace == null ? "needs revenue targets" : `vs the <b>${fm(tgtM * mi.pace)}</b> expected by now<div class="basis">${Math.round(mi.pace * 100)}% of target · by ${mi.paceBasis}</div>`, c: pace == null ? "" : pace >= 0 ? " up" : " down" },
+      { l: pace == null ? "Ahead or behind pace" : pace >= 0 ? "Ahead of pace" : "Behind pace", b: pace == null ? "–" : paceFmt(pace, useV), s: pace == null ? "needs revenue targets" : paceSub(mi, tgtM, useV), c: pace == null ? "" : pace >= 0 ? " up" : " down" },
       { l: (grouped() ? "Clients" : "Contracts") + " on pace", b: withT.length ? `${onPace}/${withT.length}` : "–", s: `working day ${mi.wdNow} of ${mi.wdTotal}<div class="mprog"><i style="width:${mi.wdTotal ? (mi.wdNow / mi.wdTotal) * 100 : 0}%"></i></div>` },
     ];
-    $("tiles").innerHTML = tiles.map((t, i) => `<div class="tile t${i}${t.c || ""}${prevTotals[i] != null && prevTotals[i] !== t.b && !viewPrev ? " bump" : ""}"><div><div class="lab">${t.l}</div><div class="big" data-count="${esc(t.b)}" data-from="${esc(prevTotals[i] ?? (i < 2 ? "0" : ""))}">${t.b}</div><div class="sub">${t.s}</div></div>${t.x || ""}</div>`).join("");
+    // (the pace tile, t2, isn't counted up like the others: paceUpdate draws it, ticking every second and knocked back by each "+£")
+    $("tiles").innerHTML = tiles.map((t, i) => `<div class="tile t${i}${t.c || ""}${i !== 2 && prevTotals[i] != null && prevTotals[i] !== t.b && !viewPrev ? " bump" : ""}"><div><div class="lab">${t.l}</div><div class="big"${i === 2 ? "" : ` data-count="${esc(t.b)}" data-from="${esc(prevTotals[i] ?? (i < 2 ? "0" : ""))}"`}>${t.b}</div><div class="sub">${t.s}</div></div>${t.x || ""}</div>`).join("");
     tiles.forEach((t, i) => (prevTotals[i] = t.b));
+    paceUpdate(totM, tgtM, useV, mi, first);
     later(() => { const r = document.querySelector(".ring .rfg"); if (r) r.style.strokeDashoffset = r.dataset.off; });
     };
     drawTotals();
@@ -1379,7 +1728,7 @@
     const newRanks = {}; rows.forEach((r, i) => (newRanks[r.name] = i + 1));
     if (!render.lastRankSave || Date.now() - render.lastRankSave > 600000 || !Object.keys(oldRanks).length) { localStorage.setItem(rankKey, JSON.stringify(newRanks)); render.lastRankSave = Date.now(); if (!Object.keys(oldRanks).length) oldRanks = newRanks; }
     rankOld.board = oldRanks;
-    const crown = (i) => `<svg viewBox="0 0 34 26"><path d="M3 20h28l2-15-9 7-7-11-7 11-9-7z" fill="${["#ffcf5c", "#cfd6e2", "#d9945c"][i]}"/><rect x="3" y="21.5" width="28" height="3.5" rx="1.4" fill="${["#f0a93a", "#9aa4b4", "#b9703a"][i]}"/></svg>`;
+    const crown = (i) => xmas() ? santaHat(i) : `<svg viewBox="0 0 34 26"><path d="M3 20h28l2-15-9 7-7-11-7 11-9-7z" fill="${["#ffcf5c", "#cfd6e2", "#d9945c"][i]}"/><rect x="3" y="21.5" width="28" height="3.5" rx="1.4" fill="${["#f0a93a", "#9aa4b4", "#b9703a"][i]}"/></svg>`;
 
     // ---- leaderboard rows ----
     // A row that has gained keeps its old figure AND its old rank until the board reaches it. Then the "+£" lands, and the row
@@ -1728,13 +2077,14 @@
     fillTargets();
     $("sEn").checked = !!schedule.enabled; $("sEvery").value = schedule.everySecs || 30; $("sStart").value = schedule.startHour ?? 7; $("sEnd").value = schedule.endHour ?? 19; $("sWk").checked = !!schedule.weekdaysOnly;
     $("exBy").value = (prefs.excludeBy ?? ["Mobile", "administrator"]).join(", ");
+    $("aliasBy").value = Object.entries(prefs.aliases || {}).map(([a, b]) => `${a.toUpperCase()} = ${b.toUpperCase()}`).join(", ");
     $("sHide").checked = schedule.hiddenWindow !== false; $("sAwake").checked = schedule.awake !== false;
     insState(); $("insMsg").textContent = "";
     { const g = window.BoardSync?.get() || {}; $("syRepo").value = g.repo || ""; $("syToken").value = ""; $("syToken").placeholder = g.hasToken ? "saved – leave blank to keep it" : "github_pat_…"; $("syRole").value = g.role || "off"; $("syName").value = g.name || ""; }
     vlFill(); $("vlState").textContent = vlStatus(); vlWatchOpen();
     { const W = ptCfg(); for (const k of ["r", "b", "k", "p", "c", "x", "u4"]) $("pt_" + k).value = W[k]; $("pt_bonus").checked = W.bonus !== false; const sn = contribPending() ? contribResetAt : contrib?.since; $("ptSince").textContent = sn ? new Date(sn).toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "the next update"; $("ptResetMsg").textContent = ""; }
     $("sAct").value = schedule.activitySecs || 20;
-    $("sLive").checked = !!schedule.live; $("sLiveMins").value = schedule.pollSecs || 20; $("sChime").checked = !!prefs.chime; $("sTotal").value = prefs.totalTarget || ""; $("sRound").value = prefs.roundMins ?? 15; $("sCards").checked = !!prefs.cards;
+    $("sLive").checked = !!schedule.live; $("sLiveMins").value = schedule.pollSecs || 20; $("sChime").checked = !!prefs.chime; $("sTotal").value = prefs.totalTarget || ""; $("sRound").value = prefs.roundMins ?? 15; $("sCards").checked = !!prefs.cards; $("sXmas").checked = prefs.theme === "christmas";
     fillDiag(); clearInterval(fillDiag.t); fillDiag.t = setInterval(() => { if ($("dlg").open) fillDiag(); else clearInterval(fillDiag.t); }, 3000);
     $("dlg").showModal();
   };
@@ -1790,12 +2140,13 @@
   };
   // ---- private staff insights (insights.js): the board's data and helpers, and a click on a name opens that person's day ----
   window.MRIBoard = {
-    contrib: () => contrib, prefs: () => prefs, ptsOf, weights: () => ptCfg(), person, isPerson, esc, fmtN, ACT_NAME, ACT_ONE,
+    contrib: () => contrib, prefs: () => prefs, ptsOf, weights: () => ptCfg(), person, canon, isPerson, esc, fmtN, ACT_NAME, ACT_ONE, confetti: (n, gold) => confetti(n, gold), santa: () => santaGlide($("roundup")),
     counted, viewName, viewPrev: () => viewPrev, boardValue: (name) => { const v = rollup(source()?.byContract || {}).rows[name]; return v ? V(v) : null; },
     boardValueOf: (byContract, name) => { const v = rollup(byContract || {}).rows[name]; return v ? V(v) : 0; },
     topActs, boardRanks: () => Object.fromEntries(contribRows(source()?.month).map(([, v], i) => [String(v.key || "").toLowerCase(), i + 1])),
     savePrefs: async (patch) => { prefs = { ...prefs, ...patch }; await chrome.storage.local.set({ "dash:prefs": prefs }); if (window.BoardSync && window.BoardSync.role() !== "off") await window.BoardSync.pushSettings(); },
   };
+  $("sXmas").addEventListener("change", async (e) => { const theme = e.target.checked ? "christmas" : ""; prefs = { ...prefs, theme }; applyTheme(); render(); const cur = (await chrome.storage.local.get("dash:prefs"))["dash:prefs"] || {}; await chrome.storage.local.set({ "dash:prefs": { ...cur, theme } }); });
   window.Insights?.init(); window.ContractLog?.init();
   $("board").addEventListener("click", (e) => { const row = e.target.closest(".row"); if (row?.dataset.name && window.ContractLog) window.ContractLog.open(row.dataset.name); }); // the value check (no PIN)
   $("ops").addEventListener("click", (e) => { const row = e.target.closest(".row"); const key = (row?.dataset.key || "").replace(/^o:/, ""); if (key && window.Insights) window.Insights.open(key); });
@@ -1914,13 +2265,17 @@
   $("usePrev").onclick = () => { harvest(); const T = tgtStore(); const prev = rollup(data?.history?.[prevKey()]?.byContract || {}, true).rows; for (const [n, v] of Object.entries(prev)) { const j = J(v); if (j > 0 && !T[n]?.jobs) (T[n] ||= {}).jobs = j; const val = Math.round(V(v)); if (val > 0 && !T[n]?.value) T[n].value = val; } fillTargets(); };
   $("addC").onclick = () => { const n = $("newC").value.trim(); if (!n) return; harvest(); const T = tgtStore(); (T[n] ||= {}).jobs = T[n].jobs || 0; $("newC").value = ""; fillTargets(); };
   $("dlgCancel").onclick = async () => { $("dlg").close(); await load(); };
+  $("dlgX").onclick = () => $("dlgCancel").onclick();
+  // ⚙ is in tabs: Board, Targets, Client groups, Staff & points, Updates, Sharing, Health check
+  const sxShow = (t) => { for (const b of document.querySelectorAll("#sxNav button")) b.classList.toggle("on", b.dataset.t === t); for (const x of document.querySelectorAll("#dlg .sx-tab")) x.classList.toggle("on", x.dataset.t === t); };
+  $("sxNav").addEventListener("click", (e) => { const b = e.target.closest("button[data-t]"); if (b) sxShow(b.dataset.t); });
   $("dlgSave").onclick = async () => {
     // the Firebase address is saved by ⚙'s own Save too, not only by the View-only link's button
-    try { const bad = await vlPresenceSave(); if (bad) { $("vlState").textContent = bad; $("vlState").scrollIntoView({ block: "center" }); $("vlPres").focus(); return; } }
-    catch (e) { $("vlState").textContent = "Couldn't save the Firebase address: " + (e.message || e); $("vlState").scrollIntoView({ block: "center" }); return; }
+    try { const bad = await vlPresenceSave(); if (bad) { sxShow("sharing"); $("vlState").textContent = bad; $("vlState").scrollIntoView({ block: "center" }); $("vlPres").focus(); return; } }
+    catch (e) { sxShow("sharing"); $("vlState").textContent = "Couldn't save the Firebase address: " + (e.message || e); $("vlState").scrollIntoView({ block: "center" }); return; }
     harvest();
     const sts = [...document.querySelectorAll("#stBox input")].filter((i) => i.checked).map((i) => i.dataset.st);
-    await chrome.storage.local.set({ "dash:targets": targets, "dash:gtargets": gtargets, "dash:prefs": { ...prefs, statuses: sts.length ? sts : DEFAULT_COUNT, chime: $("sChime").checked, totalTarget: Math.max(0, Number(String($("sTotal").value).replace(/[£,\s]/g, "")) || 0), roundMins: Math.max(0, Number($("sRound").value) || 0), cards: $("sCards").checked, excludeBy: $("exBy").value.split(",").map((s) => s.trim()).filter(Boolean), points: (() => { const o = { bonus: $("pt_bonus").checked }; for (const k of ["r", "b", "k", "p", "c", "x"]) o[k] = Math.max(0, Number($("pt_" + k).value) || 0); o.u4 = Math.max(1, Math.round(Number($("pt_u4").value) || 4)); return o; })() } });
+    await chrome.storage.local.set({ "dash:targets": targets, "dash:gtargets": gtargets, "dash:prefs": { ...prefs, statuses: sts.length ? sts : DEFAULT_COUNT, chime: $("sChime").checked, totalTarget: Math.max(0, Number(String($("sTotal").value).replace(/[£,\s]/g, "")) || 0), roundMins: Math.max(0, Number($("sRound").value) || 0), cards: $("sCards").checked, theme: $("sXmas").checked ? "christmas" : "", excludeBy: $("exBy").value.split(",").map((s) => s.trim()).filter(Boolean), aliases: Object.fromEntries($("aliasBy").value.split(",").map((s) => s.split("=").map((x) => x.trim().toLowerCase())).filter((p) => p.length === 2 && p[0] && p[1] && p[0] !== p[1])), points: (() => { const o = { bonus: $("pt_bonus").checked }; for (const k of ["r", "b", "k", "p", "c", "x"]) o[k] = Math.max(0, Number($("pt_" + k).value) || 0); o.u4 = Math.max(1, Math.round(Number($("pt_u4").value) || 4)); return o; })() } });
     await chrome.runtime.sendMessage({ type: "dashSchedule", schedule: { enabled: $("sEn").checked && window.BoardSync?.role() !== "view", everySecs: Math.max(15, Number($("sEvery").value) || 30), startHour: Number($("sStart").value) || 0, endHour: Number($("sEnd").value) || 24, weekdaysOnly: $("sWk").checked, live: $("sLive").checked, hiddenWindow: $("sHide").checked, awake: $("sAwake").checked, pollSecs: Math.max(10, Number($("sLiveMins").value) || 20), activitySecs: Math.max(15, Number($("sAct").value) || 20) } });
     schedule = (await chrome.storage.local.get("dash:schedule"))["dash:schedule"] || {}; keepAwake();
     if (window.BoardSync && window.BoardSync.role() !== "off") window.BoardSync.pushSettings().catch(() => {}); // problems show in Health check
