@@ -470,17 +470,6 @@
   .cv-line .w{color:#8fa0c3}.cv-line .r{text-align:right;font-family:Consolas,monospace}
   .cv-line .up{color:#5fe0a0}.cv-line .down{color:#ff9a9a}
   #board .row{cursor:pointer}
-  .vlwatch{margin:0 0 12px;padding:10px 14px;background:#0f1a2e;border:1px solid rgba(156,200,255,.25);border-radius:10px;font-size:13px;color:#c9d6ee}
-  .vlwatch .vwh{font-size:15px;color:#e8f1ff;margin-bottom:6px}.vlwatch .vwh span{font-size:12px;color:#8ea3c4}
-  .vlwatch ul{margin:4px 0 6px;padding-left:18px;columns:2;column-gap:28px}.vlwatch li{margin:2px 0;break-inside:avoid}.vlwatch p{margin:4px 0}.vlwatch .vwn{font-size:11.5px;color:#8ea3c4}.vlwatch .vwt{font-size:11px;color:#ffd9a0;background:#2a1f12;border:1px solid rgba(255,180,90,.45);border-radius:999px;padding:0 7px}
-  .vlwatch .vbg{font-size:11px;color:#9fb4d6;background:#16213a;border:1px solid rgba(156,200,255,.3);border-radius:999px;padding:0 7px}
-  .vllog .vlh{display:flex;align-items:center;gap:10px;margin-bottom:8px}.vllog .vlh b{font-size:15px;color:#e8f1ff}.vllog .vlh span{font-size:12px;color:#8ea3c4;margin-right:auto}.vllog .vlh .btn{padding:2px 10px}
-  .vllog .vdays{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}.vllog .vday{background:#141c33;border:1px solid rgba(255,255,255,.12);color:#c9d5ee;border-radius:999px;padding:3px 10px;font-size:12px;cursor:pointer}
-  .vllog .vday:hover{border-color:rgba(255,211,106,.5)}.vllog .vday.pre{opacity:.45}.vllog .vday.on{border-color:#ffd36a;background:rgba(255,211,106,.14);color:#ffe3a0}.vllog .vday i{font-style:normal;color:#8ea3c4;margin-left:6px}.vllog .vday.on i{color:#ffe3a0}
-  .vllog .vsum{color:#c9d6ee;margin:0 0 6px}.vllog table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:6px}
-  .vllog th{text-align:left;color:#8ea3c4;font-weight:600;font-size:11.5px;padding:4px 8px;border-bottom:1px solid rgba(255,255,255,.1);white-space:nowrap}
-  .vllog td{padding:5px 8px;border-bottom:1px solid rgba(255,255,255,.05);vertical-align:top;color:#e8f1ff;white-space:nowrap}.vllog td.v{color:#c9d5ee;line-height:1.55}.vllog td.v i{color:#8ea3c4;font-style:normal}
-  .vllog .now{color:#5ee0a0;font-weight:700}.vllog .vold{color:#6f819f;cursor:help}.vllog .vwn b{color:#b9c8e2;font-weight:600}
   .watchpill{display:inline-flex;align-items:center;gap:6px;background:#132238;color:#9cc8ff;border:1px solid rgba(156,200,255,.3);border-radius:999px;padding:4px 11px;font-size:13px;font-weight:600;margin-right:10px;cursor:default}.watchpill svg{width:15px;height:15px}.watchpill b{color:#fff}
   /* the client pop-up: Value check | Change log */
   #cv [hidden]{display:none!important}
@@ -553,7 +542,7 @@
   @media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important}}
 </style>
 <meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><meta name="viewport" content="width=1500">
-<style>#btnGroup,#btnMonth,#btnTable,#btnNow,#btnSettings,#watchers{display:none!important}#board .row,#ops .row{cursor:default!important}
+<style>#btnGroup,#btnMonth,#btnTable,#btnNow,#btnSettings,#watchers{display:none!important}#board .row{cursor:default!important}#ops .row{cursor:pointer!important}#ops .row:hover{filter:brightness(1.12)}
 .vo{background:#1d2a4a;color:#9cc8ff;border:1px solid rgba(156,200,255,.35);border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-right:10px}
 #mrivBanner{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:99;display:none;background:#2a1f12;border:1px solid rgba(255,180,90,.55);color:#ffd9a0;border-radius:10px;padding:10px 16px;font:600 15px/1.3 system-ui,sans-serif}
 #mrivBanner.on{display:block}#mrivBanner.bad{background:#3a1515;border-color:rgba(255,120,120,.6);color:#ffc4c4}
@@ -564,6 +553,11 @@
 #mrivMenu .mbig{font-size:30px;font-weight:800;margin:4px 0}#mrivMenu .mbig small{font-size:13px;color:#8fa0c3;font-weight:600}
 #mrivMenu .ml{color:#c9d5ee;margin:3px 0}#mrivMenu .mn{color:#8fa0c3;font-size:12px;margin:8px 0 0}
 #mrivMenu .mpick{display:block;margin-top:10px;color:#c9d5ee}#mrivMenu select{margin-top:4px;width:100%;background:#182039;color:#e8eefc;border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:6px}
+#mrivCard{position:fixed;z-index:97;width:340px;box-sizing:border-box;background:#121a30;border:1px solid rgba(255,211,106,.45);border-radius:14px;padding:14px 16px;box-shadow:0 20px 60px rgba(0,0,0,.6);font:14px/1.45 system-ui,sans-serif;color:#e8eefc;animation:mcIn .18s ease}@keyframes mcIn{from{opacity:0;transform:translateY(6px)}}
+#mrivCard .mh{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:16px;padding-right:24px}#mrivCard .mh span.rk{color:#ffd36a;font-weight:800;white-space:nowrap}#mrivCard .mh .youb{font-size:11px}
+#mrivCard .mbig{font-size:30px;font-weight:800;margin:4px 0}#mrivCard .mbig small{font-size:13px;color:#8fa0c3;font-weight:600}
+#mrivCard .mt{width:100%;border-collapse:collapse;margin:4px 0 6px;font-size:13.5px}#mrivCard .mt td{padding:3px 0;color:#c9d5ee;border-bottom:1px solid rgba(255,255,255,.06)}#mrivCard .mt td:nth-child(2){text-align:right;color:#e8eefc;width:44px}#mrivCard .mt td:nth-child(3){text-align:right;color:#ffd36a;font-weight:700;width:56px}
+#mrivCard .ml{color:#c9d5ee;margin:3px 0}#mrivCard .mn{color:#8fa0c3;font-size:12px;margin:8px 0 0}#mrivCard .mx{position:absolute;top:8px;right:10px;background:none;border:0;color:#8fa0c3;font-size:18px;cursor:pointer;line-height:1}
 #mrivMenu .mclear{margin-top:8px;background:none;border:1px solid rgba(255,255,255,.2);color:#c9d5ee;border-radius:8px;padding:5px 10px;cursor:pointer}
 #mrivGate{color-scheme:dark;position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:rgba(6,10,22,.6);backdrop-filter:blur(10px) saturate(.8);-webkit-backdrop-filter:blur(10px) saturate(.8);animation:mgIn .35s ease}
 #mrivGate.out{animation:mgOut .26s ease forwards;pointer-events:none}@keyframes mgIn{from{opacity:0}}@keyframes mgOut{to{opacity:0}}
@@ -743,9 +737,7 @@
           </div>
           <p class="hint" id="vlMsg">A live, read-only copy of the board for anyone with the link.</p>
           <p class="hint" id="vlState" style="color:#ffd9a0"></p>
-          <div class="row2" id="vlWatchRow" style="display:none"><button class="btn ghost" id="vlWatchBtn">🔒 Who's watching now</button><button class="btn ghost" id="vlLogBtn">🔒 Viewing log</button></div>
-          <div id="vlWatch" class="vlwatch" style="display:none"></div>
-          <div id="vlLog" class="vlwatch vllog" style="display:none"></div>
+          <div class="row2" id="vlWatchRow" style="display:none"></div>
         </div>
       </section>
       <section class="sx-tab" data-t="health">
@@ -798,7 +790,7 @@
   <p class="hint" id="insPinMsg" style="color:#ff9a9a"></p>
   <div class="row2" style="justify-content:flex-end"><button class="btn ghost" id="insPinCancel">Cancel</button><button class="btn" id="insPinGo">Open</button></div>
 </dialog>
-<script>window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin","version":"2.47.0"};
+<script>window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin","version":"2.48.2"};
 // MRI Assist – the VIEW-ONLY board: the leaderboard as a normal web page that anyone with the link can watch – nothing to
 // install, no sign-in, nothing to click into. The PC that reads MRI (the TV) puts this page on a GitHub Pages site together
 // with the board's figures, ENCRYPTED. The key is in the link, after the "#", which a browser never sends anywhere, so the
@@ -880,14 +872,12 @@
         <div class="mn">Points count the same way as on the board – nothing here is private.</div>`;
     } else if (me) html += `<div class="mh"><b>${esc(nameOf(me))}</b></div><div class="ml">No points on the board yet this month.</div>`;
     html += `<div class="mpick">${me ? `Not ${esc(nameOf(me))}? ` : ""}<button class="mclear" id="mrivChange">Change name</button></div>
-      <p class="mn">Saved in this browser only – if it ever forgets you (a private window, or after clearing your history), just pick your name again. It isn't a sign-in, so it can't show anything the board doesn't already show everyone.${snapNow?.presence ? " While this page is open with your name picked, whoever runs the board can see you're watching (nobody else can)." : ""}</p>`;
+      <p class="mn">Saved in this browser only – if it ever forgets you (a private window, or after clearing your history), just pick your name again. It isn't a sign-in, so it can't show anything the board doesn't already show everyone.</p>`;
     m.innerHTML = html;
     m.querySelector("#mrivChange").onclick = () => { m.remove(); gate(true, { cancel: !!me }); };
   }
-  // ---- checking in by name: only once you've picked your name, and only if the office has set it up. Every 30 seconds this
-  // page says "<your name> is watching", under a place only the link leads to, with the name locked by the boards' public key –
-  // this page can lock it but can't open it, and nor can anyone else with the link; only the boards can. Closing the page
-  // says it's leaving (see "the visit" below).
+  // ---- checking in: once a name is picked, if the office has set it up – every 30 seconds, under a place only the link leads to,
+  // with the name locked by the boards' public key (this page can lock it but not open it).
   let sid = ""; try { sid = sessionStorage.getItem("mriv:sid") || ""; if (!sid) { sid = Math.random().toString(36).slice(2, 12); sessionStorage.setItem("mriv:sid", sid); } } catch (_) { sid = Math.random().toString(36).slice(2, 12); }
   let spot = "", beatT = null;
   const b64 = (u8) => { let s = ""; for (let i = 0; i < u8.length; i++) s += String.fromCharCode(u8[i]); return btoa(s); };
@@ -898,12 +888,8 @@
     if (pubFor !== pk) { pubKey = await crypto.subtle.importKey("spki", Uint8Array.from(atob(pk), (c) => c.charCodeAt(0)), { name: "RSA-OAEP", hash: "SHA-256" }, false, ["encrypt"]); pubFor = pk; }
     return "R1:" + b64(new Uint8Array(await crypto.subtle.encrypt({ name: "RSA-OAEP" }, pubKey, new TextEncoder().encode(text))));
   }
-  // ---- the visit (2.47, Jake 23 Nov), for the boards' viewing log: one stretch of this page open under one name. A refresh carries
-  // on the same visit. It starts again after a pause of over 100 seconds (the phone locked, the PC asleep, the browser froze the
-  // tab, no connection – the boards had stopped seeing it, so "since" starts again when it's back), after a change of name, and at
-  // midnight. Each check-in says how long the board has been on screen in this visit (this tab showing, the window not minimised),
-  // how long it's been in use (a click, tap, scroll, key or mouse movement on it in the last 15 seconds), and whether it's on
-  // screen right now – nothing about what was clicked.
+  // ---- the visit: one stretch of this page open under one name. A refresh carries on the same visit; it starts again after a
+  // pause of over 100 seconds (the boards had stopped seeing it), after a change of name, and at midnight.
   const GAP = 100000, VK = "mriv:visit";
   const sameDay = (t) => new Date(t).toDateString() === new Date().toDateString();
   let V = { u: "", f: 0, v: 0, a: 0, ok: 0 }; // f: started (Firebase's clock); v, a: seconds on screen, in use; ok: last check-in (this device's clock)
@@ -936,9 +922,8 @@
       if (r.ok) { const j = await r.json().catch(() => null); if (!V.f) V.f = Number(j?.f) || 0; V.ok = Date.now(); keep(); }
     } catch (_) {} finally { beating = false; if (again) setTimeout(beat, 0); }
   }
-  // closing the page (or clearing the name) says the visit has ended, with its final times, instead of deleting the check-in – so
-  // the viewing log keeps short visits and when they ended; the TV tidies it away 10 minutes later. (A POST that Firebase treats
-  // as a PATCH: the browser sends it as the page closes, without having to ask Firebase first.)
+  // closing the page (or clearing the name) marks the visit as ended; the TV tidies it away. (A POST that Firebase treats as a
+  // PATCH, so the browser can send it as the page closes.)
   function leave() {
     const url = snapNow?.presence; if (!url || !spot || !V.f) return; tally();
     try { fetch(`${url}/mriv/${spot}/${sid}.json?x-http-method-override=PATCH`, { method: "POST", body: JSON.stringify({ l: { ".sv": "timestamp" }, v: Math.round(V.v), a: Math.round(V.a), o: 0 }), keepalive: true }); } catch (_) {}
@@ -949,10 +934,53 @@
     const ops = document.getElementById("ops"); if (ops) new MutationObserver(() => { if (!ops.querySelector(".row.me") && me) mark(); }).observe(ops, { childList: true });
     document.addEventListener("click", (e) => { const m = document.getElementById("mrivMenu"); if (m && !m.contains(e.target) && !e.target.closest("#mrivMe")) m.remove(); });
   });
-  // ---- everyone picks their name first (Jake, 23 Nov): the board waits behind a "Who's watching?" card until a name is picked –
-  // one of the office staff the board knows, or typed in when it isn't on the list ("~" in front tells the boards it was typed) –
-  // so whoever runs the board can see who's watching (⚙ → View-only link → Who's watching now). Saved in this browser, so it's
-  // asked once; "Change name" in the YOU menu brings the card back. It isn't a sign-in: anyone can pick any name.
+  // ---- click a name on the staff board for their points today – yours too: what the board counts for them today by type, with
+  // this month's total and place
+  const ACT_PTS = [["r", "Raised"], ["b", "Booked"], ["k", "Letters / calls"], ["p", "Priced"], ["c", "Closed"], ["x", "Cleared to invoice"], ["u", "Other updates"]];
+  function todayOf(key) { // today's counts for a person, added up the way the board does it (one person under two spellings counts once)
+    const canon = window.MRIBoard?.canon || ((u) => String(u || "").trim().toLowerCase()), o = {};
+    for (const [u, t] of Object.entries(snapNow?.contrib?.today || {})) if (canon(u) === key) for (const [k, n] of Object.entries(t || {})) if (typeof n === "number") o[k] = (o[k] || 0) + n;
+    return o;
+  }
+  function card(row) {
+    const key = String(row?.dataset.key || "").replace(/^o:/, ""); if (!key) return;
+    let c = document.getElementById("mrivCard"); if (c && c.dataset.u === key) { c.remove(); return; } // (the same name again: closes it)
+    if (!c) { c = document.createElement("div"); c.id = "mrivCard"; c.setAttribute("role", "dialog"); document.body.appendChild(c); }
+    c.dataset.u = key;
+    const w = W(), t = todayOf(key), tot = ptsOf(t, w), rows = standings(), i = rows.findIndex((x) => String(x.u).toLowerCase() === key), mine = !!me && me.toLowerCase() === key;
+    const per = (k, n) => (k === "u" ? Math.ceil(n / Math.max(1, Number(w.u4) || 4)) : (Number(w[k]) || 0) * n + (w.bonus && (k === "p" || k === "c") ? (t[k + "1"] || 0) + 2 * (t[k + "2"] || 0) : 0));
+    const lines = ACT_PTS.filter(([k]) => t[k] > 0).map(([k, label]) => `<tr><td>${label}</td><td>${t[k].toLocaleString("en-GB")}</td><td>+${Math.round(per(k, t[k])).toLocaleString("en-GB")}</td></tr>`).join("");
+    c.innerHTML = `<button class="mx" aria-label="Close">×</button><div class="mh"><b>${esc(nameOf(key))}${mine ? ` <span class="youb">YOU</span>` : ""}</b>${i >= 0 ? `<span class="rk">#${i + 1} of ${rows.length}</span>` : ""}</div>
+      <div class="mbig">${tot ? "+" + tot.toLocaleString("en-GB") : "0"} <small>pts today</small></div>
+      ${lines ? `<table class="mt"><tbody>${lines}</tbody></table>` : `<div class="ml">Nothing on the board for ${mine ? "you" : "them"} yet today.</div>`}
+      ${i >= 0 ? `<div class="ml">This month: <b>${rows[i].pts.toLocaleString("en-GB")} pts</b></div>` : ""}
+      <div class="mn">Counted the same way as the board.</div>`;
+    c.querySelector(".mx").onclick = () => c.remove();
+    // beside the row (to its left if there's room), kept on screen
+    const r = row.getBoundingClientRect(), cw = c.offsetWidth || 340;
+    let x = r.left - cw - 14; if (x < 8) x = Math.min(innerWidth - cw - 8, r.right + 14); if (x < 8) x = 8;
+    c.style.left = x + "px"; c.style.top = Math.max(8, Math.min(innerHeight - c.offsetHeight - 8, r.top - 10)) + "px";
+    seen(key);
+  }
+  const lookSent = {};
+  async function seen(whose) {
+    const url = snapNow?.presence; if (!url || !me || Date.now() - (lookSent[whose] || 0) < 60000) return; lookSent[whose] = Date.now();
+    try {
+      spot ||= (await sha(KEY + "|presence")).slice(0, 24);
+      const n = await lockName(JSON.stringify([me, whose])); if (!n) return;
+      const id = sid + "k" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+      await fetch(`${url}/mriv/${spot}/${id}.json`, { method: "PUT", body: JSON.stringify({ n, t: { ".sv": "timestamp" }, k: 1 }) });
+    } catch (_) {}
+  }
+  addEventListener("DOMContentLoaded", () => {
+    const ops = document.getElementById("ops"); if (!ops) return;
+    ops.addEventListener("click", (e) => { const row = e.target.closest(".row"); if (!row || !ops.contains(row) || document.getElementById("mrivGate")) return; e.stopPropagation(); card(row); }, true);
+  });
+  document.addEventListener("click", (e) => { const c = document.getElementById("mrivCard"); if (c && !c.contains(e.target) && !e.target.closest?.("#ops .row")) c.remove(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") document.getElementById("mrivCard")?.remove(); });
+  // ---- everyone picks their name first: the board waits behind a "Who's watching?" card until a name is picked – one of the
+  // office staff the board knows, or typed in when it isn't on the list ("~" in front marks it as typed). Saved in this browser,
+  // so it's asked once; "Change name" in the YOU menu brings the card back. It isn't a sign-in: anyone can pick any name.
   let gateQ = "", gateTyping = false, gateCancel = false;
   function staffList() {
     const c = snapNow?.contrib; if (!c) return [];
@@ -979,7 +1007,7 @@
            <div class="gb"><button class="glink" data-g="list">← Back to the list</button><button class="ggo" data-g="typed" disabled>Continue</button></div>`
         : `<input id="mrivGateQ" class="gq" placeholder="Search names…" autocomplete="off" value="${esc(gateQ)}"><div class="gl"></div>
            <button class="glink" data-g="type">Not on the list? Type your name</button>`}
-      <p class="gnote">Saved in this browser, so you're only asked once. It isn't a sign-in – it highlights your row, and lets whoever runs the board see who's watching.</p>
+      <p class="gnote">Saved in this browser, so you're only asked once. It isn't a sign-in – it highlights your row.</p>
       ${gateCancel ? `<div class="gb"><span></span><button class="glink" data-g="cancel">Cancel</button></div>` : ""}</div>`;
     gateList();
     const f = g.querySelector(gateTyping ? "#mrivGateName" : "#mrivGateQ"); if (f && !matchMedia("(pointer: coarse)").matches) setTimeout(() => f.focus(), 30);
@@ -1958,8 +1986,8 @@
       const sub = pd ? actText(pd.d) || "updates" : "";
       const line = v.t ? topActs(v.t) : `${fmtN(v.old.jobs)} closed · ${fmtN(v.old.adds)} added`;
       const lineBefore = pd && v.t ? topActs(minus(v.t, pd.d)) : line;
-      const tip = v.t ? `${person(n)}: ${fmtN(v.pts)} points = ${actFull(v.t)}` : `${person(n)}: ${fmtN(v.pts)} points`;
-      const html = `<div class="row${pd ? " pend" : ""}${flashNames.has(n) && !pd ? " flash" : ""}" data-key="${esc(key)}" data-sort='${JSON.stringify(pd ? [pd.m0] : [v.pts])}'${pd ? ` data-sortnew='${JSON.stringify([v.pts])}' data-gaintxt="${esc(chip)}" data-gain="${np}" data-sub="${esc(sub)}"` : ""} data-tip="${esc(tip)}">
+      const tip = v.t ? `${person(n)}: ${fmtN(v.pts)} points = ${actFull(v.t)}` : `${person(n)}: ${fmtN(v.pts)} points`; // (hover breakdown: on the boards only)
+      const html = `<div class="row${pd ? " pend" : ""}${flashNames.has(n) && !pd ? " flash" : ""}" data-key="${esc(key)}" data-sort='${JSON.stringify(pd ? [pd.m0] : [v.pts])}'${pd ? ` data-sortnew='${JSON.stringify([v.pts])}' data-gaintxt="${esc(chip)}" data-gain="${np}" data-sub="${esc(sub)}"` : ""}${window.MRIV ? "" : ` data-tip="${esc(tip)}"`}>
       <div class="rank"></div>
       <div class="name">${avatar(n)}<span class="nm">${esc(person(n))}</span></div><div class="bar"><div class="fill" ${pd ? `data-later="${w}"` : `data-w="${w}"`} style="width:${pd ? pd.w0 : w0}%"></div></div>
       <div class="nums">${pd ? `<b data-count="${esc(txt)}" data-hold="${esc(pd.t0)}">${esc(pd.t0)}</b>` : `<b data-count="${esc(txt)}" data-from="${esc(memo.txt[key] ?? "")}">${txt}</b>`} <span class="u">pt${v.pts === 1 ? "" : "s"}</span><small${pd ? ` data-later="${esc(line)}"` : ""}>${esc(lineBefore)}</small></div></div>`;
@@ -2223,7 +2251,7 @@
     $("sHide").checked = schedule.hiddenWindow !== false; $("sAwake").checked = schedule.awake !== false;
     insState(); $("insMsg").textContent = "";
     { const g = window.BoardSync?.get() || {}; $("syRepo").value = g.repo || ""; $("syToken").value = ""; $("syToken").placeholder = g.hasToken ? "saved – leave blank to keep it" : "github_pat_…"; $("syRole").value = g.role || "off"; $("syName").value = g.name || ""; }
-    vlFill(); $("vlState").textContent = vlStatus(); vlWatchOpen();
+    vlFill(); $("vlState").textContent = vlStatus(); window.ViewWatch?.open();
     { const W = ptCfg(); for (const k of ["r", "b", "k", "p", "c", "x", "u4"]) $("pt_" + k).value = W[k]; $("pt_bonus").checked = W.bonus !== false; const sn = contribPending() ? contribResetAt : contrib?.since; $("ptSince").textContent = sn ? new Date(sn).toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "the next update"; $("ptResetMsg").textContent = ""; }
     $("sAct").value = schedule.activitySecs || 20;
     $("sLive").checked = !!schedule.live; $("sLiveMins").value = schedule.pollSecs || 20; $("sChime").checked = !!prefs.chime; $("sTotal").value = prefs.totalTarget || ""; $("sRound").value = prefs.roundMins ?? 15; $("sCards").checked = !!prefs.cards; $("sXmas").checked = prefs.theme === "christmas";
@@ -2245,7 +2273,7 @@
         const sets = ` · settings checked ${t(y.setCheck)}${y.setBy ? ` (last changed on ${y.setBy}${y.setAt ? " " + new Date(y.setAt).toLocaleString("en-GB") : ""})` : ""}`;
         if (y.role === "publish") return head + `this PC reads MRI and shares the board · last shared ${t(y.pubAt)}${y.pubKB ? ` (${y.pubKB} KB)` : ""}${y.pubN ? ` · ${y.pubN} shares since the board opened` : ""}` + sets + tail;
         const f = y.from || {}; return head + `showing the board shared by "${f.name || "–"}"${f.version ? ` (MRI Assist ${f.version}${f.version !== y.version ? ` – this PC has ${y.version}, update it to match` : ""})` : ""} · shared ${t(y.snapAt)} · checked ${t(y.boardCheck)}${y.note ? " · " + y.note : ""}` + sets + tail; })(),
-      `View-only link: ${vlStatus() || "off"}${(() => { const y = window.BoardSync?.status?.(); return y?.role === "publish" && y.viewLogErr ? " · viewing log: PROBLEM – " + y.viewLogErr : ""; })()}`,
+      `View-only link: ${vlStatus() || "off"}${(() => { const y = window.BoardSync?.status?.(); return y?.role === "publish" && y.viewLogErr ? " · names: PROBLEM – " + y.viewLogErr : ""; })()}`,
       `Last change to figures: ${t(d.updatedAt)} · put on screen ${t(drawnAt)}${hold ? ` · HELD by pop-ups since ${t(holdSince)}` : ""}`,
       `Last full month refresh: ${t(d.fullAt)}${d.total != null ? ` · ${d.total} rows` : ""}`,
       `Last live check: ${t(d.liveAt)}${d.todayRows != null ? ` · ${d.todayRows} rows today` : ""}`,
@@ -2328,82 +2356,6 @@
     if (v.err) return "PROBLEM on the TV: " + v.err;
     return `On · the TV last shared the figures at ${hm(v.at)}${v.kb ? ` (${v.kb} KB)` : ""}${v.pageAt ? ` · page put up ${new Date(v.pageAt).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}` : ""}${vl.presence && v.names?.err && v.names.err !== "not set up" ? ` · names: PROBLEM – ${v.names.err}` : ""}. The first time, GitHub Pages can take a few minutes to show the page.`;
   }
-  // ---- WHO'S WATCHING the view-only link: private – only here in ⚙, behind the PIN (not on the board, not on the view-only page).
-  // The number is the TV's estimate from GitHub's downloads; the names are read straight from Firebase every 10 seconds while
-  // this window is open, from the people who pressed Find me and picked their name.
-  let vwT = null, vlLogT = null, vlLogDay = "";
-  async function vlWatchOpen() {
-    clearTimeout(vwT); clearTimeout(vlLogT); const vl = prefs.viewLink || {}, on = !!(vl.on && vl.repo && vl.key);
-    $("vlWatchRow").style.display = on ? "" : "none"; for (const id of ["vlWatch", "vlLog"]) { $(id).style.display = "none"; $(id).innerHTML = ""; }
-    $("vlLogBtn").style.display = vl.presence ? "" : "none"; // (names – and so the log – need the Firebase address)
-    if (!on) return;
-    // set up before v2.34 (no key pair for locking names yet): make one now, so names are private from the next check-in
-    if (vl.presence && !vl.namePriv && window.BoardSync?.newNameKeys) { try { const nk = await window.BoardSync.newNameKeys(); await window.MRIBoard.savePrefs({ viewLink: { ...vl, namePub: nk.pub, namePriv: nk.priv } }); } catch (_) {} }
-    if (await window.Insights?.isOpen?.()) vlWatch(); // the PIN was put in a moment ago: straight in
-  }
-  async function vlWatch() {
-    clearTimeout(vwT); const box = $("vlWatch"); if (!$("dlg").open) return;
-    const vl = prefs.viewLink || {}, y = window.BoardSync?.status?.() || {}, v = y.role === "publish" ? y.view : y.from?.view, hm = (x) => new Date(x).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
-    const w = v?.watch && Date.now() - v.watch.at < 15 * 60e3 ? v.watch : null, pk = v?.peak?.n != null ? v.peak : null;
-    let names = null; if (vl.presence) { try { names = await window.BoardSync.namesNow(vl); } catch (e) { names = { err: e.message || String(e) }; } }
-    const list = names?.list || [], pagesNamed = list.reduce((s, x) => s + (x.pages || 1), 0), n = Math.max(w?.n || 0, list.length), others = Math.max(0, (w?.n || 0) - pagesNamed); // (the estimate counts pages: someone on two devices is two)
-    const typed = (u) => String(u || "").startsWith("~");
-    const who = list.map((x) => `<li><b>${esc(typed(x.u) ? String(x.name || x.u).slice(1).trim() : person(contrib?.names?.[x.u] || x.u))}</b>${typed(x.u) ? ` <span class="vwt" title="Not on the board's staff list – they typed this name in">typed their own name</span>` : ""} – since ${hm(x.since)}${x.pages > 1 ? ` (${x.pages} pages)` : ""}${x.told && x.told === x.pages && !x.shown ? ` <span class="vbg" title="Open, but not showing – another tab, or the window minimised">in the background</span>` : ""}</li>`).join("");
-    box.innerHTML = `<div class="vwh"><b>${n ? fmtN(n) : "Nobody"} watching now</b>${w ? "" : n ? "" : " <span>(the number takes a few minutes after the TV starts)</span>"}${pk ? `<span> · most today ${fmtN(pk.n)}, at ${hm(pk.at)}</span>` : ""}</div>
-      ${!vl.presence ? `<p>Add the Firebase address above to see who they are – everyone picks their name when they open the link.</p>`
-        : names?.err ? `<p>Names: couldn't read Firebase – ${esc(names.err)}.</p>`
-        : `${who ? `<ul>${who}</ul>` : `<p>Nobody with their name picked is watching right now.</p>`}${others ? `<p>+ about ${fmtN(others)} more without a name: copies of the page opened before the name card came in and not refreshed since, someone still on the name card, or the estimate running a little ahead (it's worked out from GitHub's downloads).</p>` : ""}`}
-      <p class="vwn">Only shown here, with the PIN. Names update every 10 seconds while this window is open${names?.at ? ` (last ${new Date(names.at).toLocaleTimeString("en-GB")})` : ""}; the total is an estimate from GitHub's count of downloads. "Since" is when their page was opened – on copies from 2.47, or when it came back after a break (a phone locked, a PC asleep); older copies keep the time they were first opened. Everyone over the day: 🔒 Viewing log.</p>`;
-    box.style.display = ""; vwT = setTimeout(vlWatch, 10000);
-  }
-  $("vlWatchBtn").onclick = () => window.Insights.unlock(() => vlWatch());
-  // ---- the VIEWING LOG (PIN): who opened the view-only link, when, and how long it was on their screen and in use – day by day,
-  // kept 92 days by the TV (sync.js "the viewing log"); names from before 2.47 were never kept, so they can't be shown
-  const vlDay = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-  const vlTyped = (u) => String(u || "").startsWith("~");
-  const vlName = (u) => (vlTyped(u) ? String(u).slice(1).trim() : person(contrib?.names?.[String(u).toLowerCase()] || u));
-  const vlDur = (sec) => { const m = Math.round(sec / 60); return sec < 45 ? "<1 min" : m < 60 ? `${m} min` : `${Math.floor(m / 60)}h ${String(m % 60).padStart(2, "0")}m`; };
-  async function vlLog() {
-    clearTimeout(vlLogT); const box = $("vlLog"); if (!$("dlg").open) return;
-    const t0 = new Date(), days = Array.from({ length: 14 }, (_, i) => vlDay(new Date(t0.getFullYear(), t0.getMonth(), t0.getDate() - i)));
-    if (box.style.display === "none") { box.innerHTML = `<p>Reading the viewing log…</p>`; box.style.display = ""; }
-    let res; try { res = await window.BoardSync.viewLog(days); } catch (e) { box.innerHTML = `<p>Couldn't read the viewing log – ${esc(e.message || String(e))}.</p>`; vlLogT = setTimeout(vlLog, 60000); return; }
-    if (!$("dlg").open || box.style.display === "none") return;
-    const now = Date.now(), hm = (t) => new Date(t).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
-    const dayName = (d, long) => new Date(d + "T12:00:00").toLocaleDateString("en-GB", long ? { weekday: "long", day: "numeric", month: "long" } : { weekday: "short", day: "numeric" });
-    const live = (x) => !x.l && now - x.t < 100000, endOf = (x) => (live(x) ? now : x.l || x.t);
-    const span = (vs) => { let tot = 0, a = 0, b = 0; for (const x of [...vs].sort((p, q) => p.f - q.f)) { const e = endOf(x); if (x.f > b) { tot += b - a; a = x.f; b = e; } else b = Math.max(b, e); } return Math.max(0, tot + b - a) / 1000; }; // (two devices at once count once)
-    const rows = (list) => { const g = {}; for (const x of list) (g[String(x.u).toLowerCase()] ||= []).push(x);
-      return Object.values(g).map((vs) => { vs.sort((p, q) => p.f - q.f); const has = vs.some((x) => x.v != null), sum = (k) => (has ? vs.reduce((s, x) => s + (x[k] || 0), 0) : null);
-        return { u: vs[0].u, vs, first: vs[0].f, last: Math.max(...vs.map(endOf)), open: span(vs), v: sum("v"), a: sum("a"), now: vs.some(live), days: new Set(vs.map((x) => vlDay(new Date(x.f)))).size }; }); };
-    const byDay = Object.fromEntries(res.days.map((r) => [r.day, Object.values(r.s || {})])), all = Object.values(byDay).flat();
-    if (vlLogDay !== "all" && !days.includes(vlLogDay)) vlLogDay = days[0];
-    const people = (list) => new Set(list.map((x) => String(x.u).toLowerCase())).size;
-    const chips = [`<button class="vday${vlLogDay === "all" ? " on" : ""}" data-vld="all">Last 14 days<i>${people(all) || "–"}</i></button>`,
-      ...days.map((d, i) => { const pre = res.since && d < vlDay(new Date(res.since)) && !(byDay[d] || []).length; return `<button class="vday${d === vlLogDay ? " on" : ""}${pre ? " pre" : ""}" data-vld="${d}"${pre ? ` title="Before the log started"` : ""}>${i ? esc(dayName(d)) : "Today"}<i>${people(byDay[d] || []) || "–"}</i></button>`; })].join("");
-    const tag = (u) => (vlTyped(u) ? ` <span class="vwt" title="Not on the board's staff list – they typed this name in">typed their own name</span>` : "");
-    const tm = (sec) => (sec == null ? `<span class="vold" title="A copy of the page opened before 2.47 – it gives times only, until it's refreshed">–</span>` : vlDur(sec));
-    const whenEnded = (x) => { const e = x.l || x.t, d = vlDay(new Date(e)); return hm(e) + (d !== vlDay(new Date(x.f)) ? ` <i>(${esc(dayName(d))})</i>` : ""); };
-    let body;
-    if (vlLogDay === "all") {
-      const rs = rows(all).sort((p, q) => q.last - p.last);
-      body = rs.length ? `<table><thead><tr><th>Who</th><th>Days</th><th>Visits</th><th>Open</th><th>On screen</th><th>Using it</th><th>Last seen</th></tr></thead><tbody>${rs.map((r) => `<tr><td><b>${esc(vlName(r.u))}</b>${tag(r.u)}</td><td>${r.days}</td><td>${r.vs.length}</td><td>${vlDur(r.open)}</td><td>${tm(r.v)}</td><td>${tm(r.a)}</td><td>${r.now ? `<span class="now">watching now</span>` : `${vlDay(new Date(r.last)) === days[0] ? "today" : esc(dayName(vlDay(new Date(r.last))))} ${hm(r.last)}`}</td></tr>`).join("")}</tbody></table>`
-        : `<p>Nobody has opened the view-only link in the last 14 days${res.since ? " since the log started" : ""}.</p>`;
-    } else {
-      const list = byDay[vlLogDay] || [], rs = rows(list).sort((p, q) => p.first - q.first), onScr = rs.reduce((s, r) => s + (r.v || 0), 0);
-      body = rs.length ? `<p class="vsum">${rs.length} ${rs.length === 1 ? "person" : "people"} · ${list.length} visit${list.length === 1 ? "" : "s"}${onScr ? ` · on screen ${vlDur(onScr)} between them` : ""}</p>
-        <table><thead><tr><th>Who</th><th>Visits (opened – left)</th><th>Open</th><th>On screen</th><th>Using it</th></tr></thead><tbody>${rs.map((r) => `<tr><td><b>${esc(vlName(r.u))}</b>${tag(r.u)}</td><td class="v">${r.vs.map((x) => `<span title="${x.v != null ? `On screen ${vlDur(x.v)} · using it ${vlDur(x.a || 0)}` : "A copy of the page opened before 2.47 – times only"}">${hm(x.f)} – ${live(x) ? `<span class="now">watching now</span>` : whenEnded(x)}</span>`).join("<br>")}</td><td>${vlDur(r.open)}</td><td>${tm(r.v)}</td><td>${tm(r.a)}</td></tr>`).join("")}</tbody></table>`
-        : `<p>Nobody opened the view-only link ${vlLogDay === days[0] ? "today" : "on " + esc(dayName(vlLogDay, true))}${!res.since ? "" : vlDay(new Date(res.since)) > vlLogDay ? " – or if they did, it was before the log started" : ""}.</p>`;
-    }
-    const sinceTxt = res.since ? `kept since ${esc(new Date(res.since).toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }))}` : "starts once the PC that reads MRI has 2.47";
-    box.innerHTML = `<div class="vlh"><b>Viewing log</b><span>${sinceTxt}</span><button class="btn ghost" id="vlLogAgain" title="Look again (it also updates by itself every minute)">↻</button></div>
-      <div class="vdays">${chips}</div>${body}
-      <p class="vwn"><b>Open</b> – from opening the link to leaving it: closing it, or the page going quiet (a phone locked, a PC asleep). A refresh is the same visit; back after a break is a new one. <b>On screen</b> – that tab showing, the window not minimised. <b>Using it</b> – clicking, scrolling, typing or moving the mouse on it. Times to about a minute. Only shown here, with the PIN; kept 92 days. Names from before the log started were never stored anywhere, so they can't be shown.</p>`;
-    box.querySelectorAll("[data-vld]").forEach((b) => (b.onclick = () => { vlLogDay = b.dataset.vld; vlLog(); }));
-    $("vlLogAgain").onclick = () => vlLog();
-    vlLogT = setTimeout(vlLog, 60000);
-  }
-  $("vlLogBtn").onclick = () => window.Insights.unlock(() => { vlLogDay = ""; vlLog(); });
   // the Firebase address on its own (⚙'s Save, or Enter in the box): a new address gets a new pair of keys for locking names
   async function vlPresenceSave() {
     const vl = prefs.viewLink || {}, presence = String($("vlPres").value || "").trim().replace(/\/+$/, "");
@@ -2411,7 +2363,7 @@
     if (presence && !window.BoardSync?.okPresence(presence)) return "The Firebase address should look like https://your-project-default-rtdb.europe-west1.firebasedatabase.app (or leave it empty).";
     const { presence: _p, namePub: _a, namePriv: _b, ...rest } = vl, next = { ...rest, at: Date.now() };
     if (presence) { const nk = await window.BoardSync.newNameKeys(); Object.assign(next, { presence, namePub: nk.pub, namePriv: nk.priv }); }
-    await window.MRIBoard.savePrefs({ viewLink: next }); vlFill(); vlWatchOpen(); return "";
+    await window.MRIBoard.savePrefs({ viewLink: next }); vlFill(); window.ViewWatch?.open(); return "";
   }
   $("vlPres").addEventListener("keydown", async (e) => {
     if (e.key !== "Enter") return; e.preventDefault();
