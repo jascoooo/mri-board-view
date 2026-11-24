@@ -473,6 +473,14 @@
   .vlwatch{margin:0 0 12px;padding:10px 14px;background:#0f1a2e;border:1px solid rgba(156,200,255,.25);border-radius:10px;font-size:13px;color:#c9d6ee}
   .vlwatch .vwh{font-size:15px;color:#e8f1ff;margin-bottom:6px}.vlwatch .vwh span{font-size:12px;color:#8ea3c4}
   .vlwatch ul{margin:4px 0 6px;padding-left:18px;columns:2;column-gap:28px}.vlwatch li{margin:2px 0;break-inside:avoid}.vlwatch p{margin:4px 0}.vlwatch .vwn{font-size:11.5px;color:#8ea3c4}.vlwatch .vwt{font-size:11px;color:#ffd9a0;background:#2a1f12;border:1px solid rgba(255,180,90,.45);border-radius:999px;padding:0 7px}
+  .vlwatch .vbg{font-size:11px;color:#9fb4d6;background:#16213a;border:1px solid rgba(156,200,255,.3);border-radius:999px;padding:0 7px}
+  .vllog .vlh{display:flex;align-items:center;gap:10px;margin-bottom:8px}.vllog .vlh b{font-size:15px;color:#e8f1ff}.vllog .vlh span{font-size:12px;color:#8ea3c4;margin-right:auto}.vllog .vlh .btn{padding:2px 10px}
+  .vllog .vdays{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}.vllog .vday{background:#141c33;border:1px solid rgba(255,255,255,.12);color:#c9d5ee;border-radius:999px;padding:3px 10px;font-size:12px;cursor:pointer}
+  .vllog .vday:hover{border-color:rgba(255,211,106,.5)}.vllog .vday.pre{opacity:.45}.vllog .vday.on{border-color:#ffd36a;background:rgba(255,211,106,.14);color:#ffe3a0}.vllog .vday i{font-style:normal;color:#8ea3c4;margin-left:6px}.vllog .vday.on i{color:#ffe3a0}
+  .vllog .vsum{color:#c9d6ee;margin:0 0 6px}.vllog table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:6px}
+  .vllog th{text-align:left;color:#8ea3c4;font-weight:600;font-size:11.5px;padding:4px 8px;border-bottom:1px solid rgba(255,255,255,.1);white-space:nowrap}
+  .vllog td{padding:5px 8px;border-bottom:1px solid rgba(255,255,255,.05);vertical-align:top;color:#e8f1ff;white-space:nowrap}.vllog td.v{color:#c9d5ee;line-height:1.55}.vllog td.v i{color:#8ea3c4;font-style:normal}
+  .vllog .now{color:#5ee0a0;font-weight:700}.vllog .vold{color:#6f819f;cursor:help}.vllog .vwn b{color:#b9c8e2;font-weight:600}
   .watchpill{display:inline-flex;align-items:center;gap:6px;background:#132238;color:#9cc8ff;border:1px solid rgba(156,200,255,.3);border-radius:999px;padding:4px 11px;font-size:13px;font-weight:600;margin-right:10px;cursor:default}.watchpill svg{width:15px;height:15px}.watchpill b{color:#fff}
   /* the client pop-up: Value check | Change log */
   #cv [hidden]{display:none!important}
@@ -735,8 +743,9 @@
           </div>
           <p class="hint" id="vlMsg">A live, read-only copy of the board for anyone with the link.</p>
           <p class="hint" id="vlState" style="color:#ffd9a0"></p>
-          <div class="row2" id="vlWatchRow" style="display:none"><button class="btn ghost" id="vlWatchBtn">🔒 Who's watching now</button></div>
+          <div class="row2" id="vlWatchRow" style="display:none"><button class="btn ghost" id="vlWatchBtn">🔒 Who's watching now</button><button class="btn ghost" id="vlLogBtn">🔒 Viewing log</button></div>
           <div id="vlWatch" class="vlwatch" style="display:none"></div>
+          <div id="vlLog" class="vlwatch vllog" style="display:none"></div>
         </div>
       </section>
       <section class="sx-tab" data-t="health">
@@ -789,7 +798,7 @@
   <p class="hint" id="insPinMsg" style="color:#ff9a9a"></p>
   <div class="row2" style="justify-content:flex-end"><button class="btn ghost" id="insPinCancel">Cancel</button><button class="btn" id="insPinGo">Open</button></div>
 </dialog>
-<script>window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin","version":"2.46.1"};
+<script>window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin","version":"2.47.0"};
 // MRI Assist – the VIEW-ONLY board: the leaderboard as a normal web page that anyone with the link can watch – nothing to
 // install, no sign-in, nothing to click into. The PC that reads MRI (the TV) puts this page on a GitHub Pages site together
 // with the board's figures, ENCRYPTED. The key is in the link, after the "#", which a browser never sends anywhere, so the
@@ -878,29 +887,62 @@
   // ---- checking in by name: only once you've picked your name, and only if the office has set it up. Every 30 seconds this
   // page says "<your name> is watching", under a place only the link leads to, with the name locked by the boards' public key –
   // this page can lock it but can't open it, and nor can anyone else with the link; only the boards can. Closing the page
-  // checks out.
+  // says it's leaving (see "the visit" below).
   let sid = ""; try { sid = sessionStorage.getItem("mriv:sid") || ""; if (!sid) { sid = Math.random().toString(36).slice(2, 12); sessionStorage.setItem("mriv:sid", sid); } } catch (_) { sid = Math.random().toString(36).slice(2, 12); }
   let spot = "", beatT = null;
   const b64 = (u8) => { let s = ""; for (let i = 0; i < u8.length; i++) s += String.fromCharCode(u8[i]); return btoa(s); };
   const sha = async (t) => [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)))].map((b) => b.toString(16).padStart(2, "0")).join("");
-  let pubKey = null, pubFor = "", since = 0, sinceFor = "";
+  let pubKey = null, pubFor = "";
   async function lockName(text) { // RSA-OAEP with the boards' public key: "R1:" + base64
     const pk = snapNow?.presenceKey; if (!pk) return null;
     if (pubFor !== pk) { pubKey = await crypto.subtle.importKey("spki", Uint8Array.from(atob(pk), (c) => c.charCodeAt(0)), { name: "RSA-OAEP", hash: "SHA-256" }, false, ["encrypt"]); pubFor = pk; }
     return "R1:" + b64(new Uint8Array(await crypto.subtle.encrypt({ name: "RSA-OAEP" }, pubKey, new TextEncoder().encode(text))));
   }
+  // ---- the visit (2.47, Jake 23 Nov), for the boards' viewing log: one stretch of this page open under one name. A refresh carries
+  // on the same visit. It starts again after a pause of over 100 seconds (the phone locked, the PC asleep, the browser froze the
+  // tab, no connection – the boards had stopped seeing it, so "since" starts again when it's back), after a change of name, and at
+  // midnight. Each check-in says how long the board has been on screen in this visit (this tab showing, the window not minimised),
+  // how long it's been in use (a click, tap, scroll, key or mouse movement on it in the last 15 seconds), and whether it's on
+  // screen right now – nothing about what was clicked.
+  const GAP = 100000, VK = "mriv:visit";
+  const sameDay = (t) => new Date(t).toDateString() === new Date().toDateString();
+  let V = { u: "", f: 0, v: 0, a: 0, ok: 0 }; // f: started (Firebase's clock); v, a: seconds on screen, in use; ok: last check-in (this device's clock)
+  try { const s = JSON.parse(sessionStorage.getItem(VK) || "null"); if (s?.f && s.u === me && Date.now() - s.ok < GAP && sameDay(s.f)) V = { ...V, ...s }; } catch (_) {}
+  const keep = () => { try { sessionStorage.setItem(VK, JSON.stringify(V)); } catch (_) {} };
+  let lastTick = Date.now(), wasOn = document.visibilityState === "visible", lastUse = 0, px = -1, py = -1;
+  function tally() { // the time since the last look: on screen if it was showing, in use if it was used in the last 15 seconds
+    const now = Date.now(), dt = Math.max(0, Math.min(now - lastTick, 10000)) / 1000; lastTick = now; // (a long gap – asleep – adds next to nothing)
+    if (wasOn && me && V.f && V.u === me) { V.v += dt; if (now - lastUse < 15000) V.a += dt; keep(); }
+    wasOn = document.visibilityState === "visible";
+  }
+  setInterval(tally, 5000);
+  const used = () => { lastUse = Date.now(); };
+  addEventListener("pointermove", (e) => { if (Math.abs(e.clientX - px) + Math.abs(e.clientY - py) > 3) { if (px >= 0) used(); px = e.clientX; py = e.clientY; } }, { passive: true, capture: true }); // (the mouse really moved – not the board scrolling under it)
+  for (const ev of ["pointerdown", "keydown", "wheel", "touchstart"]) addEventListener(ev, used, { passive: true, capture: true });
+  let visT = null;
+  document.addEventListener("visibilitychange", () => { tally(); clearTimeout(visT); if (me) visT = setTimeout(beat, 1500); }); // (on screen, or put in the background: the boards know within seconds)
+  let beating = false, again = false;
   async function beat() {
     clearTimeout(beatT); beatT = setTimeout(beat, 30000);
     const url = snapNow?.presence; if (!url || !me) return;
-    spot ||= (await sha(KEY + "|presence")).slice(0, 24);
+    if (beating) { again = true; return; } // (one at a time – the one asked for meanwhile goes straight after)
+    beating = true; again = false;
     try {
+      spot ||= (await sha(KEY + "|presence")).slice(0, 24);
       const n = await lockName(me); if (!n) return;
-      if (sinceFor !== me) { since = 0; sinceFor = me; } // when this page started watching under this name (Firebase's clock)
-      const r = await fetch(`${url}/mriv/${spot}/${sid}.json`, { method: "PUT", body: JSON.stringify({ n, t: { ".sv": "timestamp" }, f: since || { ".sv": "timestamp" } }) });
-      if (r.ok && !since) since = Number((await r.json())?.f) || 0;
-    } catch (_) {}
+      tally();
+      if (V.u !== me || !V.f || Date.now() - V.ok > GAP || !sameDay(V.f)) { V = { u: me, f: 0, v: 0, a: 0, ok: 0 }; keep(); } // a new visit
+      const r = await fetch(`${url}/mriv/${spot}/${sid}.json`, { method: "PUT", body: JSON.stringify({ n, t: { ".sv": "timestamp" }, f: V.f || { ".sv": "timestamp" }, v: Math.round(V.v), a: Math.round(V.a), o: document.visibilityState === "visible" ? 1 : 0 }) });
+      if (r.ok) { const j = await r.json().catch(() => null); if (!V.f) V.f = Number(j?.f) || 0; V.ok = Date.now(); keep(); }
+    } catch (_) {} finally { beating = false; if (again) setTimeout(beat, 0); }
   }
-  function leave() { const url = snapNow?.presence; if (!url || !spot) return; try { fetch(`${url}/mriv/${spot}/${sid}.json`, { method: "DELETE", keepalive: true }); } catch (_) {} }
+  // closing the page (or clearing the name) says the visit has ended, with its final times, instead of deleting the check-in – so
+  // the viewing log keeps short visits and when they ended; the TV tidies it away 10 minutes later. (A POST that Firebase treats
+  // as a PATCH: the browser sends it as the page closes, without having to ask Firebase first.)
+  function leave() {
+    const url = snapNow?.presence; if (!url || !spot || !V.f) return; tally();
+    try { fetch(`${url}/mriv/${spot}/${sid}.json?x-http-method-override=PATCH`, { method: "POST", body: JSON.stringify({ l: { ".sv": "timestamp" }, v: Math.round(V.v), a: Math.round(V.a), o: 0 }), keepalive: true }); } catch (_) {}
+  }
   addEventListener("pagehide", leave);
   function setMe(u) { const was = me; me = u || ""; if (!me) setTimeout(() => gate(true), 0); try { if (me) localStorage.setItem(ME, me); else localStorage.removeItem(ME); } catch (_) {} if (!me && was) leave(); else if (me) beat(); mark(); pill(); if (document.getElementById("mrivMenu")) menu(true); F.pause = 0; F.glanceEnd = 0; F.glanceAt = 0; }
   addEventListener("DOMContentLoaded", () => {
@@ -1034,11 +1076,19 @@
       const bytes = new Uint8Array(await r.arrayBuffer()); etag = r.headers.get("etag");
       let snap; try { snap = await unseal(bytes); } catch (_) { wait = 120000; return banner("This link has been replaced – ask for the new one.", "bad"); }
       if (snap.off) { wait = 120000; return banner("The view-only board has been turned off.", "bad"); }
-      lastSnapAt = snap.at || Date.now(); banner(slow, "warn"); apply(snap); fresh();
+      lastSnapAt = snap.at || Date.now(); banner(slow, "warn"); apply(snap); fresh(); update(snap);
     } catch (_) { wait = 30000; banner("Can't reach the board right now – trying again shortly.", "warn"); }
     finally { busy = false; next(document.hidden ? Math.max(wait, 60000) : wait); }
   }
   document.addEventListener("visibilitychange", () => { if (!document.hidden) next(300); }); // back on screen: look straight away
+  // a newer copy of this page has been published (MRI Assist was updated on the PC that reads MRI): reload into it – once GitHub
+  // Pages has had a few minutes to put it live, never while a name is being picked, and at most every 10 minutes (in case Pages is
+  // still handing out this copy). The name and the visit carry on.
+  function update(snap) {
+    if (!snap.pv || !C.version || snap.pv === C.version || Date.now() - (Number(snap.pAt) || 0) < 180000 || document.getElementById("mrivGate")) return;
+    try { if (Date.now() - (Number(sessionStorage.getItem("mriv:upd")) || 0) < 600000) return; sessionStorage.setItem("mriv:upd", String(Date.now())); } catch (_) { return; }
+    tally(); setTimeout(() => location.reload(), 200);
+  }
   if (!KEY || !C.repo) { addEventListener("DOMContentLoaded", () => banner("This link isn't complete – copy the whole link, including everything after the #.", "bad")); return; }
   poll();
 })();
@@ -2195,7 +2245,7 @@
         const sets = ` · settings checked ${t(y.setCheck)}${y.setBy ? ` (last changed on ${y.setBy}${y.setAt ? " " + new Date(y.setAt).toLocaleString("en-GB") : ""})` : ""}`;
         if (y.role === "publish") return head + `this PC reads MRI and shares the board · last shared ${t(y.pubAt)}${y.pubKB ? ` (${y.pubKB} KB)` : ""}${y.pubN ? ` · ${y.pubN} shares since the board opened` : ""}` + sets + tail;
         const f = y.from || {}; return head + `showing the board shared by "${f.name || "–"}"${f.version ? ` (MRI Assist ${f.version}${f.version !== y.version ? ` – this PC has ${y.version}, update it to match` : ""})` : ""} · shared ${t(y.snapAt)} · checked ${t(y.boardCheck)}${y.note ? " · " + y.note : ""}` + sets + tail; })(),
-      `View-only link: ${vlStatus() || "off"}`,
+      `View-only link: ${vlStatus() || "off"}${(() => { const y = window.BoardSync?.status?.(); return y?.role === "publish" && y.viewLogErr ? " · viewing log: PROBLEM – " + y.viewLogErr : ""; })()}`,
       `Last change to figures: ${t(d.updatedAt)} · put on screen ${t(drawnAt)}${hold ? ` · HELD by pop-ups since ${t(holdSince)}` : ""}`,
       `Last full month refresh: ${t(d.fullAt)}${d.total != null ? ` · ${d.total} rows` : ""}`,
       `Last live check: ${t(d.liveAt)}${d.todayRows != null ? ` · ${d.todayRows} rows today` : ""}`,
@@ -2281,10 +2331,11 @@
   // ---- WHO'S WATCHING the view-only link: private – only here in ⚙, behind the PIN (not on the board, not on the view-only page).
   // The number is the TV's estimate from GitHub's downloads; the names are read straight from Firebase every 10 seconds while
   // this window is open, from the people who pressed Find me and picked their name.
-  let vwT = null;
+  let vwT = null, vlLogT = null, vlLogDay = "";
   async function vlWatchOpen() {
-    clearTimeout(vwT); const vl = prefs.viewLink || {}, on = !!(vl.on && vl.repo && vl.key);
-    $("vlWatchRow").style.display = on ? "" : "none"; $("vlWatch").style.display = "none"; $("vlWatch").innerHTML = "";
+    clearTimeout(vwT); clearTimeout(vlLogT); const vl = prefs.viewLink || {}, on = !!(vl.on && vl.repo && vl.key);
+    $("vlWatchRow").style.display = on ? "" : "none"; for (const id of ["vlWatch", "vlLog"]) { $(id).style.display = "none"; $(id).innerHTML = ""; }
+    $("vlLogBtn").style.display = vl.presence ? "" : "none"; // (names – and so the log – need the Firebase address)
     if (!on) return;
     // set up before v2.34 (no key pair for locking names yet): make one now, so names are private from the next check-in
     if (vl.presence && !vl.namePriv && window.BoardSync?.newNameKeys) { try { const nk = await window.BoardSync.newNameKeys(); await window.MRIBoard.savePrefs({ viewLink: { ...vl, namePub: nk.pub, namePriv: nk.priv } }); } catch (_) {} }
@@ -2295,17 +2346,64 @@
     const vl = prefs.viewLink || {}, y = window.BoardSync?.status?.() || {}, v = y.role === "publish" ? y.view : y.from?.view, hm = (x) => new Date(x).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
     const w = v?.watch && Date.now() - v.watch.at < 15 * 60e3 ? v.watch : null, pk = v?.peak?.n != null ? v.peak : null;
     let names = null; if (vl.presence) { try { names = await window.BoardSync.namesNow(vl); } catch (e) { names = { err: e.message || String(e) }; } }
-    const list = names?.list || [], n = Math.max(w?.n || 0, list.length), others = Math.max(0, (w?.n || 0) - list.length);
+    const list = names?.list || [], pagesNamed = list.reduce((s, x) => s + (x.pages || 1), 0), n = Math.max(w?.n || 0, list.length), others = Math.max(0, (w?.n || 0) - pagesNamed); // (the estimate counts pages: someone on two devices is two)
     const typed = (u) => String(u || "").startsWith("~");
-    const who = list.map((x) => `<li><b>${esc(typed(x.u) ? String(x.u).slice(1).trim() : person(contrib?.names?.[x.u] || x.u))}</b>${typed(x.u) ? ` <span class="vwt" title="Not on the board's staff list – they typed this name in">typed their own name</span>` : ""} – since ${hm(x.since)}${x.pages > 1 ? ` (${x.pages} pages)` : ""}</li>`).join("");
+    const who = list.map((x) => `<li><b>${esc(typed(x.u) ? String(x.name || x.u).slice(1).trim() : person(contrib?.names?.[x.u] || x.u))}</b>${typed(x.u) ? ` <span class="vwt" title="Not on the board's staff list – they typed this name in">typed their own name</span>` : ""} – since ${hm(x.since)}${x.pages > 1 ? ` (${x.pages} pages)` : ""}${x.told && x.told === x.pages && !x.shown ? ` <span class="vbg" title="Open, but not showing – another tab, or the window minimised">in the background</span>` : ""}</li>`).join("");
     box.innerHTML = `<div class="vwh"><b>${n ? fmtN(n) : "Nobody"} watching now</b>${w ? "" : n ? "" : " <span>(the number takes a few minutes after the TV starts)</span>"}${pk ? `<span> · most today ${fmtN(pk.n)}, at ${hm(pk.at)}</span>` : ""}</div>
       ${!vl.presence ? `<p>Add the Firebase address above to see who they are – everyone picks their name when they open the link.</p>`
         : names?.err ? `<p>Names: couldn't read Firebase – ${esc(names.err)}.</p>`
-        : `${who ? `<ul>${who}</ul>` : `<p>Nobody with their name picked is watching right now.</p>`}${others ? `<p>+ about ${fmtN(others)} more without a name (pages opened before everyone had to pick one, or an estimate running ahead).</p>` : ""}`}
-      <p class="vwn">Only shown here, with the PIN. Names update every 10 seconds while this window is open${names?.at ? ` (last ${new Date(names.at).toLocaleTimeString("en-GB")})` : ""}; the total is an estimate from GitHub's count of downloads.</p>`;
+        : `${who ? `<ul>${who}</ul>` : `<p>Nobody with their name picked is watching right now.</p>`}${others ? `<p>+ about ${fmtN(others)} more without a name: copies of the page opened before the name card came in and not refreshed since, someone still on the name card, or the estimate running a little ahead (it's worked out from GitHub's downloads).</p>` : ""}`}
+      <p class="vwn">Only shown here, with the PIN. Names update every 10 seconds while this window is open${names?.at ? ` (last ${new Date(names.at).toLocaleTimeString("en-GB")})` : ""}; the total is an estimate from GitHub's count of downloads. "Since" is when their page was opened – on copies from 2.47, or when it came back after a break (a phone locked, a PC asleep); older copies keep the time they were first opened. Everyone over the day: 🔒 Viewing log.</p>`;
     box.style.display = ""; vwT = setTimeout(vlWatch, 10000);
   }
   $("vlWatchBtn").onclick = () => window.Insights.unlock(() => vlWatch());
+  // ---- the VIEWING LOG (PIN): who opened the view-only link, when, and how long it was on their screen and in use – day by day,
+  // kept 92 days by the TV (sync.js "the viewing log"); names from before 2.47 were never kept, so they can't be shown
+  const vlDay = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const vlTyped = (u) => String(u || "").startsWith("~");
+  const vlName = (u) => (vlTyped(u) ? String(u).slice(1).trim() : person(contrib?.names?.[String(u).toLowerCase()] || u));
+  const vlDur = (sec) => { const m = Math.round(sec / 60); return sec < 45 ? "<1 min" : m < 60 ? `${m} min` : `${Math.floor(m / 60)}h ${String(m % 60).padStart(2, "0")}m`; };
+  async function vlLog() {
+    clearTimeout(vlLogT); const box = $("vlLog"); if (!$("dlg").open) return;
+    const t0 = new Date(), days = Array.from({ length: 14 }, (_, i) => vlDay(new Date(t0.getFullYear(), t0.getMonth(), t0.getDate() - i)));
+    if (box.style.display === "none") { box.innerHTML = `<p>Reading the viewing log…</p>`; box.style.display = ""; }
+    let res; try { res = await window.BoardSync.viewLog(days); } catch (e) { box.innerHTML = `<p>Couldn't read the viewing log – ${esc(e.message || String(e))}.</p>`; vlLogT = setTimeout(vlLog, 60000); return; }
+    if (!$("dlg").open || box.style.display === "none") return;
+    const now = Date.now(), hm = (t) => new Date(t).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+    const dayName = (d, long) => new Date(d + "T12:00:00").toLocaleDateString("en-GB", long ? { weekday: "long", day: "numeric", month: "long" } : { weekday: "short", day: "numeric" });
+    const live = (x) => !x.l && now - x.t < 100000, endOf = (x) => (live(x) ? now : x.l || x.t);
+    const span = (vs) => { let tot = 0, a = 0, b = 0; for (const x of [...vs].sort((p, q) => p.f - q.f)) { const e = endOf(x); if (x.f > b) { tot += b - a; a = x.f; b = e; } else b = Math.max(b, e); } return Math.max(0, tot + b - a) / 1000; }; // (two devices at once count once)
+    const rows = (list) => { const g = {}; for (const x of list) (g[String(x.u).toLowerCase()] ||= []).push(x);
+      return Object.values(g).map((vs) => { vs.sort((p, q) => p.f - q.f); const has = vs.some((x) => x.v != null), sum = (k) => (has ? vs.reduce((s, x) => s + (x[k] || 0), 0) : null);
+        return { u: vs[0].u, vs, first: vs[0].f, last: Math.max(...vs.map(endOf)), open: span(vs), v: sum("v"), a: sum("a"), now: vs.some(live), days: new Set(vs.map((x) => vlDay(new Date(x.f)))).size }; }); };
+    const byDay = Object.fromEntries(res.days.map((r) => [r.day, Object.values(r.s || {})])), all = Object.values(byDay).flat();
+    if (vlLogDay !== "all" && !days.includes(vlLogDay)) vlLogDay = days[0];
+    const people = (list) => new Set(list.map((x) => String(x.u).toLowerCase())).size;
+    const chips = [`<button class="vday${vlLogDay === "all" ? " on" : ""}" data-vld="all">Last 14 days<i>${people(all) || "–"}</i></button>`,
+      ...days.map((d, i) => { const pre = res.since && d < vlDay(new Date(res.since)) && !(byDay[d] || []).length; return `<button class="vday${d === vlLogDay ? " on" : ""}${pre ? " pre" : ""}" data-vld="${d}"${pre ? ` title="Before the log started"` : ""}>${i ? esc(dayName(d)) : "Today"}<i>${people(byDay[d] || []) || "–"}</i></button>`; })].join("");
+    const tag = (u) => (vlTyped(u) ? ` <span class="vwt" title="Not on the board's staff list – they typed this name in">typed their own name</span>` : "");
+    const tm = (sec) => (sec == null ? `<span class="vold" title="A copy of the page opened before 2.47 – it gives times only, until it's refreshed">–</span>` : vlDur(sec));
+    const whenEnded = (x) => { const e = x.l || x.t, d = vlDay(new Date(e)); return hm(e) + (d !== vlDay(new Date(x.f)) ? ` <i>(${esc(dayName(d))})</i>` : ""); };
+    let body;
+    if (vlLogDay === "all") {
+      const rs = rows(all).sort((p, q) => q.last - p.last);
+      body = rs.length ? `<table><thead><tr><th>Who</th><th>Days</th><th>Visits</th><th>Open</th><th>On screen</th><th>Using it</th><th>Last seen</th></tr></thead><tbody>${rs.map((r) => `<tr><td><b>${esc(vlName(r.u))}</b>${tag(r.u)}</td><td>${r.days}</td><td>${r.vs.length}</td><td>${vlDur(r.open)}</td><td>${tm(r.v)}</td><td>${tm(r.a)}</td><td>${r.now ? `<span class="now">watching now</span>` : `${vlDay(new Date(r.last)) === days[0] ? "today" : esc(dayName(vlDay(new Date(r.last))))} ${hm(r.last)}`}</td></tr>`).join("")}</tbody></table>`
+        : `<p>Nobody has opened the view-only link in the last 14 days${res.since ? " since the log started" : ""}.</p>`;
+    } else {
+      const list = byDay[vlLogDay] || [], rs = rows(list).sort((p, q) => p.first - q.first), onScr = rs.reduce((s, r) => s + (r.v || 0), 0);
+      body = rs.length ? `<p class="vsum">${rs.length} ${rs.length === 1 ? "person" : "people"} · ${list.length} visit${list.length === 1 ? "" : "s"}${onScr ? ` · on screen ${vlDur(onScr)} between them` : ""}</p>
+        <table><thead><tr><th>Who</th><th>Visits (opened – left)</th><th>Open</th><th>On screen</th><th>Using it</th></tr></thead><tbody>${rs.map((r) => `<tr><td><b>${esc(vlName(r.u))}</b>${tag(r.u)}</td><td class="v">${r.vs.map((x) => `<span title="${x.v != null ? `On screen ${vlDur(x.v)} · using it ${vlDur(x.a || 0)}` : "A copy of the page opened before 2.47 – times only"}">${hm(x.f)} – ${live(x) ? `<span class="now">watching now</span>` : whenEnded(x)}</span>`).join("<br>")}</td><td>${vlDur(r.open)}</td><td>${tm(r.v)}</td><td>${tm(r.a)}</td></tr>`).join("")}</tbody></table>`
+        : `<p>Nobody opened the view-only link ${vlLogDay === days[0] ? "today" : "on " + esc(dayName(vlLogDay, true))}${!res.since ? "" : vlDay(new Date(res.since)) > vlLogDay ? " – or if they did, it was before the log started" : ""}.</p>`;
+    }
+    const sinceTxt = res.since ? `kept since ${esc(new Date(res.since).toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }))}` : "starts once the PC that reads MRI has 2.47";
+    box.innerHTML = `<div class="vlh"><b>Viewing log</b><span>${sinceTxt}</span><button class="btn ghost" id="vlLogAgain" title="Look again (it also updates by itself every minute)">↻</button></div>
+      <div class="vdays">${chips}</div>${body}
+      <p class="vwn"><b>Open</b> – from opening the link to leaving it: closing it, or the page going quiet (a phone locked, a PC asleep). A refresh is the same visit; back after a break is a new one. <b>On screen</b> – that tab showing, the window not minimised. <b>Using it</b> – clicking, scrolling, typing or moving the mouse on it. Times to about a minute. Only shown here, with the PIN; kept 92 days. Names from before the log started were never stored anywhere, so they can't be shown.</p>`;
+    box.querySelectorAll("[data-vld]").forEach((b) => (b.onclick = () => { vlLogDay = b.dataset.vld; vlLog(); }));
+    $("vlLogAgain").onclick = () => vlLog();
+    vlLogT = setTimeout(vlLog, 60000);
+  }
+  $("vlLogBtn").onclick = () => window.Insights.unlock(() => { vlLogDay = ""; vlLog(); });
   // the Firebase address on its own (⚙'s Save, or Enter in the box): a new address gets a new pair of keys for locking names
   async function vlPresenceSave() {
     const vl = prefs.viewLink || {}, presence = String($("vlPres").value || "").trim().replace(/\/+$/, "");
