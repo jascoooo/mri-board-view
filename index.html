@@ -139,7 +139,7 @@
   .ticker{display:flex;gap:.55rem;overflow:hidden;white-space:nowrap;margin-top:.2rem;padding:.15rem 0 .15rem .2rem;-webkit-mask-image:linear-gradient(90deg,#000 0,#000 92%,transparent);mask-image:linear-gradient(90deg,#000 0,#000 92%,transparent)}
   .ticker:empty{display:none}
   .ticker .tk{display:inline-flex;gap:.45rem;align-items:center;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:99px;padding:.3rem .8rem;font-size:.85rem;color:var(--text-secondary);flex:none}
-  .ticker .tk b{color:var(--text-primary);font-weight:600}
+  .ticker .tk>b{color:var(--text-primary);font-weight:600}
   .ticker .tk .jb{color:var(--cyan);font-weight:600;font-variant-numeric:tabular-nums}.ticker .tk .ct{color:var(--gold)}.ticker .tk .pv{color:var(--green);font-weight:700}
   .ticker .tk.new{border-color:rgba(62,233,138,.7);background:rgba(62,233,138,.1);animation:pop .7s var(--spring) both}
   .ticker .lbl{font:700 .72rem var(--body);text-transform:uppercase;letter-spacing:.16em;color:var(--green);align-self:center;flex:none;display:inline-flex;align-items:center;gap:.4rem}
@@ -237,6 +237,36 @@
   .gain small{display:block;font:600 .62rem var(--body);letter-spacing:.04em;text-transform:uppercase;opacity:.9;margin-top:-.1rem;white-space:nowrap}
   .gain.adj{color:#9cc8ff;border-color:rgba(120,180,255,.6);background:rgba(8,18,40,.94);box-shadow:0 0 1.4rem rgba(76,157,255,.4)}
   .ticker .tk .pv.adj{color:#9cc8ff}
+  /* ---- badges: one medal look everywhere (rows, the Latest strip, the points card, achievement screens) ---- */
+  .bdc{--s:var(--sz,42px);--m1:#ffe2c4;--m2:#c98042;--m3:#7a4419;--ink:#4a2509;flex:none;position:relative;z-index:1;display:inline-grid;place-items:center;width:var(--s);height:var(--s);border-radius:50%;box-sizing:border-box;overflow:hidden;vertical-align:middle;color:var(--ink);background:radial-gradient(ellipse 58% 40% at 34% 22%,rgba(255,255,255,.8),rgba(255,255,255,0) 72%),radial-gradient(circle at 32% 26%,var(--m1) 0,var(--m2) 52%,var(--m3) 100%);box-shadow:inset 0 0 0 calc(var(--s)*.06) rgba(255,255,255,.3),inset 0 calc(var(--s)*-.08) calc(var(--s)*.12) rgba(0,0,0,.22),0 calc(var(--s)*.06) calc(var(--s)*.16) rgba(0,0,0,.38)}
+  .bdc::before{content:"";position:absolute;inset:calc(var(--s)*.1);border-radius:50%;border:max(1px,calc(var(--s)*.035)) dashed rgba(255,255,255,.62)}
+  .bdc b{position:relative;font:900 calc(var(--s)*.34)/1 ui-rounded,"SF Pro Rounded","Arial Rounded MT Bold","Varela Round",system-ui,"Segoe UI",sans-serif;letter-spacing:-.02em;text-shadow:0 1px 0 rgba(255,255,255,.55)}.bdc b.l4{font-size:calc(var(--s)*.27)}.bdc b.l5{font-size:calc(var(--s)*.22)}
+  .bdc svg{position:relative;width:52%;height:52%;fill:currentColor;filter:drop-shadow(0 1px 0 rgba(255,255,255,.5))}
+  .bdc .em{position:relative;font-style:normal;font-size:calc(var(--s)*.5);line-height:1;filter:grayscale(1) contrast(1.6) brightness(.82) drop-shadow(0 1px 0 rgba(255,255,255,.55));mix-blend-mode:multiply;opacity:.9}
+  .bdc.dated svg{width:40%;height:40%;margin-top:-16%}.bdc.dated small{position:absolute;bottom:21%;left:0;right:0;text-align:center;font:800 calc(var(--s)*.13)/1 ui-rounded,"Arial Rounded MT Bold",system-ui,sans-serif;letter-spacing:.04em}
+  .bdc.silver{--m1:#ffffff;--m2:#c5cdd8;--m3:#7e8999;--ink:#2f3846}.bdc.gold{--m1:#fff7d6;--m2:#f0bf45;--m3:#a6720c;--ink:#553700}
+  .bdc.special{--ink:#2a1f4a;background:radial-gradient(ellipse 58% 40% at 34% 22%,rgba(255,255,255,.75),rgba(255,255,255,0) 72%),linear-gradient(125deg,#ffd6e7,#d8c8ff,#c4ecff,#d9ffe8,#fff1c4,#ffd6e7);background-size:100% 100%,300% 300%;animation:bdcHolo 6s ease-in-out infinite}
+  .bdc.locked{--m1:#5a6b93;--m2:#2f3a5a;--m3:#18203a;--ink:#c3d1ec}.bdc.locked b{text-shadow:none}.bdc.locked::before{border-color:rgba(255,255,255,.3)}
+  .bdc.gold::after,.bdc.special::after{content:"";position:absolute;inset:-20%;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.75) 50%,transparent 60%);transform:translateX(-120%);animation:bdcShine 4.5s ease-in-out infinite}.bdc.special::after{animation-duration:3.2s}
+  @keyframes bdcShine{0%,62%{transform:translateX(-120%)}100%{transform:translateX(120%)}}@keyframes bdcHolo{0%,100%{background-position:0 0,0% 50%}50%{background-position:0 0,100% 50%}}
+  /* a medal on its ribbon (the points card, the achievement screens): the ribbon's colour is the kind of badge, the sparkles its metal */
+  .bdm{--sz:42px;--rb:#4da3ff;position:relative;display:inline-flex;flex-direction:column;align-items:center;padding-bottom:calc(var(--sz)*.3);flex:none}
+  .bdm::before,.bdm::after{content:"";position:absolute;bottom:0;width:calc(var(--sz)*.26);height:calc(var(--sz)*.5);background:linear-gradient(90deg,rgba(0,0,0,.18),transparent 35%,transparent 65%,rgba(0,0,0,.18)),var(--rb);clip-path:polygon(0 0,100% 0,100% 100%,50% 78%,0 100%);transform-origin:top center}
+  .bdm::before{left:calc(50% - var(--sz)*.27);transform:rotate(20deg)}.bdm::after{left:calc(50% + var(--sz)*.01);transform:rotate(-20deg)}
+  .bdm.k-day{--rb:#ff9f43}.bdm.k-month{--rb:#4da3ff}.bdm.k-life{--rb:#9b7bff}.bdm.k-value{--rb:#2ec486}.bdm.k-rare{--rb:#ff6f91}.bdm.k-hidden{--rb:#22c1c3}.bdm.k-special{--rb:linear-gradient(180deg,#ff8fab,#ffd36a,#5ee0a0,#58c9e8,#b98cff)}
+  .bdm .sp{position:absolute;z-index:2;width:calc(var(--sz)*.2);height:calc(var(--sz)*.2);background:#fff;clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%);filter:drop-shadow(0 0 2px rgba(255,255,255,.9));animation:bdmTw 2.6s ease-in-out infinite}
+  .bdm .sp:nth-of-type(1){top:-4%;right:-6%}.bdm .sp:nth-of-type(2){top:18%;left:-10%;width:calc(var(--sz)*.14);height:calc(var(--sz)*.14);animation-delay:.9s}.bdm .sp:nth-of-type(3){top:52%;right:-12%;width:calc(var(--sz)*.12);height:calc(var(--sz)*.12);animation-delay:1.7s}
+  @keyframes bdmTw{0%,100%{transform:scale(.2) rotate(0);opacity:0}45%{transform:scale(1) rotate(45deg);opacity:1}70%{transform:scale(.9) rotate(70deg);opacity:.9}}
+  .bdm.big{--sz:104px}.bdm.big .sp{filter:drop-shadow(0 0 4px #fff)}
+  .bdc.sm{--sz:30px}.bdc.xs{--sz:18px}.bdc.xs::before{display:none}.bdc.sm::before{inset:calc(var(--s)*.09)}
+  /* a staff member's row shows their medals */
+  .ops .name{position:relative}.qmed{display:inline-flex;gap:.22rem;margin-left:.45rem;flex:none}.qmed .bdc{--sz:1.15rem}
+  .row.q-bronze .av{box-shadow:0 0 0 2px #c98042,0 0 8px rgba(201,128,66,.55)}.row.q-silver .av{box-shadow:0 0 0 2px #dfe5ee,0 0 9px rgba(223,229,238,.6)}
+  .row.q-gold .av{box-shadow:0 0 0 2px #f0bf45,0 0 12px rgba(240,191,69,.75)}.row.q-special .av{box-shadow:0 0 0 2px #fff,0 0 14px rgba(196,236,255,.9);animation:qGlow 3s ease-in-out infinite}
+  .row.q-holo .nm{background:linear-gradient(90deg,#fff 0,#ffd6e7 20%,#c4ecff 40%,#fff1c4 60%,#d8c8ff 80%,#fff 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:qHolo 7s linear infinite}
+  .qcrown{position:absolute;left:-.3rem;top:-.62rem;width:1.05rem;height:1.05rem;transform:rotate(-22deg);z-index:2;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}.qcrown svg{width:100%;height:100%;fill:#ffd36a}
+  @keyframes qGlow{0%,100%{box-shadow:0 0 0 2px #fff,0 0 10px rgba(196,236,255,.7)}50%{box-shadow:0 0 0 2px #fff,0 0 18px rgba(255,214,231,.95)}}@keyframes qHolo{to{background-position:250% 0}}
+  .ticker .tk.tb .bdc{--sz:1.15rem}.ticker .tk.tb .bn{color:var(--gold);font-weight:700}
   .row.overtake{z-index:6;background:linear-gradient(90deg,rgba(62,233,138,.3),rgba(18,26,46,.98) 78%);box-shadow:0 .9rem 2.2rem rgba(0,0,0,.6),0 0 0 1px rgba(62,233,138,.75),0 0 1.8rem rgba(62,233,138,.4)}
   .climbtag,.droptag{flex:none;margin-left:.5rem;font:800 .78rem var(--body);border-radius:99px;padding:.14rem .6rem;white-space:nowrap}
   .climbtag{color:#06210f;background:var(--green);box-shadow:0 0 1rem rgba(62,233,138,.65);animation:tagpop 4s var(--out) forwards}
@@ -558,6 +588,25 @@
 #mrivCard .mbig{font-size:30px;font-weight:800;margin:4px 0}#mrivCard .mbig small{font-size:13px;color:#8fa0c3;font-weight:600}
 #mrivCard .mt{width:100%;border-collapse:collapse;margin:4px 0 6px;font-size:13.5px}#mrivCard .mt td{padding:3px 0;color:#c9d5ee;border-bottom:1px solid rgba(255,255,255,.06)}#mrivCard .mt td:nth-child(2){text-align:right;color:#e8eefc;width:44px}#mrivCard .mt td:nth-child(3){text-align:right;color:#ffd36a;font-weight:700;width:56px}
 #mrivCard .ml{color:#c9d5ee;margin:3px 0}#mrivCard .mn{color:#8fa0c3;font-size:12px;margin:8px 0 0}#mrivCard .mx{position:absolute;top:8px;right:10px;background:none;border:0;color:#8fa0c3;font-size:18px;cursor:pointer;line-height:1}
+#mrivCard{max-height:calc(100vh - 16px);overflow:auto;scrollbar-width:thin}
+#mrivCard .mbd{margin:10px 0 2px;padding-top:10px;border-top:1px solid rgba(255,255,255,.08)}#mrivCard .mbh{font-weight:800;font-size:14px;margin-bottom:8px}#mrivCard .mbh span{background:#ffd36a;color:#2a1f00;border-radius:999px;padding:0 7px;font-size:11px;margin-left:4px;vertical-align:1px}
+#mrivCard .mbs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px 6px;margin-bottom:8px}
+#mrivCard .bdg{display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;cursor:default}#mrivCard .bdg>b{font-size:10.5px;line-height:1.2;color:#c9d5ee;font-weight:600;margin-top:4px}
+#mrivCard .bdg>em{position:absolute;top:-4px;right:6px;font-style:normal;font-size:10px;font-weight:800;background:#ffd36a;color:#2a1f00;border-radius:999px;padding:0 5px}
+#mrivCard .bdg>.bdm{transition:transform .3s cubic-bezier(.2,1.6,.4,1)}#mrivCard .bdg:hover>.bdm{animation:mbWig .7s ease-in-out}@keyframes mbWig{0%,100%{transform:rotate(0)}30%{transform:rotate(-9deg) translateY(-2px)}65%{transform:rotate(7deg) translateY(-2px)}}
+#mrivCard .mnx{display:flex;gap:10px;align-items:center;margin:6px 0}#mrivCard .mnx>div{flex:1;min-width:0}#mrivCard .mnx>div>b{display:block;font-size:12.5px}#mrivCard .mnx>div>span{display:block;font-size:11.5px;color:#8fa0c3}
+#mrivCard .mnx>div>i{--c:#c98042;display:block;height:6px;border-radius:6px;margin-top:4px;background:linear-gradient(90deg,var(--c) calc(var(--f)*100%),rgba(255,255,255,.1) 0)}#mrivCard .mnx>div>i.silver{--c:#c5cdd8}#mrivCard .mnx>div>i.gold{--c:#f0bf45}#mrivCard .mnx>div>i.special{--c:#c4ecff}
+#mrivCard .mhid{display:flex;gap:8px;align-items:center;font-size:12px;color:#a9bbdc;margin-top:6px}
+#mrivMenu .mbadges{margin:10px 0 0;padding-top:10px;border-top:1px solid rgba(255,255,255,.08);color:#c9d5ee;font-size:12.5px}#mrivMenu .mbadges .bdc{margin:0 4px 6px 0}#mrivMenu .mbadges .more{font-size:12px;color:#ffd36a;font-weight:800}
+#mrivAch{position:fixed;inset:0;z-index:2147482500;display:grid;place-items:center;background:rgba(6,10,22,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;transition:opacity .35s;font-family:system-ui,"Segoe UI",sans-serif}
+#mrivAch.on{opacity:1}#mrivAch .ac{width:500px;max-width:92vw;text-align:center;background:linear-gradient(180deg,#172446,#0f1629);border:2px solid #ffd36a;border-radius:26px;padding:28px 30px 24px;box-shadow:0 30px 90px rgba(0,0,0,.6),0 0 60px rgba(255,211,106,.22);color:#e8eefc;transform:scale(.85) translateY(16px);transition:transform .5s cubic-bezier(.2,1.4,.4,1)}
+#mrivAch.on .ac{transform:none}#mrivAch .act{font-size:14px;font-weight:800;color:#ffd36a;letter-spacing:.16em;text-transform:uppercase}
+#mrivAch .acs{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;align-items:center;margin:16px 0 12px}#mrivAch .acs>.bdm{animation:mbPop .8s cubic-bezier(.2,1.6,.4,1) both}
+#mrivAch .acs>.bdm:nth-child(2){animation-delay:.12s}#mrivAch .acs>.bdm:nth-child(3){animation-delay:.24s}#mrivAch .acs>.bdm:nth-child(n+4){animation-delay:.36s}
+#mrivAch .acs>.bdm:not(:only-child){--sz:72px}#mrivAch .acm{font-weight:800;color:#ffd36a}
+@keyframes mbPop{from{transform:scale(0) rotate(-200deg)}}
+#mrivAch .acb{display:block;font-size:26px;font-weight:900}#mrivAch p{margin:6px 0 0;color:#c9d5ee;font-size:15px}#mrivAch .ahint{margin-top:14px;padding:10px 12px;background:rgba(255,211,106,.08);border:1px solid rgba(255,211,106,.25);border-radius:12px;font-size:13.5px}#mrivAch .ahint b{color:#ffe3a0}
+#mrivAch .acbtn{display:flex;gap:10px;justify-content:center;margin-top:16px}#mrivAch button{border:0;border-radius:10px;padding:10px 20px;font:800 14px system-ui,"Segoe UI",sans-serif;cursor:pointer}#mrivAch .acok{background:#ffd36a;color:#2a1f00}#mrivAch .acgo{background:#1d2a4a;color:#cfe2ff;border:1px solid rgba(156,200,255,.35)}
 #mrivMenu .mclear{margin-top:8px;background:none;border:1px solid rgba(255,255,255,.2);color:#c9d5ee;border-radius:8px;padding:5px 10px;cursor:pointer}
 #mrivGate{color-scheme:dark;position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:rgba(6,10,22,.6);backdrop-filter:blur(10px) saturate(.8);-webkit-backdrop-filter:blur(10px) saturate(.8);animation:mgIn .35s ease}
 #mrivGate.out{animation:mgOut .26s ease forwards;pointer-events:none}@keyframes mgIn{from{opacity:0}}@keyframes mgOut{to{opacity:0}}
@@ -790,7 +839,7 @@
   <p class="hint" id="insPinMsg" style="color:#ff9a9a"></p>
   <div class="row2" style="justify-content:flex-end"><button class="btn ghost" id="insPinCancel">Cancel</button><button class="btn" id="insPinGo">Open</button></div>
 </dialog>
-<script>window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin","version":"2.48.2"};
+<script>window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin","version":"2.49.2"};
 // MRI Assist – the VIEW-ONLY board: the leaderboard as a normal web page that anyone with the link can watch – nothing to
 // install, no sign-in, nothing to click into. The PC that reads MRI (the TV) puts this page on a GitHub Pages site together
 // with the board's figures, ENCRYPTED. The key is in the link, after the "#", which a browser never sends anywhere, so the
@@ -871,6 +920,7 @@
         ${down ? `<div class="ml">${(mine.pts - down.pts).toLocaleString("en-GB")} pts ahead of ${esc(nameOf(down.u))} (#${i + 2})</div>` : ""}
         <div class="mn">Points count the same way as on the board – nothing here is private.</div>`;
     } else if (me) html += `<div class="mh"><b>${esc(nameOf(me))}</b></div><div class="ml">No points on the board yet this month.</div>`;
+    { const mk = meKey(), bl = mk ? badgesOf(mk) : []; if (BD() && mk) html += `<div class="mbadges">${bl.length ? `${bl.slice(0, 8).map((x) => coin(x.d, { size: "sm", m: x.m })).join("")}${bl.length > 8 ? `<span class="more">+${bl.length - 8}</span>` : ""}<div>Your ${bl.length} badge${bl.length === 1 ? "" : "s"} – click your name on the staff board for all of them and what's next.</div>` : `<div>No badges yet – click your name on the staff board to see what's next.</div>`}</div>`; }
     html += `<div class="mpick">${me ? `Not ${esc(nameOf(me))}? ` : ""}<button class="mclear" id="mrivChange">Change name</button></div>
       <p class="mn">Saved in this browser only – if it ever forgets you (a private window, or after clearing your history), just pick your name again. It isn't a sign-in, so it can't show anything the board doesn't already show everyone.</p>`;
     m.innerHTML = html;
@@ -929,7 +979,7 @@
     try { fetch(`${url}/mriv/${spot}/${sid}.json?x-http-method-override=PATCH`, { method: "POST", body: JSON.stringify({ l: { ".sv": "timestamp" }, v: Math.round(V.v), a: Math.round(V.a), o: 0 }), keepalive: true }); } catch (_) {}
   }
   addEventListener("pagehide", leave);
-  function setMe(u) { const was = me; me = u || ""; if (!me) setTimeout(() => gate(true), 0); try { if (me) localStorage.setItem(ME, me); else localStorage.removeItem(ME); } catch (_) {} if (!me && was) leave(); else if (me) beat(); mark(); pill(); if (document.getElementById("mrivMenu")) menu(true); F.pause = 0; F.glanceEnd = 0; F.glanceAt = 0; }
+  function setMe(u) { setTimeout(() => checkBadges(), 900); const was = me; me = u || ""; if (!me) setTimeout(() => gate(true), 0); try { if (me) localStorage.setItem(ME, me); else localStorage.removeItem(ME); } catch (_) {} if (!me && was) leave(); else if (me) beat(); mark(); pill(); if (document.getElementById("mrivMenu")) menu(true); F.pause = 0; F.glanceEnd = 0; F.glanceAt = 0; }
   addEventListener("DOMContentLoaded", () => {
     const ops = document.getElementById("ops"); if (ops) new MutationObserver(() => { if (!ops.querySelector(".row.me") && me) mark(); }).observe(ops, { childList: true });
     document.addEventListener("click", (e) => { const m = document.getElementById("mrivMenu"); if (m && !m.contains(e.target) && !e.target.closest("#mrivMe")) m.remove(); });
@@ -954,6 +1004,7 @@
       <div class="mbig">${tot ? "+" + tot.toLocaleString("en-GB") : "0"} <small>pts today</small></div>
       ${lines ? `<table class="mt"><tbody>${lines}</tbody></table>` : `<div class="ml">Nothing on the board for ${mine ? "you" : "them"} yet today.</div>`}
       ${i >= 0 ? `<div class="ml">This month: <b>${rows[i].pts.toLocaleString("en-GB")} pts</b></div>` : ""}
+      ${badgeBlock(key, mine)}
       <div class="mn">Counted the same way as the board.</div>`;
     c.querySelector(".mx").onclick = () => c.remove();
     // beside the row (to its left if there's room), kept on screen
@@ -961,6 +1012,77 @@
     let x = r.left - cw - 14; if (x < 8) x = Math.min(innerWidth - cw - 8, r.right + 14); if (x < 8) x = 8;
     c.style.left = x + "px"; c.style.top = Math.max(8, Math.min(innerHeight - c.offsetHeight - 8, r.top - 10)) + "px";
     seen(key);
+  }
+  // ---- badges: worked out by the TV and sent with the figures, drawn the board's way (MRIBoard.coin). Everyone's are on their points
+  // card; a new one of your own gets an achievement screen, with where to find them all.
+  const BD = () => (snapNow?.badges?.defs ? snapNow.badges : null);
+  const MET = { bronze: 1, silver: 2, gold: 3, special: 4 }, CATS = ["special", "rare", "day", "month", "life", "value", "hidden"];
+  const coin = (d, o) => window.MRIBoard?.coin?.(d, o) || "";
+  const bName = (d, m) => window.MRIBoard?.badgeName?.(d, m) || d.n;
+  const monName = (m) => (m ? new Date(m + "-01T12:00:00").toLocaleDateString("en-GB", { month: "long" }) : "");
+  const monYear = (m) => (m ? new Date(m + "-01T12:00:00").toLocaleDateString("en-GB", { month: "short", year: "numeric" }) : "");
+  const meKey = () => { // your name as the board knows it (a typed name that matches someone on the board counts as them)
+    if (!me) return ""; if (!me.startsWith(TYPED)) return me.toLowerCase();
+    const t = me.slice(1).trim().toLowerCase(); return Object.keys(snapNow?.contrib?.names || {}).find((k) => nameOf(k).toLowerCase() === t) || "";
+  };
+  const order = (x, y) => (MET[y.d.m] || 0) - (MET[x.d.m] || 0) || CATS.indexOf(x.d.cat) - CATS.indexOf(y.d.cat) || (y.d.t || 0) - (x.d.t || 0) || String(y.m || "").localeCompare(String(x.m || ""));
+  function badgesOf(u) { // [{ d, m, n: times earned, months }] – best metal first; each Champion on its own, with its month
+    const b = BD(); if (!b || !u) return [];
+    const defs = Object.fromEntries(b.defs.map((d) => [d.id, d])), agg = {};
+    for (const id of Object.keys(b.by?.[u] || {})) {
+      const [base, m] = id.split("@"), d = defs[base]; if (!d) continue;
+      const k = base === "top" ? id : base, o = (agg[k] ||= { d, m: "", n: 0, months: [] }); o.n++; if (m) { o.months.push(m); if (m > o.m) o.m = m; }
+    }
+    return Object.values(agg).sort(order);
+  }
+  const label = (x) => (x.d.id === "top" ? `Champion · ${monYear(x.m)}` : x.d.s || x.d.n);
+  function badgeBlock(u, mine) {
+    const b = BD(); if (!b) return "";
+    const list = badgesOf(u), have = new Set(list.map((x) => x.d.id)), p = b.prog?.[u] || [0, 0, 0];
+    const hiddenLeft = b.defs.filter((d) => d.cat === "hidden" && !have.has(d.id)).length, next = [];
+    const thisMonth = new Set(Object.keys(b.by?.[u] || {}).filter((id) => id.endsWith("@" + b.month)).map((id) => id.split("@")[0]));
+    const nd = b.defs.find((d) => d.cat === "day" && !thisMonth.has(d.id) && (p[3] || 0) < d.t); if (nd) next.push([nd, p[3] ? `Best day this month ${p[3].toLocaleString("en-GB")} – ${(nd.t - p[3]).toLocaleString("en-GB")} to go` : `${nd.t.toLocaleString("en-GB")} points in one day`, (p[3] || 0) / nd.t]);
+    const nm = b.defs.find((d) => d.cat === "month" && !thisMonth.has(d.id) && p[0] < d.t); if (nm) next.push([nm, `${(nm.t - p[0]).toLocaleString("en-GB")} pts to go this month`, p[0] / nm.t]);
+    const nl = b.defs.find((d) => d.cat === "life" && !have.has(d.id) && p[1] < d.t); if (nl) next.push([nl, `${(nl.t - p[1]).toLocaleString("en-GB")} pts to go, all months together`, p[1] / nl.t]);
+    const nv = b.defs.find((d) => d.cat === "value" && !have.has(d.id)); if (nv && p[2] < 1) next.push([nv, `${Math.round(p[2] * 100)}% of the way there`, p[2]]);
+    return `<div class="mbd"><div class="mbh">${mine ? "Your badges" : "Badges"}${list.length ? ` <span>${list.length}</span>` : ""}</div>
+      ${list.length ? `<div class="mbs">${list.map((x) => `<div class="bdg" title="${esc(x.d.d)}${x.d.id !== "top" && x.months.length ? " – " + esc(x.months.sort().map(monName).join(", ")) : ""}">${coin(x.d, { m: x.m })}<b>${esc(label(x))}</b>${x.n > 1 ? `<em>×${x.n}</em>` : ""}</div>`).join("")}</div>` : `<div class="ml">No badges yet.</div>`}
+      ${next.map(([d, txt, f]) => `<div class="mnx">${coin(d, { size: "sm" })}<div><b>Next: ${esc(d.n)}</b><span>${txt}</span><i class="${esc(d.m)}" style="--f:${Math.max(0.03, Math.min(1, f)).toFixed(2)}"></i></div></div>`).join("")}
+      ${hiddenLeft ? `<div class="mhid">${coin(null, { size: "sm", locked: true })} ${hiddenLeft} hidden badge${hiddenLeft === 1 ? "" : "s"} still to find</div>` : ""}</div>`;
+  }
+  // achievement screens for your own new badges – the first time on this browser, one screen for what you've already got
+  const SEEN = "mriv:badges", achQ = []; let achOn = false;
+  function checkBadges() {
+    const u = meKey(), b = BD(); if (!u || !b?.by) return;
+    let seen = {}; try { seen = JSON.parse(localStorage.getItem(SEEN) || "{}") || {}; } catch (_) {}
+    const ids = Object.keys(b.by[u] || {}), defs = Object.fromEntries(b.defs.map((d) => [d.id, d])), known = ids.filter((id) => defs[id.split("@")[0]]);
+    if (!Array.isArray(seen[u])) { if (known.length) achQ.push({ intro: true, u }); }
+    else {
+      const nw = known.filter((id) => !seen[u].includes(id) && (b.by[u][id] || 0) > (b.seeded || 0)).map((id) => ({ d: defs[id.split("@")[0]], m: id.split("@")[1] })).sort(order); // (ones the TV took stock of quietly – a new set of badges – aren't "new")
+      if (nw.length > 3) achQ.push({ many: nw, u });
+      else for (const x of nw) achQ.push({ ...x, again: x.d.id !== "top" && known.filter((id) => id.split("@")[0] === x.d.id).length > 1, u });
+    }
+    seen[u] = ids; try { localStorage.setItem(SEEN, JSON.stringify(seen)); } catch (_) {}
+    showAch();
+  }
+  function showAch() {
+    if (achOn || !achQ.length) return;
+    if (document.getElementById("mrivGate") || document.querySelector(".celebrate.on, #roundup.on, #hit.on")) { setTimeout(showAch, 2000); return; }
+    achOn = true; const a = achQ.shift(), list = a.intro ? badgesOf(a.u) : a.many || [a];
+    const el = document.createElement("div"); el.id = "mrivAch"; el.setAttribute("role", "dialog");
+    const head = a.intro ? "Badges are here" : a.many ? "New badges" : a.d.cat === "hidden" ? "Hidden badge found" : a.d.m === "special" ? "Special badge" : "Achievement unlocked";
+    el.innerHTML = `<div class="ac"><div class="act">${head}</div>
+      <div class="acs">${list.slice(0, 6).map((x) => coin(x.d, { size: "big", m: x.m })).join("")}${list.length > 6 ? `<span class="acm">+${list.length - 6}</span>` : ""}</div>
+      ${a.intro ? `<b class="acb">You've already earned ${list.length}</b><p>${list.slice(0, 6).map((x) => esc(bName(x.d, x.m))).join(" · ")}${list.length > 6 ? " …" : ""}</p>`
+        : a.many ? `<b class="acb">${list.length} new badges</b><p>${list.map((x) => esc(bName(x.d, x.m))).join(" · ")}</p>`
+        : `<b class="acb">${esc(bName(a.d, a.m))}${a.again ? " – again" : ""}</b><p>${esc(a.d.d)}${a.m && a.d.id !== "top" ? " – " + monName(a.m) : ""}</p>`}
+      <p class="ahint">All your badges, and how close you are to the next ones, are on your card: <b>click your name on the staff board</b> (or <b>YOU</b> at the top).</p>
+      <div class="acbtn"><button class="acgo">Show me</button><button class="acok">Nice</button></div></div>`;
+    document.body.appendChild(el); requestAnimationFrame(() => el.classList.add("on"));
+    try { window.MRIBoard?.confetti?.(200, true); } catch (_) {}
+    const close = (then) => { el.classList.remove("on"); setTimeout(() => { el.remove(); achOn = false; if (then) then(); showAch(); }, 350); };
+    el.querySelector(".acok").onclick = () => close();
+    el.querySelector(".acgo").onclick = () => close(() => { const row = document.querySelector(`#ops .row[data-key="o:${CSS.escape(a.u)}"]`); if (row) { row.scrollIntoView({ block: "center" }); setTimeout(() => card(row), 350); } else menu(true); });
   }
   const lookSent = {};
   async function seen(whose) {
@@ -1064,12 +1186,12 @@
   addEventListener("DOMContentLoaded", () => { const ops = document.getElementById("ops"); if (ops) ["wheel", "touchstart", "mousedown", "keydown"].forEach((ev) => ops.addEventListener(ev, () => { F.pause = Date.now() + 30000; F.glanceEnd = 0; }, { passive: true })); });
   const meRefresh = () => { pill(); mark(); if (document.getElementById("mrivGate") && !gateTyping) gateList(); if (document.getElementById("mrivMenu") && !document.activeElement?.closest?.("#mrivMenu")) menu(true); };
   function apply(snap) {
-    const firstPres = !snapNow?.presence && snap.presence; snapNow = snap; setTimeout(meRefresh, 50);
+    const firstPres = !snapNow?.presence && snap.presence; snapNow = snap; setTimeout(meRefresh, 50); setTimeout(checkBadges, 1500);
     if (firstPres && me) beat(); // (checking in starts with the first figures, if you've picked your name)
     const next = {
       "dash:data": snap.data ? { ...snap.data, shared: { from: snap.from || "the office", at: snap.at || Date.now() } } : null,
       "dash:contrib": snap.contrib || null, "dash:events": snap.events || { seq: 0, list: [] },
-      "dash:prefs": { ...(snap.prefs || {}), chime: false }, "dash:targets": snap.targets || {}, "dash:gtargets": snap.gtargets || {}, "dash:schedule": {},
+      "dash:prefs": { ...(snap.prefs || {}), chime: false }, "dash:targets": snap.targets || {}, "dash:gtargets": snap.gtargets || {}, "dash:schedule": {}, "dash:badges": snap.badges || null,
     };
     const ch = {};
     for (const [k, v] of Object.entries(next)) if (JSON.stringify(store[k]) !== JSON.stringify(v)) { ch[k] = { oldValue: copy(store[k]), newValue: copy(v) }; store[k] = v; }
@@ -1210,7 +1332,8 @@
   setInterval(keepAwake, 30000);
   addEventListener("pagehide", () => { try { const others = (chrome.extension?.getViews?.() || []).filter((w) => w !== window && /dashboard\.html$/.test(w.location.pathname)); if (!others.length) chrome.power?.releaseKeepAwake(); } catch (_) {} });
   async function load() {
-    const s = await chrome.storage.local.get(["dash:data", "dash:targets", "dash:gtargets", "dash:schedule", "dash:prefs", "dash:contrib", "dash:pointsReset"]);
+    const s = await chrome.storage.local.get(["dash:data", "dash:targets", "dash:gtargets", "dash:schedule", "dash:prefs", "dash:contrib", "dash:pointsReset", "dash:badges"]);
+    badgesD = s["dash:badges"] || null; lastQSig = qSig();
     data = s["dash:data"] || null; targets = s["dash:targets"] || {}; gtargets = s["dash:gtargets"] || {};
     contrib = s["dash:contrib"] || null;
     prefs = s["dash:prefs"] || {}; schedule = s["dash:schedule"] || {}; keepAwake();
@@ -1249,6 +1372,10 @@
   }, 15000);
   chrome.storage.onChanged.addListener((ch) => {
     if (ch["dash:events"]) onEvents(ch["dash:events"].newValue);
+    if (ch["dash:badges"]) { // new badges: into the Latest strip; the rows only redraw when someone's medals change
+      badgesD = ch["dash:badges"].newValue || null; renderTicker();
+      const sig = qSig(); if (sig !== lastQSig && !(ch["dash:data"] || ch["dash:targets"] || ch["dash:gtargets"] || ch["dash:prefs"] || ch["dash:contrib"])) { lastQSig = sig; render(); }
+    }
     const dd = ch["dash:data"];
     if (dd && !ch["dash:targets"] && !ch["dash:gtargets"] && !ch["dash:prefs"] && !ch["dash:contrib"]) { // (a shared board's points arrive with its figures: never skip those)
       const o = dd.oldValue || {}, n = dd.newValue || {};
@@ -1331,14 +1458,57 @@
     const cards = !prefs.cards ? [] : fresh.filter((e) => e.kind !== "added" && (!data?.hasValue || +e.value > 0)).map((e) => (e.kind === "status" ? { ...e, op: e.closer ?? (e.by || e.op) } : e)); // value added to an existing job shows in the roundup and the Latest strip, not as a "job closed" card
     if (cards.length) { if (cards.length > 3) celQueue.push(cards); else celQueue.push(...cards); setTimeout(runQueue, 1500); } // wait for the new totals to arrive // big batches become one grouped card
   }
+  // ---- BADGES (badges.js works them out on the TV; the view-only page gets them with the figures): one medal look everywhere –
+  // the staff rows, the Latest strip, the points card and the achievement screens. Metals: bronze, silver, gold, special (animated).
+  let badgesD = null, lastQSig = "";
+  const METAL = { bronze: 1, silver: 2, gold: 3, special: 4 }, BCAT = ["special", "rare", "day", "month", "life", "value", "hidden"];
+  const CROWN = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 18.5h19l-1.6-10.2-4.9 4.3L12 5l-3 7.6-4.9-4.3z"/></svg>`;
+  const monYY = (m) => { const d = new Date(m + "-01T12:00:00"); return d.toLocaleDateString("en-GB", { month: "short" }).toUpperCase().slice(0, 3) + " " + String(d.getFullYear()).slice(2); };
+  function coin(d, o = {}) { // o: size (xs, sm, big), m (the month of a monthly badge or Champion), locked (a hidden one not found)
+    if (!d && !o.locked) return "";
+    const dated = !o.locked && d.id === "top" && o.m && o.size !== "xs";
+    const face = o.locked ? `<b class="l1">?</b>` : d.e ? `<i class="em">${esc(d.e)}</i>` : d.ic ? `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${esc(d.ic)}"/></svg>` : `<b class="l${Math.min(5, String(d.f || "").length)}">${esc(d.f || "")}</b>`; // (an emoji is stamped into the metal)
+    const metal = o.locked ? "locked" : esc(d.m || "bronze"), small = o.size === "xs" || o.size === "sm";
+    const c = `<span class="bdc ${metal}${small ? " " + o.size : ""}${dated ? " dated" : ""}">${face}${dated ? `<small>${monYY(o.m)}</small>` : ""}</span>`;
+    if (small) return c; // (the rows, the Latest strip, "next" and the YOU menu: just the coin)
+    const sp = o.locked ? 0 : { silver: 1, gold: 2, special: 3 }[d.m] || 0; // sparkles: more for a better metal
+    return `<span class="bdm k-${o.locked ? "hidden" : esc(d.cat || "month")}${o.size ? " " + esc(o.size) : ""}">${c}${'<i class="sp"></i>'.repeat(sp)}</span>`;
+  }
+  const badgeName = (d, m) => (d.id === "top" && m ? `Champion – ${new Date(m + "-01T12:00:00").toLocaleDateString("en-GB", { month: "long", year: "numeric" })}` : d.n);
+  const prevMonthOf = (m) => { const [y, mo] = String(m).split("-").map(Number); const d = new Date(y, mo - 2, 1); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`; };
+  // a row's flair: the avatar ringed in the metal of this month's best points medal, a crown for last month's champion, a shimmer
+  // on the name for anyone holding a special medal, and their three best medals beside the name
+  function quirks(u) {
+    const b = badgesD, got = b?.by?.[String(u || "").toLowerCase()]; if (!got || !b.defs) return null;
+    const defs = Object.fromEntries(b.defs.map((d) => [d.id, d])), pm = b.month ? prevMonthOf(b.month) : ""; let metal = 0, crown = false, holo = false; const best = {};
+    for (const id of Object.keys(got)) {
+      const [base, m] = id.split("@"), d = defs[base]; if (!d) continue;
+      if (d.cat === "month") { if (m !== b.month) continue; metal = Math.max(metal, METAL[d.m] || 0); }
+      if (base === "top" && m === pm) crown = true;
+      if (d.m === "special" && (base !== "top" || m === pm)) holo = true;
+      if (!best[base] || String(m || "") > String(best[base][1] || "")) best[base] = [d, m];
+    }
+    const minis = Object.values(best).sort(([a], [c]) => (METAL[c.m] || 0) - (METAL[a.m] || 0) || BCAT.indexOf(a.cat) - BCAT.indexOf(c.cat) || (c.t || 0) - (a.t || 0)).slice(0, 3);
+    return { cls: `${metal ? " q-" + ["", "bronze", "silver", "gold", "special"][metal] : ""}${holo ? " q-holo" : ""}`, crown, minis };
+  }
+  const qSig = () => (badgesD?.month || "") + JSON.stringify(Object.keys(badgesD?.by || {}).sort().map((u) => { const q = quirks(u); return q ? u + q.cls + q.crown + q.minis.map(([d, m]) => d.id + (m || "")).join() : ""; }));
   const short = (t, n) => (String(t).length > n ? String(t).slice(0, n - 1).trimEnd() + "…" : String(t));
   // "Mobile" and other excluded names aren't people: their jobs still show, just without a staff name
   const who = (op) => person(op) || "—";
+  const tickSeen = new Set(); // (badges already in the strip – a new one pops in like a new job)
   function renderTicker(newIds = []) {
     const actor = (e) => (e.kind !== "new" && e.by ? e.by : e.op);
     const twin = (e) => e.kind === "added" && events.some((x) => x.kind === "status" && x.job === e.job && Math.abs(x.at - e.at) < 5000 && nowCounts(x)); // priced and completed in one go: one entry
-    const list = events.filter((e) => nowCounts(e) && !twin(e) && isPerson(actor(e)) && (!data?.hasValue || +e.value > 0)).slice(-12).reverse(); // jobs closed on Mobile (or any excluded name) aren't listed
-    $("ticker").innerHTML = list.length ? `<span class="lbl">Latest</span>` + list.map((e) => `<span class="tk${newIds.includes(e.id) ? " new" : ""}">${esc(new Date(e.at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }))} · <span class="jb">${esc(e.job || "—")}</span> · <b>${esc(who(actor(e)))}</b>${data?.hasValue ? ` · <span class="pv${e.kind === "added" ? " adj" : ""}">+${fmtGBP(+e.value || 0)}${e.kind === "added" ? (e.by ? " added" : " added to existing job") : e.kind === "status" ? ` · ${esc(e.from)} → ${esc(e.status)}` : ""}</span>` : ""}</span>`).join("") : "";
+    const jobs = events.filter((e) => nowCounts(e) && !twin(e) && isPerson(actor(e)) && (!data?.hasValue || +e.value > 0)).slice(-12); // jobs closed on Mobile (or any excluded name) aren't listed
+    // badges earned since badges started (not the ones everyone already had then), in among the jobs by time
+    const b = badgesD, defs = b?.defs ? Object.fromEntries(b.defs.map((d) => [d.id, d])) : {}, won = [];
+    for (const [u, o] of Object.entries(b?.by || {})) if (isPerson(u)) for (const [id, at] of Object.entries(o)) { const [base, m] = id.split("@"); if (defs[base] && at > (b.seeded || 0)) won.push({ at, u, d: defs[base], m, bid: u + "|" + id }); }
+    const items = [...jobs.map((e) => ({ at: e.at, e })), ...won.map((x) => ({ at: x.at, x }))].sort((p, q) => q.at - p.at).slice(0, 12);
+    const hmT = (t) => esc(new Date(t).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }));
+    const isNew = new Set(won.filter((x) => tickSeen.size && !tickSeen.has(x.bid)).map((x) => x.bid));
+    const badgeTk = (x) => { const fresh = isNew.has(x.bid); return `<span class="tk tb${fresh ? " new" : ""}">${hmT(x.at)} · ${x.d.cat === "hidden" ? coin(null, { size: "xs", locked: true }) : coin(x.d, { size: "xs", m: x.m })} <b>${esc(who(contrib?.names?.[x.u] || x.u))}</b> <span class="bn">${x.d.cat === "hidden" ? "found a hidden badge" : esc(badgeName(x.d, x.m))}</span></span>`; };
+    tickSeen.add(""); for (const x of won) tickSeen.add(x.bid);
+    $("ticker").innerHTML = items.length ? `<span class="lbl">Latest</span>` + items.map(({ e, x }) => x ? badgeTk(x) : `<span class="tk${newIds.includes(e.id) ? " new" : ""}">${esc(new Date(e.at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }))} · <span class="jb">${esc(e.job || "—")}</span> · <b>${esc(who(actor(e)))}</b>${data?.hasValue ? ` · <span class="pv${e.kind === "added" ? " adj" : ""}">+${fmtGBP(+e.value || 0)}${e.kind === "added" ? (e.by ? " added" : " added to existing job") : e.kind === "status" ? ` · ${esc(e.from)} → ${esc(e.status)}` : ""}</span>` : ""}</span>`).join("") : "";
   }
   async function runQueue() {
     if (celBusy || !celQueue.length) return;
@@ -1987,9 +2157,9 @@
       const line = v.t ? topActs(v.t) : `${fmtN(v.old.jobs)} closed · ${fmtN(v.old.adds)} added`;
       const lineBefore = pd && v.t ? topActs(minus(v.t, pd.d)) : line;
       const tip = v.t ? `${person(n)}: ${fmtN(v.pts)} points = ${actFull(v.t)}` : `${person(n)}: ${fmtN(v.pts)} points`; // (hover breakdown: on the boards only)
-      const html = `<div class="row${pd ? " pend" : ""}${flashNames.has(n) && !pd ? " flash" : ""}" data-key="${esc(key)}" data-sort='${JSON.stringify(pd ? [pd.m0] : [v.pts])}'${pd ? ` data-sortnew='${JSON.stringify([v.pts])}' data-gaintxt="${esc(chip)}" data-gain="${np}" data-sub="${esc(sub)}"` : ""}${window.MRIV ? "" : ` data-tip="${esc(tip)}"`}>
+      const q = quirks(key.slice(2)), html = `<div class="row${pd ? " pend" : ""}${flashNames.has(n) && !pd ? " flash" : ""}${q?.cls || ""}" data-key="${esc(key)}" data-sort='${JSON.stringify(pd ? [pd.m0] : [v.pts])}'${pd ? ` data-sortnew='${JSON.stringify([v.pts])}' data-gaintxt="${esc(chip)}" data-gain="${np}" data-sub="${esc(sub)}"` : ""}${window.MRIV ? "" : ` data-tip="${esc(tip)}"`}>
       <div class="rank"></div>
-      <div class="name">${avatar(n)}<span class="nm">${esc(person(n))}</span></div><div class="bar"><div class="fill" ${pd ? `data-later="${w}"` : `data-w="${w}"`} style="width:${pd ? pd.w0 : w0}%"></div></div>
+      <div class="name">${q?.crown ? `<i class="qcrown">${CROWN}</i>` : ""}${avatar(n)}<span class="nm">${esc(person(n))}</span>${q?.minis.length ? `<span class="qmed">${q.minis.map(([d, m]) => coin(d, { size: "xs", m })).join("")}</span>` : ""}</div><div class="bar"><div class="fill" ${pd ? `data-later="${w}"` : `data-w="${w}"`} style="width:${pd ? pd.w0 : w0}%"></div></div>
       <div class="nums">${pd ? `<b data-count="${esc(txt)}" data-hold="${esc(pd.t0)}">${esc(pd.t0)}</b>` : `<b data-count="${esc(txt)}" data-from="${esc(memo.txt[key] ?? "")}">${txt}</b>`} <span class="u">pt${v.pts === 1 ? "" : "s"}</span><small${pd ? ` data-later="${esc(line)}"` : ""}>${esc(lineBefore)}</small></div></div>`;
       memo.w[key] = w; memo.txt[key] = txt; memo.m[key] = v.pts; if (v.t) memo.cnt[key] = { ...v.t }; return html; }).join("") : `<div class="empty" style="font-size:.9rem">${viewPrev ? "No office staff data yet." : "No points yet – they appear here as people raise, book, price, close and clear jobs."}</div>`;
     sortRows(opsEl); applyRanks(opsEl);
@@ -2311,7 +2481,7 @@
   // ---- private staff insights (insights.js): the board's data and helpers, and a click on a name opens that person's day ----
   window.MRIBoard = {
     contrib: () => contrib, prefs: () => prefs, ptsOf, weights: () => ptCfg(), person, canon, isPerson, esc, fmtN, ACT_NAME, ACT_ONE, confetti: (n, gold) => confetti(n, gold), santa: () => santaGlide($("roundup")),
-    counted, viewName, viewPrev: () => viewPrev, boardValue: (name) => { const v = rollup(source()?.byContract || {}).rows[name]; return v ? V(v) : null; },
+    counted, viewName, viewPrev: () => viewPrev, coin, badgeName, quirks, boardValue: (name) => { const v = rollup(source()?.byContract || {}).rows[name]; return v ? V(v) : null; },
     boardValueOf: (byContract, name) => { const v = rollup(byContract || {}).rows[name]; return v ? V(v) : 0; },
     topActs, boardRanks: () => Object.fromEntries(contribRows(source()?.month).map(([, v], i) => [String(v.key || "").toLowerCase(), i + 1])),
     savePrefs: async (patch) => { prefs = { ...prefs, ...patch }; await chrome.storage.local.set({ "dash:prefs": prefs }); if (window.BoardSync && window.BoardSync.role() !== "off") await window.BoardSync.pushSettings(); },
