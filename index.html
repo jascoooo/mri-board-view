@@ -245,9 +245,9 @@
   .bdc .em{position:relative;font-style:normal;font-size:calc(var(--s)*.5);line-height:1;filter:grayscale(1) contrast(1.6) brightness(.82) drop-shadow(0 1px 0 rgba(255,255,255,.55));mix-blend-mode:multiply;opacity:.9}
   .bdc.dated svg{width:40%;height:40%;margin-top:-16%}.bdc.dated small{position:absolute;bottom:21%;left:0;right:0;text-align:center;font:800 calc(var(--s)*.13)/1 ui-rounded,"Arial Rounded MT Bold",system-ui,sans-serif;letter-spacing:.04em}
   .bdc.silver{--m1:#ffffff;--m2:#c5cdd8;--m3:#7e8999;--ink:#2f3846}.bdc.gold{--m1:#fff7d6;--m2:#f0bf45;--m3:#a6720c;--ink:#553700}
-  .bdc.special{--ink:#2a1f4a;background:radial-gradient(ellipse 58% 40% at 34% 22%,rgba(255,255,255,.75),rgba(255,255,255,0) 72%),linear-gradient(125deg,#ffd6e7,#d8c8ff,#c4ecff,#d9ffe8,#fff1c4,#ffd6e7);background-size:100% 100%,300% 300%;animation:bdcHolo 6s ease-in-out infinite}
+  .bdc.special{--ink:#2a1546;background:radial-gradient(ellipse 58% 40% at 34% 22%,rgba(255,255,255,.62),rgba(255,255,255,0) 72%),linear-gradient(125deg,#ff8fc6,#b996ff,#6fcbff,#73efbe,#ffe07a,#ff8fc6,#b996ff);background-size:100% 100%,300% 300%;animation:bdcHolo 4s ease-in-out infinite;box-shadow:inset 0 0 0 calc(var(--s)*.06) rgba(255,255,255,.5),inset 0 calc(var(--s)*-.08) calc(var(--s)*.12) rgba(70,20,130,.28),0 calc(var(--s)*.06) calc(var(--s)*.16) rgba(0,0,0,.38),0 0 calc(var(--s)*.3) rgba(196,150,255,.65)}
   .bdc.locked{--m1:#5a6b93;--m2:#2f3a5a;--m3:#18203a;--ink:#c3d1ec}.bdc.locked b{text-shadow:none}.bdc.locked::before{border-color:rgba(255,255,255,.3)}
-  .bdc.gold::after,.bdc.special::after{content:"";position:absolute;inset:-20%;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.75) 50%,transparent 60%);transform:translateX(-120%);animation:bdcShine 4.5s ease-in-out infinite}.bdc.special::after{animation-duration:3.2s}
+  .bdc.gold::after,.bdc.special::after{content:"";position:absolute;inset:-20%;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.75) 50%,transparent 60%);transform:translateX(-120%);animation:bdcShine 4.5s ease-in-out infinite}.bdc.special::after{background:linear-gradient(115deg,transparent 34%,rgba(255,255,255,.4) 43%,#fff 50%,rgba(255,255,255,.4) 57%,transparent 66%);animation-duration:2.6s}
   @keyframes bdcShine{0%,62%{transform:translateX(-120%)}100%{transform:translateX(120%)}}@keyframes bdcHolo{0%,100%{background-position:0 0,0% 50%}50%{background-position:0 0,100% 50%}}
   /* a medal on its ribbon (the points card, the achievement screens): the ribbon's colour is the kind of badge, the sparkles its metal */
   .bdm{--sz:42px;--rb:#4da3ff;position:relative;display:inline-flex;flex-direction:column;align-items:center;padding-bottom:calc(var(--sz)*.3);flex:none}
@@ -263,9 +263,11 @@
   .ops .name{position:relative}.qmed{display:inline-flex;gap:.22rem;margin-left:.45rem;flex:none}.qmed .bdc{--sz:1.15rem}
   .row.q-bronze .av{box-shadow:0 0 0 2px #c98042,0 0 8px rgba(201,128,66,.55)}.row.q-silver .av{box-shadow:0 0 0 2px #dfe5ee,0 0 9px rgba(223,229,238,.6)}
   .row.q-gold .av{box-shadow:0 0 0 2px #f0bf45,0 0 12px rgba(240,191,69,.75)}.row.q-special .av{box-shadow:0 0 0 2px #fff,0 0 14px rgba(196,236,255,.9);animation:qGlow 3s ease-in-out infinite}
-  .row.q-holo .nm{background:linear-gradient(90deg,#fff 0,#ffd6e7 20%,#c4ecff 40%,#fff1c4 60%,#d8c8ff 80%,#fff 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:qHolo 7s linear infinite}
+  .row.q-holo .nm{background:linear-gradient(90deg,#ffc9e6 0,#cdb8ff 18%,#a9e4ff 34%,#fff 46%,#fff 54%,#b9f5d9 66%,#ffe9a3 82%,#ffc9e6 100%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:qHolo 4.5s linear infinite;filter:drop-shadow(0 0 .35rem rgba(205,175,255,.45))}
+  .row.q-holo:not(.won)::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(100deg,transparent 0,rgba(214,186,255,.08) 30%,rgba(255,255,255,.2) 50%,rgba(186,232,255,.08) 70%,transparent 100%) no-repeat;background-size:40% 100%;background-position:-70% 0;animation:qSheen 6s ease-in-out infinite}
+  @keyframes qSheen{0%,45%{background-position:-70% 0}100%{background-position:170% 0}}
   .qcrown{position:absolute;left:-.3rem;top:-.62rem;width:1.05rem;height:1.05rem;transform:rotate(-22deg);z-index:2;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}.qcrown svg{width:100%;height:100%;fill:#ffd36a}
-  @keyframes qGlow{0%,100%{box-shadow:0 0 0 2px #fff,0 0 10px rgba(196,236,255,.7)}50%{box-shadow:0 0 0 2px #fff,0 0 18px rgba(255,214,231,.95)}}@keyframes qHolo{to{background-position:250% 0}}
+  @keyframes qGlow{0%,100%{box-shadow:0 0 0 2px #fff,0 0 10px rgba(196,236,255,.7)}50%{box-shadow:0 0 0 2px #fff,0 0 18px rgba(255,214,231,.95)}}@keyframes qHolo{to{background-position:200% 0}}
   .ticker .tk.tb .bdc{--sz:1.15rem}.ticker .tk.tb .bn{color:var(--gold);font-weight:700}
   .row.overtake{z-index:6;background:linear-gradient(90deg,rgba(62,233,138,.3),rgba(18,26,46,.98) 78%);box-shadow:0 .9rem 2.2rem rgba(0,0,0,.6),0 0 0 1px rgba(62,233,138,.75),0 0 1.8rem rgba(62,233,138,.4)}
   .climbtag,.droptag{flex:none;margin-left:.5rem;font:800 .78rem var(--body);border-radius:99px;padding:.14rem .6rem;white-space:nowrap}
@@ -840,7 +842,7 @@
   <p class="hint" id="insPinMsg" style="color:#ff9a9a"></p>
   <div class="row2" style="justify-content:flex-end"><button class="btn ghost" id="insPinCancel">Cancel</button><button class="btn" id="insPinGo">Open</button></div>
 </dialog>
-<script>window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin","version":"2.49.5"};
+<script>window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin","version":"2.49.7"};
 // MRI Assist – the VIEW-ONLY board: the leaderboard as a normal web page that anyone with the link can watch – nothing to
 // install, no sign-in, nothing to click into. The PC that reads MRI (the TV) puts this page on a GitHub Pages site together
 // with the board's figures, ENCRYPTED. The key is in the link, after the "#", which a browser never sends anywhere, so the
@@ -1510,15 +1512,18 @@
     }
     return { from: ["", "bronze", "silver", "gold", "special"][from], again: false, n: 1 };
   }
-  // a row's flair: the avatar ringed in the metal of this month's best points medal, a crown for last month's champion, a shimmer
-  // on the name for anyone holding a special medal, and their three best medals beside the name
+  // a row's flair: the avatar ringed in the metal of this month's best points medal, a crown for last month's champion, a sheen on
+  // the row and the name for anyone holding a special medal, and beside the name their best gold and special medals – three at most
+  // (Jake: "only show on the leaderboard gold or special top 3 badges only so it doesn't get overcrowded"; the crown stands for last
+  // month's Champion, so that medal isn't repeated beside it)
   function quirks(u) {
     const b = badgesD, got = b?.by?.[String(u || "").toLowerCase()]; if (!got || !b.defs) return null;
     const pm = b.month ? prevMonthOf(b.month) : "", ms = medalsOf(got, b.defs); let metal = 0;
     const defs = Object.fromEntries(b.defs.map((d) => [d.id, d]));
     for (const id of Object.keys(got)) { const [base, m] = id.split("@"), d = defs[base]; if (d?.cat === "month" && m === b.month) metal = Math.max(metal, METAL[d.m] || 0); }
     const crown = Object.keys(got).includes("top@" + pm), holo = ms.some((x) => x.d.m === "special" && (x.d.id !== "top" || x.m === pm));
-    return { cls: `${metal ? " q-" + ["", "bronze", "silver", "gold", "special"][metal] : ""}${holo ? " q-holo" : ""}`, crown, minis: ms.slice(0, 3).map((x) => [x.d, x.m]) };
+    const minis = ms.filter((x) => (x.d.m === "gold" || x.d.m === "special") && !(crown && x.d.id === "top" && x.m === pm)).slice(0, 3);
+    return { cls: `${metal ? " q-" + ["", "bronze", "silver", "gold", "special"][metal] : ""}${holo ? " q-holo" : ""}`, crown, minis: minis.map((x) => [x.d, x.m]) };
   }
   const qSig = () => (badgesD?.month || "") + JSON.stringify(Object.keys(badgesD?.by || {}).sort().map((u) => { const q = quirks(u); return q ? u + q.cls + q.crown + q.minis.map(([d, m]) => d.id + (m || "")).join() : ""; }));
   const short = (t, n) => (String(t).length > n ? String(t).slice(0, n - 1).trimEnd() + "…" : String(t));
@@ -2473,7 +2478,7 @@
         if (y.role === "publish") return head + `this PC reads MRI and shares the board · last shared ${t(y.pubAt)}${y.pubKB ? ` (${y.pubKB} KB)` : ""}${y.pubN ? ` · ${y.pubN} shares since the board opened` : ""}` + sets + tail;
         const f = y.from || {}; return head + `showing the board shared by "${f.name || "–"}"${f.version ? ` (MRI Assist ${f.version}${f.version !== y.version ? ` – this PC has ${y.version}, update it to match` : ""})` : ""} · shared ${t(y.snapAt)} · checked ${t(y.boardCheck)}${y.note ? " · " + y.note : ""}` + sets + tail; })(),
       `View-only link: ${vlStatus() || "off"}${(() => { const y = window.BoardSync?.status?.(); return y?.role === "publish" && y.viewLogErr ? " · names: PROBLEM – " + y.viewLogErr : ""; })()}`,
-      `Badges: ${bdg?.at ? `worked out ${t(bdg.at)} · ${Object.values(bdg.by || {}).filter((o) => Object.keys(o).some((id) => id !== "sparky")).length} of ${Object.keys(bdg.prog || {}).length} people have one · set ${bdg.ver || 1} · sent to the view-only page with the figures` : window.BoardSync?.role?.() === "view" ? "worked out on the PC that reads MRI" : "not worked out yet (a minute after the board opens)"}`,
+      `Badges: ${bdg?.at ? `${window.BoardSync?.role?.() === "view" ? "from the PC that reads MRI, " : ""}worked out ${t(bdg.at)} · ${Object.values(bdg.by || {}).filter((o) => Object.keys(o).some((id) => id !== "sparky")).length} of ${Object.keys(bdg.prog || {}).length} people have one · set ${bdg.ver || 1}${window.BoardSync?.role?.() === "view" ? "" : " · sent to the other boards and the view-only page with the figures"}` : window.BoardSync?.role?.() === "view" ? "none yet – they come with the shared board from the PC that reads MRI (update it to 2.49.7 too)" : "not worked out yet (a minute after the board opens)"}`,
       `Last change to figures: ${t(d.updatedAt)} · put on screen ${t(drawnAt)}${hold ? ` · HELD by pop-ups since ${t(holdSince)}` : ""}`,
       `Last full month refresh: ${t(d.fullAt)}${d.total != null ? ` · ${d.total} rows` : ""}`,
       `Last live check: ${t(d.liveAt)}${d.todayRows != null ? ` · ${d.todayRows} rows today` : ""}`,
