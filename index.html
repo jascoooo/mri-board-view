@@ -259,6 +259,14 @@
   @keyframes bdmTw{0%,100%{transform:scale(.2) rotate(0);opacity:0}45%{transform:scale(1) rotate(45deg);opacity:1}70%{transform:scale(.9) rotate(70deg);opacity:.9}}
   .bdm.big{--sz:104px}.bdm.mid{--sz:34px}.bdm.big .sp{filter:drop-shadow(0 0 4px #fff)}
   .bdc.sm{--sz:30px}.bdc.xs{--sz:18px}.bdc.xs::before{display:none}.bdc.sm::before{inset:calc(var(--s)*.09)}
+  /* 2nd and 3rd Place – a podium finish, "not an easy feat": the numeral in a laurel with the month and year, a steady glow in its
+     own metal, the shine sweep the golds have, the full set of sparkles, and a navy ribbon striped in its metal */
+  .bdc svg text{font-family:ui-rounded,"SF Pro Rounded","Arial Rounded MT Bold","Varela Round",system-ui,"Segoe UI",sans-serif;font-weight:900}
+  .bdc.dated.pod svg{width:52%;height:52%;margin-top:-25%}.bdc.dated.pod small{bottom:18%}.bdc.xs.pod b{font-size:calc(var(--s)*.52)}
+  .bdc.pod.silver{box-shadow:inset 0 0 0 calc(var(--s)*.06) rgba(255,255,255,.45),inset 0 calc(var(--s)*-.08) calc(var(--s)*.12) rgba(0,0,0,.2),0 calc(var(--s)*.06) calc(var(--s)*.16) rgba(0,0,0,.38),0 0 calc(var(--s)*.34) rgba(214,228,255,.62)}
+  .bdc.pod.bronze{box-shadow:inset 0 0 0 calc(var(--s)*.06) rgba(255,255,255,.35),inset 0 calc(var(--s)*-.08) calc(var(--s)*.12) rgba(0,0,0,.22),0 calc(var(--s)*.06) calc(var(--s)*.16) rgba(0,0,0,.38),0 0 calc(var(--s)*.34) rgba(255,166,92,.58)}
+  .bdc.pod::after{content:"";position:absolute;inset:-20%;background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.85) 50%,transparent 62%);transform:translateX(-120%);animation:bdcShine 3.8s ease-in-out infinite}
+  .bdm.k-podium{--st:#e6ebf3;--rb:linear-gradient(90deg,#1b2a66 0 15%,var(--st) 15% 29%,#1b2a66 29% 71%,var(--st) 71% 85%,#1b2a66 85%)}.bdm.k-podium.m-bronze{--st:#dc9459}
   /* a staff member's row shows their medals */
   .ops .name{position:relative}.qmed{display:inline-flex;gap:.22rem;margin-left:.45rem;flex:none}.qmed .bdc{--sz:1.15rem}
   .row.q-bronze .av{box-shadow:0 0 0 2px #c98042,0 0 8px rgba(201,128,66,.55)}.row.q-silver .av{box-shadow:0 0 0 2px #dfe5ee,0 0 9px rgba(223,229,238,.6)}
@@ -267,6 +275,10 @@
   .row.q-holo:not(.won)::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(100deg,transparent 0,rgba(214,186,255,.08) 30%,rgba(255,255,255,.2) 50%,rgba(186,232,255,.08) 70%,transparent 100%) no-repeat;background-size:40% 100%;background-position:-70% 0;animation:qSheen 6s ease-in-out infinite}
   @keyframes qSheen{0%,45%{background-position:-70% 0}100%{background-position:170% 0}}
   .qcrown{position:absolute;left:-.3rem;top:-.62rem;width:1.05rem;height:1.05rem;transform:rotate(-22deg);z-index:2;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}.qcrown svg{width:100%;height:100%;fill:#ffd36a}
+  /* last month's 2nd and 3rd: a little silver 2 or bronze 3 pinned to the avatar, with the medals' shine */
+  .av{position:relative}.qpod{position:absolute;right:-.34rem;bottom:-.28rem;z-index:2;width:.95rem;height:.95rem;border-radius:50%;display:grid;place-items:center;overflow:hidden;font:900 .58rem/1 ui-rounded,"Arial Rounded MT Bold",system-ui,sans-serif;font-style:normal;color:#2f3846;background:radial-gradient(circle at 32% 26%,#fff 0,#c5cdd8 55%,#7e8999 100%);box-shadow:0 0 0 1.5px #0c1430,0 0 8px rgba(214,228,255,.8)}
+  .qpod.p3{color:#4a2509;background:radial-gradient(circle at 32% 26%,#ffe2c4 0,#c98042 55%,#7a4419 100%);box-shadow:0 0 0 1.5px #0c1430,0 0 8px rgba(255,166,92,.75)}
+  .qpod::after{content:"";position:absolute;inset:-30%;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.85) 50%,transparent 60%);transform:translateX(-120%);animation:bdcShine 5s ease-in-out infinite}
   @keyframes qGlow{0%,100%{box-shadow:0 0 0 2px #fff,0 0 10px rgba(196,236,255,.7)}50%{box-shadow:0 0 0 2px #fff,0 0 18px rgba(255,214,231,.95)}}@keyframes qHolo{to{background-position:200% 0}}
   .ticker .tk.tb .bdc{--sz:1.15rem}.ticker .tk.tb .bn{color:var(--gold);font-weight:700}
   .row.overtake{z-index:6;background:linear-gradient(90deg,rgba(62,233,138,.3),rgba(18,26,46,.98) 78%);box-shadow:0 .9rem 2.2rem rgba(0,0,0,.6),0 0 0 1px rgba(62,233,138,.75),0 0 1.8rem rgba(62,233,138,.4)}
@@ -858,7 +870,7 @@
   <p class="hint" id="insPinMsg" style="color:#ff9a9a"></p>
   <div class="row2" style="justify-content:flex-end"><button class="btn ghost" id="insPinCancel">Cancel</button><button class="btn" id="insPinGo">Open</button></div>
 </dialog>
-<script>window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin","version":"2.49.13"};
+<script>window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin","version":"2.49.14"};
 // MRI Assist – the VIEW-ONLY board: the leaderboard as a normal web page that anyone with the link can watch – nothing to
 // install, no sign-in, nothing to click into. The PC that reads MRI (the TV) puts this page on a GitHub Pages site together
 // with the board's figures, ENCRYPTED. The key is in the link, after the "#", which a browser never sends anywhere, so the
@@ -1058,7 +1070,8 @@
   // ---- badges: worked out by the TV and sent with the figures, drawn the board's way (MRIBoard.coin). Everyone's are on their points
   // card; a new one of your own gets an achievement screen, with where to find them all.
   const BD = () => (snapNow?.badges?.defs ? snapNow.badges : null);
-  const MET = { bronze: 1, silver: 2, gold: 3, special: 4 }, CATS = ["special", "rare", "day", "month", "life", "value", "hidden"];
+  const MET = { bronze: 1, silver: 2, gold: 3, special: 4 }, CATS = ["special", "rare", "podium", "day", "month", "life", "value", "hidden"];
+  const dated = (d) => !!d && (!!d.dated || d.id === "top"); // Champion, 2nd and 3rd Place: shown with the month and year they were won
   const coin = (d, o) => window.MRIBoard?.coin?.(d, o) || "";
   const bName = (d, m) => window.MRIBoard?.badgeName?.(d, m) || d.n;
   const monName = (m) => (m ? new Date(m + "-01T12:00:00").toLocaleDateString("en-GB", { month: "long" }) : "");
@@ -1072,12 +1085,12 @@
     const b = BD(); if (!b || !u) return [];
     return window.MRIBoard?.medalsOf?.(b.by?.[u], b.defs) || [];
   }
-  const label = (x) => (x.d.id === "top" ? `Champion · ${monYear(x.m)}` : x.d.s || x.d.n);
+  const label = (x) => (dated(x.d) && x.m ? `${x.d.s || x.d.n} · ${monYear(x.m)}` : x.d.s || x.d.n);
   // the card's medals (Jake: "limit badges to 2 rows or make them smaller so they're neater"): small, five to a row, two rows at most –
   // past ten, the last space is "+N more", which opens the rest
   const CAP = 10;
   function cells(list) {
-    const out = list.map((x, i) => `<div class="bdg${list.length > CAP && i >= CAP - 1 ? " bx" : ""}" title="${esc(x.d.d)}${x.months.length ? " – " + esc(x.months.sort().map(x.d.id === "top" ? monYear : monName).join(", ")) : ""}">${coin(x.d, { m: x.m, size: "mid" })}<b>${esc(label(x))}</b>${x.n > 1 ? `<em>×${x.n}</em>` : ""}</div>`);
+    const out = list.map((x, i) => `<div class="bdg${list.length > CAP && i >= CAP - 1 ? " bx" : ""}" title="${esc(x.d.d)}${x.months.length ? " – " + esc(x.months.sort().map(dated(x.d) ? monYear : monName).join(", ")) : ""}">${coin(x.d, { m: x.m, size: "mid" })}<b>${esc(label(x))}</b>${x.n > 1 ? `<em>×${x.n}</em>` : ""}</div>`);
     if (list.length > CAP) out.splice(CAP - 1, 0, `<button type="button" class="bdg bmore" aria-label="Show all ${list.length} badges"><span>+${list.length - CAP + 1}</span><b>more</b></button>`);
     return out.join("");
   }
@@ -1116,13 +1129,13 @@
     if (document.getElementById("mrivGate") || document.querySelector(".celebrate.on, #roundup.on, #hit.on")) { setTimeout(showAch, 2000); return; }
     achOn = true; const a = achQ.shift(), list = a.intro ? badgesOf(a.u) : a.many || [a];
     const el = document.createElement("div"); el.id = "mrivAch"; el.setAttribute("role", "dialog");
-    const head = a.intro ? "Badges are here" : a.many ? "New badges" : a.again ? "Earned again" : a.d.cat === "hidden" ? "Hidden badge found" : a.from ? "Medal upgraded" : a.d.m === "special" ? "Special badge" : "Achievement unlocked";
+    const head = a.intro ? "Badges are here" : a.many ? "New badges" : a.d.cat === "podium" ? (a.again ? "Back on the podium" : "On the podium") : a.again ? "Earned again" : a.d.cat === "hidden" ? "Hidden badge found" : a.from ? "Medal upgraded" : a.d.m === "special" ? "Special badge" : "Achievement unlocked";
     const cap = (t) => t.charAt(0).toUpperCase() + t.slice(1);
     el.innerHTML = `<div class="ac"><div class="act">${head}</div>
       <div class="acs">${list.slice(0, 6).map((x) => coin(x.d, { size: "big", m: x.m })).join("")}${list.length > 6 ? `<span class="acm">+${list.length - 6}</span>` : ""}</div>
       ${a.intro ? `<b class="acb">You've already earned ${list.length}</b><p>${list.map((x) => esc(bName(x.d, x.m))).join(" · ")}</p>`
         : a.many ? `<b class="acb">${list.length} new badges</b><p>${list.map((x) => esc(bName(x.d, x.m))).join(" · ")}</p>`
-        : `<b class="acb">${esc(bName(a.d, a.m))}${a.again && a.d.id !== "top" ? ` ×${a.n}` : ""}</b><p>${a.from ? `${cap(a.from)} → ${cap(a.d.m)} · ` : ""}${esc(a.d.d)}${a.m && a.d.id !== "top" ? " – " + monName(a.m) : ""}</p>`}
+        : `<b class="acb">${esc(bName(a.d, a.m))}${a.again && !dated(a.d) ? ` ×${a.n}` : ""}</b><p>${a.from ? `${cap(a.from)} → ${cap(a.d.m)} · ` : ""}${esc(a.d.d)}${a.m && !dated(a.d) ? " – " + monName(a.m) : ""}${a.d.cat === "podium" ? ` – no easy feat. Well done!` : ""}</p>`}
       <p class="ahint">All your badges, and how close you are to the next ones, are on your card: <b>click your name on the staff board</b> (or <b>YOU</b> at the top).</p>
       <div class="acbtn"><button class="acgo">Show me</button><button class="acok">Nice</button></div></div>`;
     document.body.appendChild(el); requestAnimationFrame(() => el.classList.add("on"));
@@ -1509,24 +1522,26 @@
   // ---- BADGES (badges.js works them out on the TV; the view-only page gets them with the figures): one medal look everywhere –
   // the staff rows, the Latest strip, the points card and the achievement screens. Metals: bronze, silver, gold, special (animated).
   let badgesD = null, lastQSig = "";
-  const METAL = { bronze: 1, silver: 2, gold: 3, special: 4 }, BCAT = ["special", "rare", "day", "month", "life", "value", "hidden"];
+  const METAL = { bronze: 1, silver: 2, gold: 3, special: 4 }, BCAT = ["special", "rare", "podium", "day", "month", "life", "value", "hidden"];
+  const isDated = (d) => !!d && (!!d.dated || d.id === "top"); // Champion, 2nd and 3rd Place: won for a month, with its month and year on
   const CROWN = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 18.5h19l-1.6-10.2-4.9 4.3L12 5l-3 7.6-4.9-4.3z"/></svg>`;
   const monYY = (m) => { const d = new Date(m + "-01T12:00:00"); return d.toLocaleDateString("en-GB", { month: "short" }).toUpperCase().slice(0, 3) + " " + String(d.getFullYear()).slice(2); };
-  function coin(d, o = {}) { // o: size (xs, sm, big), m (the month of a monthly badge or Champion), locked (a hidden one not found)
+  function coin(d, o = {}) { // o: size (xs, sm, big), m (the month of a monthly badge or a podium place), locked (a hidden one not found)
     if (!d && !o.locked) return "";
-    const dated = !o.locked && d.id === "top" && o.m && o.size !== "xs";
-    const face = o.locked ? `<b class="l1">?</b>` : d.e ? `<i class="em">${esc(d.e)}</i>` : d.ic ? `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${esc(d.ic)}"/></svg>` : `<b class="l${Math.min(5, String(d.f || "").length)}">${esc(d.f || "")}</b>`; // (an emoji is stamped into the metal)
+    const dated = !o.locked && isDated(d) && o.m && o.size !== "xs", pod = !o.locked && d.cat === "podium";
+    const num = !o.locked && d.num ? esc(String(d.num).slice(0, 2)) : ""; // 2nd and 3rd Place: the numeral in its laurel (on the smallest coins, just the numeral)
+    const face = o.locked ? `<b class="l1">?</b>` : num && o.size === "xs" ? `<b class="l1">${num}</b>` : d.e ? `<i class="em">${esc(d.e)}</i>` : d.ic ? `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${esc(d.ic)}"/>${num ? `<text x="12" y="16.1" text-anchor="middle" font-size="11">${num}</text>` : ""}</svg>` : `<b class="l${Math.min(5, String(d.f || "").length)}">${esc(d.f || "")}</b>`; // (an emoji is stamped into the metal)
     const metal = o.locked ? "locked" : esc(d.m || "bronze"), small = o.size === "xs" || o.size === "sm";
-    const c = `<span class="bdc ${metal}${small ? " " + o.size : ""}${dated ? " dated" : ""}">${face}${dated ? `<small>${monYY(o.m)}</small>` : ""}</span>`;
+    const c = `<span class="bdc ${metal}${small ? " " + o.size : ""}${dated ? " dated" : ""}${pod ? " pod" : ""}">${face}${dated ? `<small>${monYY(o.m)}</small>` : ""}</span>`;
     if (small) return c; // (the rows, the Latest strip, "next" and the YOU menu: just the coin)
-    const sp = o.locked ? 0 : { silver: 1, gold: 2, special: 3 }[d.m] || 0; // sparkles: more for a better metal
-    return `<span class="bdm k-${o.locked ? "hidden" : esc(d.cat || "month")}${o.size ? " " + esc(o.size) : ""}">${c}${'<i class="sp"></i>'.repeat(sp)}</span>`;
+    const sp = o.locked ? 0 : pod ? 3 : { silver: 1, gold: 2, special: 3 }[d.m] || 0; // sparkles: more for a better metal – and a podium place gets the full set
+    return `<span class="bdm k-${o.locked ? "hidden" : esc(d.cat || "month")}${pod ? " m-" + metal : ""}${o.size ? " " + esc(o.size) : ""}">${c}${'<i class="sp"></i>'.repeat(sp)}</span>`;
   }
-  const badgeName = (d, m) => (d.id === "top" && m ? `Champion – ${new Date(m + "-01T12:00:00").toLocaleDateString("en-GB", { month: "long", year: "numeric" })}` : d.n);
+  const badgeName = (d, m) => (isDated(d) && m ? `${d.n} – ${new Date(m + "-01T12:00:00").toLocaleDateString("en-GB", { month: "long", year: "numeric" })}` : d.n);
   const prevMonthOf = (m) => { const [y, mo] = String(m).split("-").map(Number); const d = new Date(y, mo - 2, 1); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`; };
   // ---- one medal a kind (Jake, 24 Nov: "too many badges – have bronzes and silvers upgrade and replace each other"): within points in
   // a day, a month, in total and sales, the best medal ever reached is the one that shows (×N: the months it was reached in); a
-  // Champion shows its latest month and year (×N: wins); every other badge shows once
+  // Champion, 2nd or 3rd Place shows its latest month and year (×N: times); every other badge shows once
   const TIERED = new Set(["day", "month", "life", "value"]);
   function medalsOf(got, defsList) { // [{ d, m (latest month), n, months }], best first
     const defs = Object.fromEntries((defsList || []).map((d) => [d.id, d])), out = {};
@@ -1550,7 +1565,8 @@
     }
     return { from: ["", "bronze", "silver", "gold", "special"][from], again: false, n: 1 };
   }
-  // a row's flair: the avatar ringed in the metal of this month's best points medal, a crown for last month's champion, a sheen on
+  // a row's flair: the avatar ringed in the metal of this month's best points medal, a crown for last month's champion (and a silver
+  // 2 or bronze 3 pinned to the avatar for last month's 2nd and 3rd – Jake: "make sure it's still prestigious"), a sheen on
   // the row and the name for anyone holding a special medal, and beside the name their best gold and special medals – three at most
   // (Jake: "only show on the leaderboard gold or special top 3 badges only so it doesn't get overcrowded"; the crown stands for last
   // month's Champion, so that medal isn't repeated beside it)
@@ -1560,10 +1576,11 @@
     const defs = Object.fromEntries(b.defs.map((d) => [d.id, d]));
     for (const id of Object.keys(got)) { const [base, m] = id.split("@"), d = defs[base]; if (d?.cat === "month" && m === b.month) metal = Math.max(metal, METAL[d.m] || 0); }
     const crown = Object.keys(got).includes("top@" + pm), holo = ms.some((x) => x.d.m === "special" && (x.d.id !== "top" || x.m === pm));
+    const pod = !pm ? 0 : got["second@" + pm] ? 2 : got["third@" + pm] ? 3 : 0;
     const minis = ms.filter((x) => (x.d.m === "gold" || x.d.m === "special") && !(crown && x.d.id === "top" && x.m === pm)).slice(0, 3);
-    return { cls: `${metal ? " q-" + ["", "bronze", "silver", "gold", "special"][metal] : ""}${holo ? " q-holo" : ""}`, crown, minis: minis.map((x) => [x.d, x.m]) };
+    return { cls: `${metal ? " q-" + ["", "bronze", "silver", "gold", "special"][metal] : ""}${holo ? " q-holo" : ""}`, crown, pod, pm, minis: minis.map((x) => [x.d, x.m]) };
   }
-  const qSig = () => (badgesD?.month || "") + JSON.stringify(Object.keys(badgesD?.by || {}).sort().map((u) => { const q = quirks(u); return q ? u + q.cls + q.crown + q.minis.map(([d, m]) => d.id + (m || "")).join() : ""; }));
+  const qSig = () => (badgesD?.month || "") + JSON.stringify(Object.keys(badgesD?.by || {}).sort().map((u) => { const q = quirks(u); return q ? u + q.cls + q.crown + q.pod + q.minis.map(([d, m]) => d.id + (m || "")).join() : ""; }));
   const short = (t, n) => (String(t).length > n ? String(t).slice(0, n - 1).trimEnd() + "…" : String(t));
   // "Mobile" and other excluded names aren't people: their jobs still show, just without a staff name
   const who = (op) => person(op) || "—";
@@ -1578,7 +1595,7 @@
     const items = [...jobs.map((e) => ({ at: e.at, e })), ...won.map((x) => ({ at: x.at, x }))].sort((p, q) => q.at - p.at).slice(0, 12);
     const hmT = (t) => esc(new Date(t).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }));
     const isNew = new Set(won.filter((x) => tickSeen.size && !tickSeen.has(x.bid)).map((x) => x.bid));
-    const badgeTk = (x) => { const fresh = isNew.has(x.bid); return `<span class="tk tb${fresh ? " new" : ""}">${hmT(x.at)} · ${x.d.cat === "hidden" ? coin(null, { size: "xs", locked: true }) : coin(x.d, { size: "xs", m: x.m })} <b>${esc(who(contrib?.names?.[x.u] || x.u))}</b> <span class="bn">${x.d.cat === "hidden" ? "found a hidden badge" : esc(badgeName(x.d, x.m)) + (x.n > 1 && x.d.id !== "top" ? ` ×${x.n}` : "")}</span></span>`; };
+    const badgeTk = (x) => { const fresh = isNew.has(x.bid); return `<span class="tk tb${fresh ? " new" : ""}">${hmT(x.at)} · ${x.d.cat === "hidden" ? coin(null, { size: "xs", locked: true }) : coin(x.d, { size: "xs", m: x.m })} <b>${esc(who(contrib?.names?.[x.u] || x.u))}</b> <span class="bn">${x.d.cat === "hidden" ? "found a hidden badge" : esc(badgeName(x.d, x.m)) + (x.n > 1 && !isDated(x.d) ? ` ×${x.n}` : "")}</span></span>`; };
     tickSeen.add(""); for (const x of won) tickSeen.add(x.bid);
     $("ticker").innerHTML = items.length ? `<span class="lbl">Latest</span>` + items.map(({ e, x }) => x ? badgeTk(x) : `<span class="tk${newIds.includes(e.id) ? " new" : ""}">${esc(new Date(e.at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }))} · <span class="jb">${esc(e.job || "—")}</span> · <b>${esc(who(actor(e)))}</b>${data?.hasValue ? ` · <span class="pv${e.kind === "added" ? " adj" : ""}">+${fmtGBP(+e.value || 0)}${e.kind === "added" ? (e.by ? " added" : " added to existing job") : e.kind === "status" ? ` · ${esc(e.from)} → ${esc(e.status)}` : ""}</span>` : ""}</span>`).join("") : "";
   }
@@ -2317,7 +2334,7 @@
       const tip = v.t ? `${person(n)}: ${fmtN(v.pts)} points = ${actFull(v.t)}` : `${person(n)}: ${fmtN(v.pts)} points`; // (hover breakdown: on the boards only)
       const q = quirks(key.slice(2)), html = `<div class="row${pd ? " pend" : ""}${flashNames.has(n) && !pd ? " flash" : ""}${q?.cls || ""}" data-key="${esc(key)}" data-sort='${JSON.stringify(pd ? [pd.m0] : [v.pts])}'${pd ? ` data-sortnew='${JSON.stringify([v.pts])}' data-gaintxt="${esc(chip)}" data-gain="${np}" data-sub="${esc(sub)}"` : ""}${window.MRIV ? "" : ` data-tip="${esc(tip)}"`}>
       <div class="rank"></div>
-      <div class="name">${q?.crown ? `<i class="qcrown">${CROWN}</i>` : ""}${avatar(n)}<span class="nm">${esc(person(n))}</span>${q?.minis.length ? `<span class="qmed">${q.minis.map(([d, m]) => coin(d, { size: "xs", m })).join("")}</span>` : ""}</div><div class="bar"><div class="fill" ${pd ? `data-later="${w}"` : `data-w="${w}"`} style="width:${pd ? pd.w0 : w0}%"></div></div>
+      <div class="name">${q?.crown ? `<i class="qcrown">${CROWN}</i>` : ""}${avatar(n, q?.pod ? `<i class="qpod p${q.pod}" title="${q.pod === 2 ? "2nd" : "3rd"} place in ${esc(new Date(q.pm + "-01T12:00:00").toLocaleDateString("en-GB", { month: "long" }))}">${q.pod}</i>` : "")}<span class="nm">${esc(person(n))}</span>${q?.minis.length ? `<span class="qmed">${q.minis.map(([d, m]) => coin(d, { size: "xs", m })).join("")}</span>` : ""}</div><div class="bar"><div class="fill" ${pd ? `data-later="${w}"` : `data-w="${w}"`} style="width:${pd ? pd.w0 : w0}%"></div></div>
       <div class="nums">${pd ? `<b data-count="${esc(txt)}" data-hold="${esc(pd.t0)}">${esc(pd.t0)}</b>` : `<b data-count="${esc(txt)}" data-from="${esc(memo.txt[key] ?? "")}">${txt}</b>`} <span class="u">pt${v.pts === 1 ? "" : "s"}</span><small${pd ? ` data-later="${esc(line)}"` : ""}>${esc(lineBefore)}</small></div></div>`;
       memo.w[key] = w; memo.txt[key] = txt; memo.m[key] = v.pts; if (v.t) memo.cnt[key] = { ...v.t }; return html; }).join("") : `<div class="empty" style="font-size:.9rem">${viewPrev ? "No office staff data yet." : "No points yet – they appear here as people raise, book, price, close and clear jobs."}</div>`;
     sortRows(opsEl); applyRanks(opsEl);
@@ -2438,7 +2455,7 @@
   const hue = (s) => { let h = 0; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
   const initials = (n) => (person(n) || "?").split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase();
   const avGrad = (n) => { const h = hue(person(n)); return `linear-gradient(135deg,hsl(${h} 72% 58%),hsl(${(h + 45) % 360} 70% 36%))`; };
-  const avatar = (n) => `<span class="av" style="background:${avGrad(n)}">${esc(initials(n))}</span>`;
+  const avatar = (n, pin = "") => `<span class="av" style="background:${avGrad(n)}">${esc(initials(n))}${pin}</span>`; // (pin: last month's 2nd or 3rd)
   const tops = (c) => { const m = {}; c.querySelectorAll("[data-key]").forEach((e) => (m[e.dataset.key] = e.offsetTop)); return m; };
   // FLIP: rows start where they used to be and glide to their new rank
   function flip(c, old) {
@@ -2640,7 +2657,7 @@
   // ---- private staff insights (insights.js): the board's data and helpers, and a click on a name opens that person's day ----
   window.MRIBoard = {
     contrib: () => contrib, prefs: () => prefs, ptsOf, weights: () => ptCfg(), person, canon, isPerson, esc, fmtN, ACT_NAME, ACT_ONE, confetti: (n, gold) => confetti(n, gold), santa: () => santaGlide($("roundup")),
-    counted, viewName, viewPrev: () => viewPrev, coin, badgeName, quirks, medalsOf, upgradeOf, boardValue: (name) => { const v = rollup(source()?.byContract || {}).rows[name]; return v ? V(v) : null; },
+    counted, viewName, viewPrev: () => viewPrev, coin, badgeName, isDated, quirks, medalsOf, upgradeOf, boardValue: (name) => { const v = rollup(source()?.byContract || {}).rows[name]; return v ? V(v) : null; },
     boardValueOf: (byContract, name) => { const v = rollup(byContract || {}).rows[name]; return v ? V(v) : 0; },
     topActs, boardRanks: () => Object.fromEntries(contribRows(source()?.month).map(([, v], i) => [String(v.key || "").toLowerCase(), i + 1])),
     savePrefs: async (patch) => { prefs = { ...prefs, ...patch }; await chrome.storage.local.set({ "dash:prefs": prefs }); if (window.BoardSync && window.BoardSync.role() !== "off") await window.BoardSync.pushSettings(); },
