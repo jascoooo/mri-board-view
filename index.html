@@ -372,6 +372,16 @@
   @keyframes swingF{from{transform:rotate(-14deg)}to{transform:rotate(12deg)}}@keyframes swingH{from{transform:rotate(12deg)}to{transform:rotate(-14deg)}}@keyframes wave{from{transform:rotate(-16deg)}to{transform:rotate(14deg)}}
   body.xmas .crown svg,body.xmas .wcrown svg{filter:drop-shadow(0 .15rem .3rem rgba(0,0,0,.45))}
   @media (prefers-reduced-motion:reduce){body.xmas .fill,body.xmas .tm-bar i{animation:none}}
+  /* Christmas lights strung across the screen (dashboard.js placeLights): above the snow, under every pop-up; clicks go through */
+  #xlights{position:fixed;inset:0;pointer-events:none;z-index:7;overflow:hidden}#xlights svg{position:absolute;overflow:visible;display:block}
+  #xlights .xdefs{left:0;top:0}#xlights .xtacks{left:0;top:0}#xlights .xtacks circle{fill:#aeb4bf;stroke:#3a3f48;stroke-width:1}
+  #xlights .xs{position:absolute;will-change:transform;animation:xlSway 4.5s ease-in-out infinite alternate}#xlights .xs svg{left:0;top:0}
+  #xlights .xs.hang{animation-name:xlSwing}
+  #xlights .xw{fill:none;stroke:#173322;stroke-width:2.6;stroke-linecap:round}#xlights .xw2{fill:none;stroke:#3f7a4f;stroke-width:1.1;stroke-dasharray:3 2.4;stroke-linecap:round}
+  #xlights .xb{animation:xlTw 8s ease-in-out infinite}
+  @keyframes xlSway{from{transform:rotate(var(--r)) skewX(calc(var(--a) * -1)) rotate(calc(var(--r) * -1))}to{transform:rotate(var(--r)) skewX(var(--a)) rotate(calc(var(--r) * -1))}}@keyframes xlSwing{from{transform:rotate(calc(var(--a) * -1))}to{transform:rotate(var(--a))}}
+  @keyframes xlTw{0%,100%{opacity:1}62%{opacity:1}73%{opacity:.25}83%{opacity:.25}94%{opacity:1}}
+  @media (prefers-reduced-motion:reduce){#xlights .xs,#xlights .xb{animation:none!important}}
   .celebrate{position:fixed;left:50%;top:50%;transform:translate(-50%,-46%) scale(.82);opacity:0;z-index:21;min-width:36rem;max-width:80vw;text-align:center;padding:2rem 2.8rem 1.9rem;border-radius:1.8rem;border:2px solid transparent;pointer-events:none;
     background:linear-gradient(170deg,#152240,#0a101e) padding-box,conic-gradient(from var(--ang),#3ee98a,#38e1ff,#4c9dff,#ffcf5c,#3ee98a) border-box;
     box-shadow:0 2.5rem 6rem rgba(0,0,0,.7),0 0 5rem rgba(62,233,138,.25);transition:opacity .35s,transform .6s var(--spring);animation:angspin 5s linear infinite}
@@ -580,6 +590,11 @@
 #mrivBanner.on{display:block}#mrivBanner.bad{background:#3a1515;border-color:rgba(255,120,120,.6);color:#ffc4c4}
 .mepill{background:#2a2410;color:#ffe3a0;border:1px solid rgba(255,211,106,.5);border-radius:999px;padding:4px 12px;font:600 13px system-ui,sans-serif;margin-right:10px;cursor:pointer}.mepill b{background:#ffd36a;color:#2a1f00;border-radius:5px;padding:0 5px;margin-right:6px;font-size:11px;letter-spacing:.05em}
 #ops .row.me{outline:2px solid #ffd36a;outline-offset:-2px;background:rgba(255,211,106,.10)!important}.youb{background:#ffd36a;color:#2a1f00;border-radius:6px;padding:1px 7px;font-size:.62em;font-weight:900;letter-spacing:.06em;margin-left:10px;vertical-align:middle}
+.ibtn{width:26px;height:26px;padding:0;margin-right:10px;border-radius:50%;border:1px solid rgba(156,200,255,.5);background:#1d2a4a;color:#9cc8ff;font:italic 800 15px/1 Georgia,"Times New Roman",serif;cursor:pointer;vertical-align:middle}.ibtn:hover{background:#26375f;color:#fff}
+#mrivInfo{position:fixed;top:76px;right:24px;z-index:98;width:300px;box-sizing:border-box;background:#121a30;border:1px solid rgba(156,200,255,.45);border-radius:14px;padding:14px 16px;box-shadow:0 20px 60px rgba(0,0,0,.6);font:14px/1.45 system-ui,sans-serif;color:#e8eefc;animation:mcIn .18s ease}
+#mrivInfo .ih{font-weight:800;font-size:16px;margin:0 24px 6px 0}#mrivInfo .mx{position:absolute;top:8px;right:10px;background:none;border:0;color:#8fa0c3;font-size:18px;cursor:pointer;line-height:1}
+#mrivInfo table{width:100%;border-collapse:collapse;font-size:13.5px}#mrivInfo td{padding:3px 0;color:#c9d5ee;border-bottom:1px solid rgba(255,255,255,.06)}#mrivInfo td:last-child{text-align:right;color:#ffd36a;font-weight:700;white-space:nowrap;padding-left:10px}
+#mrivInfo p{margin:8px 0 0;color:#c9d5ee;font-size:12.5px}#mrivInfo .ij{color:#e8eefc;font-weight:600}
 #mrivMenu{position:fixed;top:76px;right:24px;z-index:98;width:340px;background:#121a30;border:1px solid rgba(255,211,106,.45);border-radius:14px;padding:14px 16px;box-shadow:0 20px 60px rgba(0,0,0,.6);font:14px/1.45 system-ui,sans-serif;color:#e8eefc}
 #mrivMenu .mh{display:flex;justify-content:space-between;align-items:baseline;font-size:16px}#mrivMenu .mh span{color:#ffd36a;font-weight:800}
 #mrivMenu .mbig{font-size:30px;font-weight:800;margin:4px 0}#mrivMenu .mbig small{font-size:13px;color:#8fa0c3;font-weight:600}
@@ -592,8 +607,8 @@
 #mrivCard .ml{color:#c9d5ee;margin:3px 0}#mrivCard .mn{color:#8fa0c3;font-size:12px;margin:8px 0 0}#mrivCard .mx{position:absolute;top:8px;right:10px;background:none;border:0;color:#8fa0c3;font-size:18px;cursor:pointer;line-height:1}
 #mrivCard{max-height:calc(100vh - 16px);overflow:auto;scrollbar-width:thin}
 #mrivCard .mbd{margin:10px 0 2px;padding-top:10px;border-top:1px solid rgba(255,255,255,.08)}#mrivCard .mbh{font-weight:800;font-size:14px;margin-bottom:8px}#mrivCard .mbh span{background:#ffd36a;color:#2a1f00;border-radius:999px;padding:0 7px;font-size:11px;margin-left:4px;vertical-align:1px}
-#mrivCard .mbs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px 2px;margin-bottom:8px}#mrivCard .mbs .bx{display:none}#mrivCard .mbs.all .bx{display:flex}#mrivCard .mbs.all .bmore{display:none}
-#mrivCard .bdg{display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;cursor:default;min-width:0}#mrivCard .bdg>b{font-size:9.5px;line-height:1.15;color:#c9d5ee;font-weight:600;margin-top:3px;max-width:100%;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#mrivCard .mbs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px 5px;margin-bottom:8px}#mrivCard .mbs .bx{display:none}#mrivCard .mbs.all .bx{display:flex}#mrivCard .mbs.all .bmore{display:none}
+#mrivCard .bdg{display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;cursor:default;min-width:0}#mrivCard .bdg>b{font-size:9.5px;line-height:1.15;color:#c9d5ee;font-weight:600;margin-top:3px;max-width:100%;overflow-wrap:break-word}
 #mrivCard .bdg>em{position:absolute;top:-4px;right:calc(50% - 26px);font-style:normal;font-size:9px;font-weight:800;background:#ffd36a;color:#2a1f00;border-radius:999px;padding:0 4px;z-index:3}
 #mrivCard .bmore{background:none;border:0;padding:0;color:inherit;font:inherit;cursor:pointer}#mrivCard .bmore>span{display:grid;place-items:center;width:34px;height:34px;margin-bottom:10px;border-radius:50%;box-sizing:border-box;border:1.5px dashed rgba(255,255,255,.35);background:rgba(255,255,255,.06);font-weight:800;font-size:12px;color:#e8eefc}#mrivCard .bmore:hover>span{background:rgba(255,211,106,.18);border-color:#ffd36a}
 #mrivCard .bdg>.bdm{transition:transform .3s cubic-bezier(.2,1.6,.4,1)}#mrivCard .bdg:hover>.bdm{animation:mbWig .7s ease-in-out}@keyframes mbWig{0%,100%{transform:rotate(0)}30%{transform:rotate(-9deg) translateY(-2px)}65%{transform:rotate(7deg) translateY(-2px)}}
@@ -743,6 +758,7 @@
             <span class="hint" id="insMsg"></span>
           </div>
           <p class="hint"><b id="insState"></b></p>
+          <p class="hint" id="insWarn" hidden style="color:#ffb59e"><b>⚠ This is still the PIN MRI Assist came with.</b> Anyone with a copy of the extension could work it out – change it above (every board follows).</p>
         </div>
       </section>
       <section class="sx-tab" data-t="updates">
@@ -842,7 +858,7 @@
   <p class="hint" id="insPinMsg" style="color:#ff9a9a"></p>
   <div class="row2" style="justify-content:flex-end"><button class="btn ghost" id="insPinCancel">Cancel</button><button class="btn" id="insPinGo">Open</button></div>
 </dialog>
-<script>window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin","version":"2.49.7"};
+<script>window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin","version":"2.49.13"};
 // MRI Assist – the VIEW-ONLY board: the leaderboard as a normal web page that anyone with the link can watch – nothing to
 // install, no sign-in, nothing to click into. The PC that reads MRI (the TV) puts this page on a GitHub Pages site together
 // with the board's figures, ENCRYPTED. The key is in the link, after the "#", which a browser never sends anywhere, so the
@@ -897,8 +913,29 @@
     if (!me) return; const row = ops.querySelector(`.row[data-key="o:${CSS.escape(me.toLowerCase())}"]`); if (!row) return;
     row.classList.add("me"); const nm = row.querySelector(".nm"); if (nm && !row.querySelector(".youb")) nm.insertAdjacentHTML("afterend", `<span class="youb">YOU</span>`);
   }
+  // ---- "i": how the points work, very simply (Jake: "an extremely simple 'i' info button … what earns points … just for fun and to
+  // keep people motivated") – the TV's own point values, so it always matches the board
+  function infoBtn(u) {
+    if (document.getElementById("mrivInfoBtn")) return;
+    const b = document.createElement("button"); b.id = "mrivInfoBtn"; b.type = "button"; b.className = "ibtn"; b.textContent = "i";
+    b.title = "How the points work"; b.setAttribute("aria-label", "How the points work"); u.before(b); b.onclick = () => info();
+  }
+  function info() {
+    let m = document.getElementById("mrivInfo"); if (m) { m.remove(); return; }
+    const w = W(), n = (v) => Math.max(0, Number(v) || 0), pts = (v) => `${v} pt${v === 1 ? "" : "s"}`;
+    const rows = [["Raise a job", n(w.r)], ["Book a visit", n(w.b)], ["Price a job", n(w.p)], ["Close a job", n(w.c)], ["Log a letter or call", n(w.k)], ["Clear a job to invoice", n(w.x)]].filter(([, v]) => v > 0);
+    if (n(w.u4)) rows.push([`Every ${n(w.u4)} other updates`, 1]);
+    m = document.createElement("div"); m.id = "mrivInfo"; m.setAttribute("role", "dialog"); m.setAttribute("aria-label", "How the points work");
+    m.innerHTML = `<button class="mx" aria-label="Close">×</button><div class="ih">How the points work</div>
+      <table><tbody>${rows.map(([t, v]) => `<tr><td>${t}</td><td>${pts(v)}</td></tr>`).join("")}</tbody></table>
+      ${w.bonus !== false ? `<p>Bigger jobs earn a little extra when you price or close them.</p>` : ""}
+      <p>You can earn badges for special achievements too – click your name to see yours.</p>
+      <p class="ij">This board is just a bit of fun – a way to celebrate the great work everyone puts in and keep each other going. Enjoy it, and cheer each other on!</p>`;
+    m.querySelector(".mx").onclick = () => m.remove();
+    document.getElementById("mrivMenu")?.remove(); document.body.appendChild(m);
+  }
   function pill() { // in the header: "YOU #3 · 214 pts · +12 today", or "Find me"
-    let b = document.getElementById("mrivMe"); const u = document.getElementById("updated"); if (!u) return;
+    let b = document.getElementById("mrivMe"); const u = document.getElementById("updated"); if (!u) return; infoBtn(u);
     if (!b) { b = document.createElement("button"); b.id = "mrivMe"; b.className = "mepill"; u.before(b); b.onclick = () => menu(); }
     const rows = standings(), i = rows.findIndex((x) => x.u === me);
     if (!me || i < 0) { b.innerHTML = me ? (me.startsWith(TYPED) ? `<b>YOU</b> ${esc(nameOf(me))}` : `<b>YOU</b> no points yet`) : "Find me"; b.title = me ? "Your name – click to change it" : "Pick your name to highlight it and see your own numbers"; return; }
@@ -986,6 +1023,7 @@
   addEventListener("DOMContentLoaded", () => {
     const ops = document.getElementById("ops"); if (ops) new MutationObserver(() => { if (!ops.querySelector(".row.me") && me) mark(); }).observe(ops, { childList: true });
     document.addEventListener("click", (e) => { const m = document.getElementById("mrivMenu"); if (m && !m.contains(e.target) && !e.target.closest("#mrivMe")) m.remove(); });
+    document.addEventListener("click", (e) => { const m = document.getElementById("mrivInfo"); if (m && !m.contains(e.target) && !e.target.closest("#mrivInfoBtn")) m.remove(); });
   });
   // ---- click a name on the staff board for their points today – yours too: what the board counts for them today by type, with
   // this month's total and place
@@ -1082,7 +1120,7 @@
     const cap = (t) => t.charAt(0).toUpperCase() + t.slice(1);
     el.innerHTML = `<div class="ac"><div class="act">${head}</div>
       <div class="acs">${list.slice(0, 6).map((x) => coin(x.d, { size: "big", m: x.m })).join("")}${list.length > 6 ? `<span class="acm">+${list.length - 6}</span>` : ""}</div>
-      ${a.intro ? `<b class="acb">You've already earned ${list.length}</b><p>${list.slice(0, 6).map((x) => esc(bName(x.d, x.m))).join(" · ")}${list.length > 6 ? " …" : ""}</p>`
+      ${a.intro ? `<b class="acb">You've already earned ${list.length}</b><p>${list.map((x) => esc(bName(x.d, x.m))).join(" · ")}</p>`
         : a.many ? `<b class="acb">${list.length} new badges</b><p>${list.map((x) => esc(bName(x.d, x.m))).join(" · ")}</p>`
         : `<b class="acb">${esc(bName(a.d, a.m))}${a.again && a.d.id !== "top" ? ` ×${a.n}` : ""}</b><p>${a.from ? `${cap(a.from)} → ${cap(a.d.m)} · ` : ""}${esc(a.d.d)}${a.m && a.d.id !== "top" ? " – " + monName(a.m) : ""}</p>`}
       <p class="ahint">All your badges, and how close you are to the next ones, are on your card: <b>click your name on the staff board</b> (or <b>YOU</b> at the top).</p>
@@ -1108,7 +1146,7 @@
     ops.addEventListener("click", (e) => { const row = e.target.closest(".row"); if (!row || !ops.contains(row) || document.getElementById("mrivGate")) return; e.stopPropagation(); card(row); }, true);
   });
   document.addEventListener("click", (e) => { const c = document.getElementById("mrivCard"); if (c && !c.contains(e.target) && !e.target.closest?.("#ops .row")) c.remove(); });
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") document.getElementById("mrivCard")?.remove(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") { document.getElementById("mrivCard")?.remove(); document.getElementById("mrivInfo")?.remove(); } });
   // ---- everyone picks their name first: the board waits behind a "Who's watching?" card until a name is picked – one of the
   // office staff the board knows, or typed in when it isn't on the list ("~" in front marks it as typed). Saved in this browser,
   // so it's asked once; "Change name" in the YOU menu brings the card back. It isn't a sign-in: anyone can pick any name.
@@ -1712,7 +1750,93 @@
   }
   // ---- Christmas theme (⚙ → Theme): snow, tinsel instead of confetti, candy-cane bars (CSS), Santa hats instead of crowns ----
   const xmas = () => prefs.theme === "christmas";
-  function applyTheme() { document.body.classList.toggle("xmas", xmas()); if (xmas()) snowStart(); else snowStop(); placeSnowCaps(); }
+  function applyTheme() { document.body.classList.toggle("xmas", xmas()); if (xmas()) snowStart(); else snowStop(); placeSnowCaps(); placeLights(); }
+  // ---- Christmas lights (Jake, 25 Nov: "kind of messy Stranger Things style christmas lights, slightly covering boxes / figures and
+  // swaying" … "more diagonal" … "a bit too messy … just slight coverage" … "smooth, no clear cuts" … "just on the top left and bottom
+  // right corners"): old-fashioned C9 bulbs on twisted green wire, one string slung diagonally across the top-left corner and one
+  // across the bottom-right, sagging a little between pins. Bulbs keep off the figures, rows and clock (the wire may cross
+  // them). Every swag swings gently on its own; each bulb now and then fades down and back up to its own rhythm – smooth, no flashes.
+  // Laid out from the board's own boxes, so it fits the TV and the view-only page alike; clicks go straight through. Reduced
+  // motion: still, lit.
+  const XL = ["#ff3b30", "#2f7bff", "#2ecc40", "#ffd60a", "#ff8c1a", "#ff4fb0"];
+  let xlKey = "";
+  function placeLights() {
+    let layer = $("xlights");
+    if (!xmas()) { layer?.remove(); xlKey = ""; return; }
+    const W = innerWidth, H = innerHeight, box = (e) => (e ? e.getBoundingClientRect() : null), tr = box($("tiles")), hr = box(document.querySelector("header"));
+    const tt = tr?.height ? tr.top : H * 0.085, tb = tr?.height ? tr.bottom : H * 0.22, hb = hr?.height && hr.bottom <= tt ? hr.bottom : tt - 16;
+    const below = [...document.querySelectorAll(".card")].map(box).filter((r) => r && r.height > 40 && r.top > tb - 4).map((r) => r.top);
+    const mt = below.length ? Math.min(...below) : tb + 40;
+    const key = [W, H, hb, tt, tb, mt].map((v) => Math.round(v / 8)).join(","); if (layer && key === xlKey) return; xlKey = key;
+    // what the bulbs keep off (Jake: "covering the numbers a bit too much – just slight coverage"): the tiles' figures, every row of
+    // the two lists, the roundup countdown, the last-update time, the clock, the podium and the YOU pill. The wire may cross them; a
+    // bulb never sits on them. (The title may have a bulb or two in front of it.)
+    // (only what's actually showing: a long list's rows below the bottom of its box are cut off, not covering the chart underneath –
+    // Jake, 25 Nov: "put the bulbs on this section", the revenue chart, which had none because of the hidden rows of a long staff list)
+    const shown = (el) => { const r = el.getBoundingClientRect(), c = el.closest(".board, .card"), q = c && c !== el ? c.getBoundingClientRect() : null; if (!q) return r;
+      const L = Math.max(r.left, q.left), T = Math.max(r.top, q.top), R = Math.min(r.right, q.right), B = Math.min(r.bottom, q.bottom); return R > L && B > T ? { left: L, top: T, right: R, bottom: B, width: R - L, height: B - T } : null; };
+    const keep = [...document.querySelectorAll(".tile .big, #board .row, #ops .row, #rcount, #updated, #clock, .podium, #mrivMe, #mrivInfoBtn")].map(shown).filter((r) => r && r.width && r.height);
+    if (!layer) { layer = document.createElement("div"); layer.id = "xlights"; layer.setAttribute("aria-hidden", "true"); document.body.appendChild(layer); }
+    const u = Math.max(0.55, Math.min(1.4, Math.min(W / 1920, H / 1080))), f = (n) => Math.round(n * 10) / 10;
+    let seed = 20261225; const rnd = () => ((seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 4294967296), rr = (a, b) => a + (b - a) * rnd(); // (the same "mess" every time)
+    const mix = (hex, to, k) => "#" + [1, 3, 5].map((i) => Math.round(parseInt(hex.substr(i, 2), 16) * (1 - k) + parseInt(to.substr(i, 2), 16) * k).toString(16).padStart(2, "0")).join("");
+    const defs = XL.map((c, i) => `<radialGradient id="xlG${i}"><stop offset="0" stop-color="${c}" stop-opacity=".5"/><stop offset=".35" stop-color="${c}" stop-opacity=".16"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient><radialGradient id="xlB${i}" cx=".38" cy=".3" r=".8"><stop offset="0" stop-color="${mix(c, "#ffffff", 0.6)}"/><stop offset=".5" stop-color="${c}"/><stop offset="1" stop-color="${mix(c, "#000000", 0.3)}"/></radialGradient>`).join("");
+    // a string: its pins, the swags between them, and loose ends that hang from a pin
+    const quad = (a, c, b, t) => [(1 - t) * (1 - t) * a[0] + 2 * (1 - t) * t * c[0] + t * t * b[0], (1 - t) * (1 - t) * a[1] + 2 * (1 - t) * t * c[1] + t * t * b[1]];
+    const cubic = (a, c1, c2, b, t) => { const m = 1 - t; return [0, 1].map((k) => m * m * m * a[k] + 3 * m * m * t * c1[k] + 3 * m * t * t * c2[k] + t * t * t * b[k]); };
+    const segs = [], tacks = [];
+    function string({ pins, sag, hangStart, hangEnd, gap, col0 }) {
+      let carry = gap * rr(0.3, 0.9), ci = col0;
+      const add = (kind, pts, d, origin, chord = 0) => { // pts: the curve sampled; bulbs every `gap` along it, carried on from the last part
+        const L = [0]; for (let i = 1; i < pts.length; i++) L.push(L[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+        const bulbs = [], end = L[L.length - 1]; let at = carry;
+        const pos = (s0) => { let i = 1; while (i < L.length - 1 && L[i] < s0) i++; const a = pts[i - 1], b = pts[i], t = Math.max(0, Math.min(1, (s0 - L[i - 1]) / Math.max(1e-6, L[i] - L[i - 1]))); return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a, b]; };
+        const clear = (x, y) => !keep.some((r) => x + 9 * u > r.left - 4 * u && x - 9 * u < r.right + 4 * u && y + 27 * u > r.top - 4 * u && y - 3 * u < r.bottom + 4 * u);
+        for (; at < end; at += gap) {
+          let s1 = null; for (let k = 0; k <= gap * 0.45; k += 2 * u) { if (at + k < end && clear(...pos(at + k))) { s1 = at + k; break; } if (at - k > 0 && clear(...pos(at - k))) { s1 = at - k; break; } }
+          if (s1 == null) continue; // (nowhere near here that doesn't cover something: no bulb)
+          const [x, y, a, b] = pos(s1);
+          let nx = -(b[1] - a[1]), ny = b[0] - a[0]; if (ny < 0) { nx = -nx; ny = -ny; } // the side of the wire that's down
+          const lean = (Math.atan2(-nx, ny) * 180) / Math.PI; bulbs.push([x, y, lean * 0.5 + rr(-9, 9), ci++ % XL.length]);
+        }
+        carry = at - L[L.length - 1];
+        segs.push({ kind, d, pts, bulbs, origin, chord });
+      };
+      const samp = (fn) => Array.from({ length: 41 }, (_, i) => fn(i / 40));
+      if (hangStart) { const [p, len] = hangStart, e = [p[0] + rr(-6, 8) * u, p[1] + len], c1 = [p[0] - 9 * u, p[1] + len * 0.4], c2 = [p[0] + 12 * u, p[1] + len * 0.75];
+        add("hang", samp((t) => cubic(e, c2, c1, p, t)), `M ${e} C ${c2} ${c1} ${p}`, p); tacks.push(p); }
+      for (let i = 1; i < pins.length; i++) {
+        const a = pins[i - 1], b = pins[i], s = sag(i), c = [(a[0] + b[0]) / 2 + rr(-0.12, 0.12) * (b[0] - a[0]), (a[1] + b[1]) / 2 + 2 * s];
+        add("swag", samp((t) => quad(a, c, b, t)), `M ${a} Q ${c} ${b}`, [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], (Math.atan2(b[1] - a[1], b[0] - a[0]) * 180) / Math.PI); if (i < pins.length - 1 || hangEnd) tacks.push(b);
+      }
+      if (hangEnd) { const [len] = hangEnd, p = pins[pins.length - 1], e = [p[0] + rr(-8, 6) * u, p[1] + len], c1 = [p[0] + 10 * u, p[1] + len * 0.35], c2 = [p[0] - 10 * u, p[1] + len * 0.7];
+        add("hang", samp((t) => cubic(p, c1, c2, e, t)), `M ${p} C ${c1} ${c2} ${e}`, p); }
+    }
+    const row = (x0, x1, step, y) => { const p = [[x0, y()]]; while (p[p.length - 1][0] < x1) p.push([Math.min(x1, p[p.length - 1][0] + rr(step[0], step[1]) * u), y()]); return p; };
+    // two strings, slung diagonally across the top-left and bottom-right corners (Jake: "a bit too messy" … "maybe just on the top left
+    // and bottom right corners"), pinned every so often along the line between their ends and sagging a little between the pins
+    const diag = (a, b, gap, col0) => {
+      const len = Math.hypot(b[0] - a[0], b[1] - a[1]), n = Math.max(2, Math.round(len / (rr(230, 320) * u))), pins = [a];
+      for (let k = 1; k < n; k++) { const t = (k + rr(-0.12, 0.12)) / n; pins.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t + rr(-6, 4) * u]); }
+      pins.push(b); string({ pins, gap, col0, sag: () => (rnd() < 0.15 ? rr(38, 46) : rr(18, 34)) * u });
+    };
+    const out = 30 * u;
+    diag([W * 0.34, -14 * u], [-out, tt + (tb - tt) * 0.55], 54 * u, 0); //  top left
+    diag([W + out, H * 0.68], [W * 0.74, H + 16 * u], 54 * u, 4); //          bottom right
+    // drawn: each swag (and loose end) in its own small layer that swings on its own – the pins stay put
+    const T0 = performance.now() / 1000; // (every delay counts from page load, so a redraw carries on where it was instead of jumping)
+    const bulb = ([x, y, r, c], ox, oy) => `<g class="xb" style="animation-duration:${f(rr(6, 12))}s;animation-delay:${f(-(rr(0, 12) + T0))}s" transform="translate(${f(x - ox)} ${f(y - oy)}) rotate(${f(r)})"><circle cy="${f(13 * u)}" r="${f(22 * u)}" fill="url(#xlG${c})"/><rect x="${f(-3.4 * u)}" y="${f(-1 * u)}" width="${f(6.8 * u)}" height="${f(6.6 * u)}" rx="${f(1.4 * u)}" fill="#27462f"/><rect x="${f(-3.4 * u)}" y="${f(1.7 * u)}" width="${f(6.8 * u)}" height="${f(1.1 * u)}" fill="#18301f"/><path d="M ${f(-4.3 * u)} ${f(5 * u)} C ${f(-7.4 * u)} ${f(10 * u)} ${f(-5 * u)} ${f(19.5 * u)} 0 ${f(24 * u)} C ${f(5 * u)} ${f(19.5 * u)} ${f(7.4 * u)} ${f(10 * u)} ${f(4.3 * u)} ${f(5 * u)} Z" fill="url(#xlB${c})"/><ellipse cx="${f(-1.9 * u)}" cy="${f(10.5 * u)}" rx="${f(1.1 * u)}" ry="${f(3.3 * u)}" fill="#fff" opacity=".5"/></g>`;
+    const pad = 34 * u;
+    const html = segs.map((g) => {
+      const xs = g.pts.map((p) => p[0]), ys = g.pts.map((p) => p[1]), x0 = Math.min(...xs) - pad, y0 = Math.min(...ys) - pad, w = Math.max(...xs) + pad - x0, h = Math.max(...ys) + pad + 30 * u - y0;
+      const loc = (d) => d.replace(/(-?[\d.]+),(-?[\d.]+)/g, (_, a, b) => `${f(+a - x0)} ${f(+b - y0)}`);
+      const swing = g.kind === "hang" ? rr(3, 5) : rr(5, 8); // degrees: a shear along the swag's chord (both pins stay put), a turn for a loose end
+      return `<div class="xs ${g.kind}" style="left:${f(x0)}px;top:${f(y0)}px;width:${f(w)}px;height:${f(h)}px;transform-origin:${f(g.origin[0] - x0)}px ${f(g.origin[1] - y0)}px;--a:${f(swing)}deg;--r:${f(g.chord)}deg;animation-duration:${f(rr(3.8, 6.5))}s;animation-delay:${f(-(rr(0, 6) + T0))}s"><svg width="${f(w)}" height="${f(h)}" viewBox="0 0 ${f(w)} ${f(h)}"><path class="xw" d="${loc(g.d)}"/><path class="xw2" d="${loc(g.d)}"/>${g.bulbs.map((b) => bulb(b, x0, y0)).join("")}</svg></div>`;
+    }).join("");
+    layer.innerHTML = `<svg class="xdefs" width="0" height="0"><defs>${defs}</defs></svg>${html}<svg class="xtacks" width="${W}" height="${H}">${tacks.filter((p) => p[0] > -10 && p[0] < W + 10).map((p) => `<circle cx="${f(p[0])}" cy="${f(p[1])}" r="${f(2.7 * u)}"/>`).join("")}</svg>`;
+  }
+  addEventListener("resize", () => { if (xmas()) placeLights(); });
+  setInterval(() => { if (xmas()) placeLights(); }, 2000); // (the boxes can move as the board fills in)
   // a little settled snow along the top of some of the boxes (drawn in their own layer, as the boxes clip anything outside them)
   function placeSnowCaps() {
     let layer = $("snowcaps");
@@ -2525,7 +2649,7 @@
   window.Insights?.init(); window.ContractLog?.init();
   $("board").addEventListener("click", (e) => { const row = e.target.closest(".row"); if (row?.dataset.name && window.ContractLog) window.ContractLog.open(row.dataset.name); }); // the value check (no PIN)
   $("ops").addEventListener("click", (e) => { const row = e.target.closest(".row"); const key = (row?.dataset.key || "").replace(/^o:/, ""); if (key && window.Insights) window.Insights.open(key); });
-  const insState = async () => { $("insState").textContent = (await window.Insights.isOpen()) ? "Unlocked on this PC." : "Locked on this PC."; };
+  const insState = async () => { $("insState").textContent = (await window.Insights.isOpen()) ? "Unlocked on this PC." : "Locked on this PC."; $("insWarn").hidden = !window.Insights.isDefaultPin?.(); };
   $("insChange").onclick = async () => { $("insMsg").textContent = ""; try { await window.Insights.changePin($("insCur").value, $("insNew").value); $("insCur").value = $("insNew").value = ""; $("insMsg").textContent = "PIN changed" + (window.BoardSync?.role() !== "off" ? " on every board." : "."); } catch (e) { $("insMsg").textContent = e.message; } insState(); };
   $("insLockPc").onclick = async () => { await window.Insights.lock(); $("insMsg").textContent = "Locked."; insState(); };
   // share between boards: connect this PC to the private GitHub repository
