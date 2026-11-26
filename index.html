@@ -274,6 +274,14 @@
   .row.q-holo .nm{background:linear-gradient(90deg,#ffc9e6 0,#cdb8ff 18%,#a9e4ff 34%,#fff 46%,#fff 54%,#b9f5d9 66%,#ffe9a3 82%,#ffc9e6 100%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:qHolo 4.5s linear infinite;filter:drop-shadow(0 0 .35rem rgba(205,175,255,.45))}
   .row.q-holo:not(.won)::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(100deg,transparent 0,rgba(214,186,255,.08) 30%,rgba(255,255,255,.2) 50%,rgba(186,232,255,.08) 70%,transparent 100%) no-repeat;background-size:40% 100%;background-position:-70% 0;animation:qSheen 6s ease-in-out infinite}
   @keyframes qSheen{0%,45%{background-position:-70% 0}100%{background-position:170% 0}}
+  /* the board's month (each runs to the 8th working day of the next) and the list of past months */
+  #month .mwin{font:600 .5em var(--body);letter-spacing:.04em;color:var(--text-secondary);vertical-align:middle;margin-left:.3rem;white-space:nowrap}
+  #monthList{position:fixed;z-index:60;min-width:19rem;max-height:70vh;overflow:auto;background:#121a31;border:1px solid rgba(255,255,255,.14);border-radius:14px;box-shadow:0 1.2rem 3rem rgba(0,0,0,.55);padding:.45rem}
+  #monthList .mlh{font:800 .68rem var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--text-secondary);padding:.35rem .6rem .45rem}
+  #monthList button{display:block;width:100%;text-align:left;background:none;border:0;border-radius:10px;padding:.5rem .65rem;color:var(--text-primary);font:inherit;cursor:pointer}
+  #monthList button:hover,#monthList button:focus-visible{background:rgba(255,255,255,.07);outline:none}
+  #monthList button b{display:block;font:700 .95rem var(--body)}#monthList button span{display:block;font-size:.78rem;color:var(--text-secondary);margin-top:.1rem}
+  #monthList button:first-of-type b{color:var(--gold)}#monthList p{margin:.4rem .65rem .6rem;font-size:.8rem;color:var(--text-secondary)}
   .qcrown{position:absolute;left:-.3rem;top:-.62rem;width:1.05rem;height:1.05rem;transform:rotate(-22deg);z-index:2;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}.qcrown svg{width:100%;height:100%;fill:#ffd36a}
   /* last month's 2nd and 3rd: a little silver 2 or bronze 3 pinned to the avatar, with the medals' shine */
   .av{position:relative}.qpod{position:absolute;right:-.34rem;bottom:-.28rem;z-index:2;width:.95rem;height:.95rem;border-radius:50%;display:grid;place-items:center;overflow:hidden;font:900 .58rem/1 ui-rounded,"Arial Rounded MT Bold",system-ui,sans-serif;font-style:normal;color:#2f3846;background:radial-gradient(circle at 32% 26%,#fff 0,#c5cdd8 55%,#7e8999 100%);box-shadow:0 0 0 1.5px #0c1430,0 0 8px rgba(214,228,255,.8)}
@@ -870,7 +878,65 @@
   <p class="hint" id="insPinMsg" style="color:#ff9a9a"></p>
   <div class="row2" style="justify-content:flex-end"><button class="btn ghost" id="insPinCancel">Cancel</button><button class="btn" id="insPinGo">Open</button></div>
 </dialog>
-<script>window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin","version":"2.49.14"};
+<script>// MRI Assist – THE BOARD'S MONTH (Jake, 26 Nov: "every month needs to run from the 8th working day of the month to the following
+// month's 8th working day to allow for accrued income, before moving onto the next month" … "it will still run the completed report
+// for that month alone, I'm just talking about the display and timeframe to achieve the target").
+//  - A month's REVENUE is still its own completed report (jobs completed 1st–last of that month), but the board keeps showing that
+//    month – and the time to reach its target runs on – until the end of the 8th working day of the next month, so jobs finished
+//    late in the month can still be completed and valued. November 2026 stays up until the end of Thu 10 Dec.
+//  - The STAFF POINTS, monthly medals and the podium follow the same window: a month's points are those earned from the day after
+//    its own 8th working day to the end of the next month's (so 1–10 Dec counts for November; December starts on Fri 11 Dec).
+//  - Working days: Monday to Friday, less the bank holidays of England and Wales.
+// Used by the MRI window (content.js), the boards (dashboard.js, badges.js, sync.js …) and the view-only page (inlined there).
+(() => {
+  const WD = 8;
+  const pad = (n) => String(n).padStart(2, "0");
+  const iso = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const add = (key, n) => { const [y, m] = String(key).split("-").map(Number); const d = new Date(y, m - 1 + n, 1); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}`; };
+  // ---- bank holidays in England and Wales: the usual rules (a weekend one moves to the next free weekday), Easter, and the
+  // one-off changes there have been. A new one-off (a coronation, a jubilee) goes in EXTRA, and any Monday it replaced in MOVED.
+  const EXTRA = ["2020-05-08", "2022-06-02", "2022-06-03", "2022-09-19", "2023-05-08"], MOVED = ["2020-05-04", "2022-05-30"];
+  const memo = {};
+  function holidays(y) {
+    if (memo[y]) return memo[y];
+    const out = new Set(), at = (m, d) => new Date(y, m - 1, d);
+    const free = (d) => { const x = new Date(d); while (x.getDay() === 0 || x.getDay() === 6 || out.has(iso(x))) x.setDate(x.getDate() + 1); return x; };
+    out.add(iso(free(at(1, 1)))); // New Year's Day
+    const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3);
+    const h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, n = Math.floor((a + 11 * h + 22 * l) / 451);
+    const em = Math.floor((h + l - 7 * n + 114) / 31), ed = ((h + l - 7 * n + 114) % 31) + 1; // Easter Sunday
+    out.add(iso(new Date(y, em - 1, ed - 2))); out.add(iso(new Date(y, em - 1, ed + 1))); // Good Friday, Easter Monday
+    const firstMon = (m) => { const x = at(m, 1); while (x.getDay() !== 1) x.setDate(x.getDate() + 1); return x; };
+    const lastMon = (m) => { const x = new Date(y, m, 0); while (x.getDay() !== 1) x.setDate(x.getDate() - 1); return x; };
+    out.add(iso(firstMon(5))); out.add(iso(lastMon(5))); out.add(iso(lastMon(8))); // early May, spring, summer
+    out.add(iso(free(at(12, 25)))); out.add(iso(free(at(12, 26)))); // Christmas Day, Boxing Day
+    for (const x of MOVED) if (x.startsWith(y + "-")) out.delete(x);
+    for (const x of EXTRA) if (x.startsWith(y + "-")) out.add(x);
+    return (memo[y] = out);
+  }
+  const dayOf = (s) => new Date(String(s).slice(0, 10) + "T12:00:00");
+  const isWork = (d) => { const x = typeof d === "string" ? dayOf(d) : d; return x.getDay() !== 0 && x.getDay() !== 6 && !holidays(x.getFullYear()).has(iso(x)); };
+  // the nth working day of a month ("YYYY-MM") as "YYYY-MM-DD"
+  const wdMemo = {};
+  function workingDay(key, nth = WD) {
+    const id = key + "|" + nth; if (wdMemo[id]) return wdMemo[id];
+    const [y, m] = String(key).split("-").map(Number); let n = 0;
+    for (let d = 1; d <= 31; d++) { const x = new Date(y, m - 1, d, 12); if (x.getMonth() !== m - 1) break; if (isWork(x) && ++n === nth) return (wdMemo[id] = iso(x)); }
+    return (wdMemo[id] = iso(new Date(y, m, 0, 12)));
+  }
+  // the board's month for a day: up to and including its month's 8th working day it still belongs to the month before
+  const periodOf = (day) => { const s = String(day).slice(0, 10), m = s.slice(0, 7); return s <= workingDay(m) ? add(m, -1) : m; };
+  const closeDay = (key) => workingDay(add(key, 1)); // the last day of month M on the board: the 8th working day of M+1
+  const startDay = (key) => { const d = dayOf(workingDay(key)); d.setDate(d.getDate() + 1); return iso(d); }; // its first: the day after M's own 8th
+  const now = () => periodOf(iso(new Date()));
+  // working days from a to b (inclusive)
+  const workDays = (a, b) => { let n = 0; for (let d = dayOf(a); iso(d) <= b; d.setDate(d.getDate() + 1)) if (isWork(d)) n++; return n; };
+  const nice = (s, o = { weekday: "short", day: "numeric", month: "short" }) => dayOf(s).toLocaleDateString("en-GB", o);
+  const label = (key) => new Date(String(key) + "-01T12:00:00").toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+  window.MRIPeriod = { WD, iso, add, holidays: (y) => [...holidays(y)].sort(), isWork, workingDay, periodOf, closeDay, startDay, now, workDays, nice, label };
+})();
+
+window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin","version":"2.50.0"};
 // MRI Assist – the VIEW-ONLY board: the leaderboard as a normal web page that anyone with the link can watch – nothing to
 // install, no sign-in, nothing to click into. The PC that reads MRI (the TV) puts this page on a GitHub Pages site together
 // with the board's figures, ENCRYPTED. The key is in the link, after the "#", which a browser never sends anywhere, so the
@@ -1261,8 +1327,12 @@
   // the latest figures: checked every 10 seconds. A check that finds nothing new costs nothing (GitHub answers "not changed"), so
   // only real changes count against the viewer key's 5,000 an hour, which everyone watching shares: if it runs low, every page
   // watching slows down by itself, and speeds up again when the hour resets. A page in a background tab checks once a minute.
-  let etag = null, timer = null, busy = false, lastSnapAt = 0;
-  const next = (ms) => { clearTimeout(timer); timer = setTimeout(poll, ms + Math.random() * 1500); };
+  let etag = null, timer = null, busy = false, lastSnapAt = 0, pollAt = 0, dueAt = 0;
+  const next = (ms) => { clearTimeout(timer); const t = ms + Math.random() * 1500; dueAt = Date.now() + t; timer = setTimeout(poll, t); };
+  // when the PC that reads MRI is off (a restart, an update), the figures stop: say so, and carry on looking – the board picks
+  // up by itself within seconds of it sending again (2.49.15)
+  const QUIET = 8 * 60000; // (it says it's alive at least every 5 minutes)
+  const quiet = () => (lastSnapAt && Date.now() - lastSnapAt > QUIET ? `Waiting for the office PC – these are the figures it sent at ${new Date(lastSnapAt).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}. The board updates by itself as soon as it's back.` : "");
   const pace = (left) => (!(left >= 0) ? 10000 : left < 150 ? 300000 : left < 600 ? 90000 : left < 1500 ? 30000 : 10000);
   // keeps "SHARED from … · 8s ago" honest: while the TV is sharing (it says it's alive at least every 5 minutes), a check that
   // finds nothing new means what's on screen is current
@@ -1272,25 +1342,28 @@
     for (const fn of listeners) { try { fn({ "dash:data": { oldValue: copy(d), newValue: copy(n) } }, "local"); } catch (_) {} }
   }
   async function poll() {
-    if (busy) return; busy = true; let wait = 10000;
+    if (busy) return; busy = true; pollAt = Date.now(); let wait = 10000;
     try {
-      const r = await fetch(`https://api.github.com/repos/${C.repo}/contents/${C.file}?ref=${C.branch}`, { cache: "no-store", referrerPolicy: "no-referrer",
+      const r = await fetch(`https://api.github.com/repos/${C.repo}/contents/${C.file}?ref=${C.branch}`, { cache: "no-store", referrerPolicy: "no-referrer", signal: AbortSignal.timeout(25000), // (never left waiting on a look that doesn't come back)
         headers: { Accept: "application/vnd.github.raw", ...(TOKEN ? { Authorization: "Bearer " + TOKEN } : {}), ...(etag ? { "If-None-Match": etag } : {}) } });
       wait = pace(r.headers.get("x-ratelimit-remaining") == null ? NaN : Number(r.headers.get("x-ratelimit-remaining")));
       const slow = wait >= 90000 ? "Lots of people are watching – the board updates a little less often for now." : "";
-      if (r.status === 304) { fresh(); if (isReady) banner(slow, "warn"); return; }
+      if (r.status === 304) { fresh(); if (isReady) banner(quiet() || slow, "warn"); return; }
       if (r.status === 401) { wait = 300000; return banner("This link's viewer key doesn't work any more – ask for the new link.", "bad"); }
       if (r.status === 403 || r.status === 429) { wait = 180000; return banner("Lots of people are watching – updates pause for a few minutes.", "warn"); }
       if (r.status === 404) { wait = 60000; return banner("Nothing has been shared yet – this page fills in as soon as it is.", "warn"); }
       if (!r.ok) throw new Error("GitHub said " + r.status);
-      const bytes = new Uint8Array(await r.arrayBuffer()); etag = r.headers.get("etag");
+      const bytes = new Uint8Array(await r.arrayBuffer()); const tag = r.headers.get("etag");
       let snap; try { snap = await unseal(bytes); } catch (_) { wait = 120000; return banner("This link has been replaced – ask for the new one.", "bad"); }
       if (snap.off) { wait = 120000; return banner("The view-only board has been turned off.", "bad"); }
-      lastSnapAt = snap.at || Date.now(); banner(slow, "warn"); apply(snap); fresh(); update(snap);
+      lastSnapAt = snap.at || Date.now(); banner(quiet() || slow, "warn"); apply(snap); etag = tag; fresh(); update(snap); // (remembered once it's on screen: a hiccup putting it there is tried again)
     } catch (_) { wait = 30000; banner("Can't reach the board right now – trying again shortly.", "warn"); }
     finally { busy = false; next(document.hidden ? Math.max(wait, 60000) : wait); }
   }
   document.addEventListener("visibilitychange", () => { if (!document.hidden) next(300); }); // back on screen: look straight away
+  addEventListener("online", () => next(500)); addEventListener("pageshow", (e) => { if (e.persisted) next(300); }); // (back online, or brought back from the browser's back/forward store)
+  // a watchdog: if a look ever gets stuck, or the next one was never set going (a computer waking from sleep), start again
+  setInterval(() => { if (busy && Date.now() - pollAt > 60000) busy = false; if (!busy && dueAt && Date.now() > dueAt + 30000) next(0); }, 15000);
   // a newer copy of this page has been published (MRI Assist was updated on the PC that reads MRI): reload into it – once GitHub
   // Pages has had a few minutes to put it live, never while a name is being picked, and at most every 10 minutes (in case Pages is
   // still handing out this copy). The name and the visit carry on.
@@ -1313,6 +1386,10 @@
   const fmtFull = (n) => "£" + Math.round(n).toLocaleString("en-GB"); // to the pound, so even a small job visibly moves the total
   const fmtGBP = (n) => "£" + (n >= 999500 ? (n / 1e6).toFixed(2) + "m" : n >= 100000 ? (n / 1000).toFixed(0) + "k" : Math.round(n).toLocaleString("en-GB"));
   let data = null, targets = {}, schedule = {}, tableMode = false, page = 0, viewPrev = false, prefs = {};
+  // THE BOARD'S MONTH (period.js, Jake 26 Nov): a month stays on the board – and its target's time runs on – until the end of the
+  // 8th working day of the next month (accrued income); its revenue is still its own completed report. viewMonth: a past month
+  // picked from the month list (each one kept for good, with the targets it had when it closed: dash:months)
+  const PER = window.MRIPeriod; let viewMonth = null, monthRecs = {};
   let contrib = null, contribResetAt = 0; // staff points worked out by the hidden MRI window (see content.js "STAFF POINTS")
   const DEFAULT_COUNT = ["Complete", "Variation"]; // Compl-FOC (free of charge) is not counted
   const counted = () => prefs.statuses || DEFAULT_COUNT;
@@ -1376,16 +1453,18 @@
     return { rows, members };
   }
   // targets as the board uses them: "Other (Misc)" gets its own target if one is typed in, otherwise the sum of its members' targets
-  function effT() {
-    const T = tgtStore(), names = Object.keys(T).filter(isMisc); if (!names.length) return T;
+  function effT(T = tgtStore()) {
+    T ||= tgtStore(); const names = Object.keys(T).filter(isMisc); if (!names.length) return T;
     const out = { ...T }; const sum = (k) => names.reduce((s, n) => s + (Number(T[n][k]) || 0), 0);
     out[MISC] = { ...(T[MISC] || {}), value: Number(T[MISC]?.value) || sum("value"), jobs: Number(T[MISC]?.jobs) || sum("jobs") };
     for (const n of names) delete out[n];
     return out;
   }
   let gtargets = {};
-  const prevKey = () => { const n = new Date(); const p = new Date(n.getFullYear(), n.getMonth() - 1, 1); return `${p.getFullYear()}-${String(p.getMonth() + 1).padStart(2, "0")}`; };
-  const source = () => (viewPrev ? data?.history?.[prevKey()] || null : data);
+  const prevKey = () => PER.add(PER.now(), -1); // (the month before the one on the board)
+  const source = () => (viewMonth ? data?.history?.[viewMonth] || null : data);
+  // the targets a month is measured against: a past month's as they were when it closed (if it closed with this version or later)
+  const recT = () => { const r = viewMonth && monthRecs[viewMonth]; return r ? (grouped() ? r.gtargets : r.targets) || null : null; };
 
   // the screen (and so the PC) stays awake while the board is open – Chrome/Edge's own power setting, as a video player uses.
   // It's held for the whole extension, so it's only let go when the last board on this PC closes. ⚙ can switch it off.
@@ -1393,8 +1472,8 @@
   setInterval(keepAwake, 30000);
   addEventListener("pagehide", () => { try { const others = (chrome.extension?.getViews?.() || []).filter((w) => w !== window && /dashboard\.html$/.test(w.location.pathname)); if (!others.length) chrome.power?.releaseKeepAwake(); } catch (_) {} });
   async function load() {
-    const s = await chrome.storage.local.get(["dash:data", "dash:targets", "dash:gtargets", "dash:schedule", "dash:prefs", "dash:contrib", "dash:pointsReset", "dash:badges"]);
-    badgesD = s["dash:badges"] || null; lastQSig = qSig();
+    const s = await chrome.storage.local.get(["dash:data", "dash:targets", "dash:gtargets", "dash:schedule", "dash:prefs", "dash:contrib", "dash:pointsReset", "dash:badges", "dash:months"]);
+    badgesD = s["dash:badges"] || null; lastQSig = qSig(); monthRecs = s["dash:months"] || {};
     data = s["dash:data"] || null; targets = s["dash:targets"] || {}; gtargets = s["dash:gtargets"] || {};
     contrib = s["dash:contrib"] || null;
     prefs = s["dash:prefs"] || {}; schedule = s["dash:schedule"] || {}; keepAwake();
@@ -1432,6 +1511,7 @@
     [$("board"), $("ops")].forEach((l) => delete l.dataset.show); render();
   }, 15000);
   chrome.storage.onChanged.addListener((ch) => {
+    if (ch["dash:months"]) { monthRecs = ch["dash:months"].newValue || {}; if (viewMonth) render(); } // (a month's record: its targets as they were when it closed)
     if (ch["dash:events"]) onEvents(ch["dash:events"].newValue);
     if (ch["dash:badges"]) { // new badges: into the Latest strip; the rows only redraw when someone's medals change
       badgesD = ch["dash:badges"].newValue || null; renderTicker();
@@ -1467,7 +1547,7 @@
   // whole points only: named actions are whole numbers, and other updates are 1 point per 4 (rounded up)
   const ptsOf = (t, W = ptCfg()) => Math.round(W.r * t.r + W.b * t.b + W.k * t.k + W.p * t.p + W.c * t.c + W.x * t.x + (W.bonus ? (t.p1 || 0) + 2 * (t.p2 || 0) + (t.c1 || 0) + 2 * (t.c2 || 0) : 0)) + Math.ceil((t.u || 0) / Math.max(1, Number(W.u4) || 4));
   const contribPending = () => !!(contribResetAt && contribResetAt > (contrib?.since || 0)); // reset pressed, not yet picked up
-  const monthNow = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`; };
+  const monthNow = () => PER.now(); // (the month on the board)
   function monthRows(m) {
     const W = { ...ptCfg(), ...(m.w || {}) };
     const per = {};
@@ -1477,8 +1557,9 @@
   function contribRows(month) {
     if (!contrib || contribPending()) return [];
     const per = {};
+    const want = month || monthNow();
     for (const [day, users] of Object.entries(contrib.days || {})) {
-      if (!day.startsWith(month || monthNow())) continue;
+      if (!window.MRIV && (day.endsWith("-00") ? day.slice(0, 7) : PER.periodOf(day)) !== want) continue; // (a day counts for the month on the board that day; the view-only page only ever gets the month's total)
       for (const [u0, t] of Object.entries(users)) { const u = canon(u0), o = (per[u] ||= { r: 0, b: 0, k: 0, p: 0, p1: 0, p2: 0, c: 0, c1: 0, c2: 0, x: 0, u: 0 }); for (const k in o) o[k] += t[k] || 0; }
     }
     return Object.entries(per).filter(([u]) => isPerson(u)).map(([u, t]) => [contrib.names?.[u] || u, { pts: ptsOf(t), t, key: u }]).filter(([, v]) => v.pts > 0).sort((a, b) => b[1].pts - a[1].pts || a[0].localeCompare(b[0]));
@@ -2068,33 +2149,23 @@
   function monthInfo(monthKey) {
     const [y, m] = (monthKey || "").split("-").map(Number); const now = new Date();
     const days = new Date(y, m, 0).getDate();
-    const isCurrent = now.getFullYear() === y && now.getMonth() + 1 === m;
-    const day = isCurrent ? now.getDate() : days;
-    return { y, m, days, day, frac: day / days, ...paceInfo(y, m, isCurrent), label: new Date(y, m - 1, 1).toLocaleString("en-GB", { month: "long", year: "numeric" }) };
+    const isCurrent = monthKey === PER.now(); // (the month on the board – up to the 8th working day of the next)
+    const day = now.getFullYear() === y && now.getMonth() + 1 === m ? now.getDate() : days; // (the per-day chart: its own calendar days)
+    return { y, m, days, day, frac: day / days, isCurrent, from: PER.startDay(monthKey), close: PER.closeDay(monthKey), ...paceInfo(monthKey, isCurrent), label: new Date(y, m - 1, 1).toLocaleString("en-GB", { month: "long", year: "numeric" }) };
   }
-  // "Expected by now": the share of the month's target we'd expect to have reached at this moment.
-  // Counts working days only (Mon–Fri, and only the part of today's working hours that has passed). If last month's
-  // day-by-day revenue is known, it follows that shape (e.g. a slow start and a busy last week) instead of a straight line.
-  const isWorkDay = (d) => d.getDay() !== 0 && d.getDay() !== 6;
-  function paceInfo(y, m, isCurrent) {
-    const days = new Date(y, m, 0).getDate(), now = new Date();
-    let wdTotal = 0, wdDone = 0;
-    for (let d = 1; d <= days; d++) { const dt = new Date(y, m - 1, d); if (!isWorkDay(dt)) continue; wdTotal++; if (isCurrent && d < now.getDate()) wdDone++; }
+  // "Expected by now": the share of the month's target we'd expect to have reached at this moment. The time to reach it runs from
+  // the 1st of the month to the end of the 8th working day of the next (Jake: "the timeframe to achieve the target"), working days
+  // only (Monday to Friday, less bank holidays – period.js), and only the part of today's working hours that has passed.
+  const isWorkDay = (d) => PER.isWork(d);
+  function paceInfo(key, isCurrent) {
+    const from = key + "-01", to = PER.closeDay(key), wdTotal = PER.workDays(from, to), now = new Date(), today = PER.iso(now);
     if (!isCurrent) return { pace: 1, wdTotal, wdDone: wdTotal, wdNow: wdTotal, paceBasis: "" };
+    let wdDone = 0; for (const d = new Date(from + "T12:00:00"); PER.iso(d) < today && PER.iso(d) <= to; d.setDate(d.getDate() + 1)) if (PER.isWork(d)) wdDone++;
     const ph = data?.paceHours; // a board showing the shared one uses the working hours of the PC that reads MRI, so every board says the same
     const st = ph?.start ?? schedule.startHour ?? 7, en = ph?.end ?? schedule.endHour ?? 19;
-    const part = isWorkDay(now) ? Math.max(0, Math.min(1, (now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600 - st) / Math.max(1, en - st))) : 0; // to the second, so the pace tile ticks
-    const x = wdTotal ? (wdDone + part) / wdTotal : 0; // how far through the month's working time we are
-    let pace = x, paceBasis = "working days";
-    const pk = `${m === 1 ? y - 1 : y}-${String(m === 1 ? 12 : m - 1).padStart(2, "0")}`, last = data?.history?.[pk];
-    if (last?.byDayV) {
-      const ld = new Date(y, m - 1, 0).getDate(), [ly, lm] = pk.split("-").map(Number); const pts = [0]; let cum = 0;
-      // running total after each working day; weekend revenue is added to the working day before it
-      for (let d = 1; d <= ld; d++) { cum += DV(last.byDayV[d]); if (isWorkDay(new Date(ly, lm - 1, d))) pts.push(cum); else if (pts.length > 1) pts[pts.length - 1] = cum; }
-      const tot = cum, n = pts.length - 1; if (n > 0) pts[n] = tot;
-      if (tot > 0 && n > 3) { const pos = x * n, i = Math.min(n - 1, Math.floor(pos)), f = pos - i; pace = Math.max(0, Math.min(1, (pts[i] + (pts[Math.min(n, i + 1)] - pts[i]) * f) / tot)); paceBasis = "working days, following last month's pattern"; }
-    }
-    return { pace, wdTotal, wdDone, wdNow: wdDone + (isWorkDay(now) ? 1 : 0), paceBasis };
+    const part = PER.isWork(now) && today <= to ? Math.max(0, Math.min(1, (now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600 - st) / Math.max(1, en - st))) : 0; // to the second, so the pace tile ticks
+    const pace = wdTotal ? Math.min(1, (wdDone + part) / wdTotal) : 1; // how far through the working time to the close we are
+    return { pace, wdTotal, wdDone, wdNow: Math.min(wdTotal, wdDone + (PER.isWork(now) ? 1 : 0)), paceBasis: `working days to the close, ${PER.nice(to)}` };
   }
   // ---- the pace tile, to the pound. It creeps up every second as the time-based "expected by now" rises (working hours
   // only), and every "+£" that lands on the board knocks it back: the number drops, a chip shows by how much, the tile jolts.
@@ -2121,7 +2192,7 @@
   // drawTotals calls this: totM = what's on the board now (each "+£" is held back until its row shows it), tgtM = the target
   function paceUpdate(totM, tgtM, useV, mi, reset) {
     if (!tgtM) { paceLive = null; paceShown = null; paceAnim = null; return; }
-    const month = `${mi.y}-${String(mi.m).padStart(2, "0")}`, d = new Date(), cur = !viewPrev && d.getFullYear() === mi.y && d.getMonth() + 1 === mi.m;
+    const month = `${mi.y}-${String(mi.m).padStart(2, "0")}`, cur = !viewPrev && month === PER.now();
     const same = !!paceLive && paceLive.month === month && paceLive.cur === cur && paceLive.useV === useV && paceLive.tgtM === tgtM;
     const gain = same ? totM - paceLive.totM : 0;
     paceLive = { totM, tgtM, useV, month, cur };
@@ -2181,15 +2252,15 @@
   function render() {
     drawnAt = Date.now();
     const src = source();
-    const mi = monthInfo(src?.month || (viewPrev ? prevKey() : new Date().toISOString().slice(0, 7)));
-    $("btnMonth").textContent = viewPrev ? "Show this month" : "Show last month";
-    $("month").textContent = mi.label;
+    const mi = monthInfo(src?.month || viewMonth || PER.now());
+    $("btnMonth").textContent = viewMonth ? "Back to this month" : "Past months ▾";
+    $("month").innerHTML = `${esc(mi.label)} <small class="mwin">${mi.isCurrent ? `until ${esc(PER.nice(mi.close))}` : `closed ${esc(PER.nice(mi.close))}`}</small>`; // (each month runs to the 8th working day of the next)
     renderStatus();
-    if (!src?.byContract) { $("tiles").innerHTML = ""; if (viewPrev) { $("board").innerHTML = `<div class="empty">No figures for last month yet. Open ⚙ Targets &amp; schedule and press "Load last month from MRI".</div>`; $("ops").innerHTML = ""; $("daily").innerHTML = ""; return; } $("board").innerHTML = `<div class="empty">No figures yet. Open ⚙ Targets &amp; schedule, turn on automatic updates (or press Update now) with MRI signed in on this PC.</div>`; $("ops").innerHTML = ""; $("daily").innerHTML = ""; return; }
+    if (!src?.byContract) { $("tiles").innerHTML = ""; if (viewPrev) { $("board").innerHTML = `<div class="empty">No revenue figures kept for ${esc(mi.label)}.${viewMonth === prevKey() ? ` Open ⚙ Targets &amp; schedule and press "Load last month from MRI".` : ""}</div>`; $("ops").innerHTML = ""; $("daily").innerHTML = ""; return; } $("board").innerHTML = `<div class="empty">No figures yet. Open ⚙ Targets &amp; schedule, turn on automatic updates (or press Update now) with MRI signed in on this PC.</div>`; $("ops").innerHTML = ""; $("daily").innerHTML = ""; return; }
 
     $("btnGroup").textContent = grouped() ? "Group: Clients" : "Group: Contracts";
     $("boardTitle").textContent = grouped() ? "Client leaderboard" : "Contract leaderboard";
-    const T = effT(); const R = rollup(src.byContract);
+    const T = effT(recT()); const R = rollup(src.byContract);
     const useV = !!src.hasValue; const fm = useV ? fmtGBP : fmtN;
     // m = the measure that counts (revenue), mt = its target
     const mk = (name, jobs, value, tj, tv) => { const m = useV ? value : jobs, mt = useV ? tv : tj; return { name, jobs, value, tj, tv, m, mt, pct: mt ? m / mt : null, st: status(m, mt, mi.pace, fm) }; };
@@ -2201,7 +2272,7 @@
     rows.sort((a, b) => (b.pct != null) - (a.pct != null) || (b.pct ?? 0) - (a.pct ?? 0) || b.m - a.m || b.jobs - a.jobs);
 
     // ---- animation memory: what was on screen last time, so things glide instead of jumping ----
-    const viewKey = `${grouped() ? "g" : "c"}:${viewPrev ? "prev" : "cur"}:${src.month}`;
+    const viewKey = `${grouped() ? "g" : "c"}:${viewMonth || "cur"}:${src.month}`;
     if (memo.key !== viewKey) { for (const k of Object.keys(pend)) delete pend[k]; memo.key = viewKey; memo.w = {}; memo.m = {}; memo.hi = {}; memo.dip = {}; memo.r = {}; memo.txt = {}; memo.cnt = {}; memo.pod = []; memo.first = true; }
     const first = memo.first;
 
@@ -2238,7 +2309,7 @@
     // ---- who's hot, and the ranks saved a few minutes ago (for the small ▲▼ beside a rank) ----
     const hot = {}; const hourAgo = Date.now() - 3600000;
     for (const e of events) if (e.at > hourAgo && counted().includes(e.status)) { const g = viewName(e.contract); hot[g] = (hot[g] || 0) + 1; }
-    const rankKey = `ranks:${grouped() ? "g" : "c"}:${viewPrev ? "prev" : "cur"}`;
+    const rankKey = `ranks:${grouped() ? "g" : "c"}:${viewMonth ? "prev" : "cur"}`;
     let oldRanks = {}; try { oldRanks = JSON.parse(localStorage.getItem(rankKey) || "{}"); } catch (_) {}
     const newRanks = {}; rows.forEach((r, i) => (newRanks[r.name] = i + 1));
     if (!render.lastRankSave || Date.now() - render.lastRankSave > 600000 || !Object.keys(oldRanks).length) { localStorage.setItem(rankKey, JSON.stringify(newRanks)); render.lastRankSave = Date.now(); if (!Object.keys(oldRanks).length) oldRanks = newRanks; }
@@ -2308,14 +2379,14 @@
 
     // ---- office staff: contribution points (raise 2 · book 2 · letter/call 1 · price 2 · close 2 · clear 1 · 1 per 4 other updates) ----
     // (last month, from before the points existed, still shows the old jobs-closed scoring)
-    const prevPts = viewPrev ? contrib?.months?.[prevKey()] : null;
+    const prevPts = viewMonth ? contrib?.months?.[viewMonth] : null;
     const ops = viewPrev ? (prevPts ? monthRows(prevPts) : staffStats(src).map((x) => [x.name, { pts: x.pts, old: x }])) : contribRows(src?.month);
     const opMax = Math.max(1, ...ops.map(([, v]) => v.pts));
     // the points were re-counted from a different start (e.g. every board lined up to the same one): show the new scores quietly
     const rebased = !viewPrev && !!contrib?.since && !!memo.since && contrib.since !== memo.since; if (!viewPrev && contrib?.since) memo.since = contrib.since;
     if (rebased) for (const k of Object.keys(pend)) if (k.startsWith("o:")) delete pend[k];
     const opsEl = $("ops"), oldOps = first ? {} : tops(opsEl);
-    $("opsSub").textContent = viewPrev ? (prevPts ? `Contribution points, final${prevPts.since && new Date(prevPts.since).getMonth() === new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).getMonth() ? " (counted from " + new Date(prevPts.since).toLocaleDateString("en-GB", { day: "numeric", month: "short" }) + ")" : ""}` : "jobs closed + value increases (before points started)") : contribSince();
+    $("opsSub").textContent = viewPrev ? (prevPts ? `Contribution points, final · ${PER.nice(prevPts.from || PER.startDay(viewMonth), { day: "numeric", month: "short" })} – ${PER.nice(prevPts.to || PER.closeDay(viewMonth), { day: "numeric", month: "short" })}${prevPts.since && PER.periodOf(PER.iso(new Date(prevPts.since))) === viewMonth ? " (counted from " + new Date(prevPts.since).toLocaleDateString("en-GB", { day: "numeric", month: "short" }) + ")" : ""}` : "jobs closed + value increases (before points started)") : contribSince();
     opsEl.innerHTML = ops.length ? ops.map(([n, v]) => { const key = "o:" + String(v.key || n).toLowerCase(), w = (v.pts / opMax) * 100, w0 = memo.w[key] ?? 0, txt = fmtN(v.pts);
       const was = memo.m[key] ?? 0;
       if (!first && !rebased && !viewPrev && v.t && v.pts > was) {
@@ -2515,7 +2586,33 @@
 
   // ---- controls ----
   $("btnGroup").onclick = async () => { prefs.groupBy = grouped() ? "contract" : "client"; await chrome.storage.local.set({ "dash:prefs": prefs }); page = 0; render(); };
-  $("btnMonth").onclick = () => { viewPrev = !viewPrev; page = 0; render(); };
+  // ---- past months: every month the board has been through, newest first – its revenue (that month's completed report, as read
+  // up to its close), its targets as they were when it closed, and the staff's final points
+  const pastMonths = () => [...new Set([...Object.keys(data?.history || {}), ...Object.keys(contrib?.months || {}), ...Object.keys(monthRecs || {})])].filter((m) => /^\d{4}-\d{2}$/.test(m) && m < (data?.month && data.month < PER.now() ? data.month : PER.now())).sort().reverse();
+  function pickMonth(m) { viewMonth = m || null; viewPrev = !!viewMonth; page = 0; $("monthList")?.remove(); render(); }
+  $("btnMonth").onclick = (e) => {
+    e.stopPropagation(); if (viewMonth) return pickMonth(null);
+    let el = $("monthList"); if (el) { el.remove(); return; }
+    const list = pastMonths(), r = $("btnMonth").getBoundingClientRect(), cur = data?.month || PER.now();
+    el = document.createElement("div"); el.id = "monthList"; el.style.top = Math.round(r.bottom + 6) + "px"; el.style.right = Math.round(innerWidth - r.right) + "px";
+    const line = (m, now) => { const h = data?.history?.[m], v = h?.byContract ? Object.values(rollup(h.byContract).rows).reduce((a, x) => a + (h.hasValue ? V(x) : J(x)), 0) : null, pts = contrib?.months?.[m] ? monthRows(contrib.months[m]) : [];
+      return `<button type="button" data-m="${now ? "" : esc(m)}"><b>${esc(PER.label(m))}</b><span>${now ? `on the board until ${esc(PER.nice(PER.closeDay(m)))}` : `${esc(PER.nice(PER.startDay(m), { day: "numeric", month: "short" }))} – ${esc(PER.nice(PER.closeDay(m), { day: "numeric", month: "short" }))}${v != null ? ` · ${h.hasValue ? fmtGBP(v) : fmtN(v) + " jobs"}` : ""}${pts.length ? ` · top: ${esc(person(pts[0][0]))}` : ""}`}</span></button>`; };
+    el.innerHTML = `<div class="mlh">Months</div>${line(cur, true)}${list.length ? list.map((m) => line(m)).join("") : `<p>Each month is kept here once it closes (the 8th working day of the next month).</p>`}`;
+    document.body.appendChild(el);
+    el.onclick = (ev) => { const b = ev.target.closest("button[data-m]"); if (b) pickMonth(b.dataset.m); };
+    setTimeout(() => addEventListener("click", function off(ev) { if (!el.contains(ev.target)) { el.remove(); removeEventListener("click", off); } }), 0);
+  };
+  // the record of each month as it closes (on the PC that reads MRI – the other boards get them with the shared board): its window,
+  // and the targets, counted statuses and client groups it was measured with. Its revenue (data.history) and the staff's points
+  // (contrib.months) are kept for good alongside.
+  async function noteClosed() {
+    if (window.BoardSync?.role?.() === "view" || window.MRIV) return;
+    const m = prevKey(); if (monthRecs[m] || PER.closeDay(m) < PER.iso(new Date(Date.now() - 4 * 864e5))) return; // (only a month that has just closed – not one from before this version)
+    const cur = (await chrome.storage.local.get("dash:months"))["dash:months"] || {}; if (cur[m]) { monthRecs = cur; return; }
+    cur[m] = { month: m, from: PER.startDay(m), to: PER.closeDay(m), closedAt: Date.now(), targets: { ...targets }, gtargets: { ...gtargets }, statuses: prefs.statuses || null, groupOf: prefs.groupOf || null, groupNames: prefs.groupNames || null };
+    monthRecs = cur; await chrome.storage.local.set({ "dash:months": cur });
+  }
+  setTimeout(() => noteClosed().catch(() => {}), 5000); setInterval(() => noteClosed().catch(() => {}), 60000);
   $("btnFull").onclick = () => (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen());
   $("btnTable").onclick = () => { tableMode = !tableMode; $("btnTable").textContent = tableMode ? "Leaderboard view" : "Table view"; render(); };
   $("btnNow").onclick = async () => {
@@ -2614,7 +2711,7 @@
       `Timers: ${al.map((a) => a.name + " next " + new Date(a.scheduledTime).toLocaleTimeString("en-GB")).join(", ") || "none"}`,
       (() => { const y = window.BoardSync?.status(); if (!y || !y.on) return "Shared between boards: no (⚙ → Share between boards)";
         const head = `Shared through GitHub (${y.repo}) as "${y.name}": `;
-        const tail = `${y.rateLeft != null ? ` · ${y.rateLeft} GitHub requests left this hour` : ""}${y.err ? " · PROBLEM: " + y.err : ""}`;
+        const tail = `${y.rateLeft != null ? ` · ${y.rateLeft} GitHub requests left this hour` : ""}${y.role === "publish" && y.writes != null ? ` · ${y.writes} changes to GitHub this hour (it allows about 500; sharing slows down from 320)` : ""}${y.err ? " · PROBLEM: " + y.err : ""}`;
         const sets = ` · settings checked ${t(y.setCheck)}${y.setBy ? ` (last changed on ${y.setBy}${y.setAt ? " " + new Date(y.setAt).toLocaleString("en-GB") : ""})` : ""}`;
         if (y.role === "publish") return head + `this PC reads MRI and shares the board · last shared ${t(y.pubAt)}${y.pubKB ? ` (${y.pubKB} KB)` : ""}${y.pubN ? ` · ${y.pubN} shares since the board opened` : ""}` + sets + tail;
         const f = y.from || {}; return head + `showing the board shared by "${f.name || "–"}"${f.version ? ` (MRI Assist ${f.version}${f.version !== y.version ? ` – this PC has ${y.version}, update it to match` : ""})` : ""} · shared ${t(y.snapAt)} · checked ${t(y.boardCheck)}${y.note ? " · " + y.note : ""}` + sets + tail; })(),
@@ -2657,7 +2754,7 @@
   // ---- private staff insights (insights.js): the board's data and helpers, and a click on a name opens that person's day ----
   window.MRIBoard = {
     contrib: () => contrib, prefs: () => prefs, ptsOf, weights: () => ptCfg(), person, canon, isPerson, esc, fmtN, ACT_NAME, ACT_ONE, confetti: (n, gold) => confetti(n, gold), santa: () => santaGlide($("roundup")),
-    counted, viewName, viewPrev: () => viewPrev, coin, badgeName, isDated, quirks, medalsOf, upgradeOf, boardValue: (name) => { const v = rollup(source()?.byContract || {}).rows[name]; return v ? V(v) : null; },
+    counted, viewName, viewPrev: () => viewPrev, viewMonth: () => viewMonth, pickMonth, coin, badgeName, isDated, quirks, medalsOf, upgradeOf, boardValue: (name) => { const v = rollup(source()?.byContract || {}).rows[name]; return v ? V(v) : null; },
     boardValueOf: (byContract, name) => { const v = rollup(byContract || {}).rows[name]; return v ? V(v) : 0; },
     topActs, boardRanks: () => Object.fromEntries(contribRows(source()?.month).map(([, v], i) => [String(v.key || "").toLowerCase(), i + 1])),
     savePrefs: async (patch) => { prefs = { ...prefs, ...patch }; await chrome.storage.local.set({ "dash:prefs": prefs }); if (window.BoardSync && window.BoardSync.role() !== "off") await window.BoardSync.pushSettings(); },
