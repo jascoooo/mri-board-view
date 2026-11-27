@@ -936,7 +936,7 @@
   window.MRIPeriod = { WD, iso, add, holidays: (y) => [...holidays(y)].sort(), isWork, workingDay, periodOf, closeDay, startDay, now, workDays, nice, label };
 })();
 
-window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin","version":"2.50.0"};
+window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin","version":"2.50.1"};
 // MRI Assist – the VIEW-ONLY board: the leaderboard as a normal web page that anyone with the link can watch – nothing to
 // install, no sign-in, nothing to click into. The PC that reads MRI (the TV) puts this page on a GitHub Pages site together
 // with the board's figures, ENCRYPTED. The key is in the link, after the "#", which a browser never sends anywhere, so the
@@ -2700,6 +2700,19 @@ window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin"
     fillDiag(); clearInterval(fillDiag.t); fillDiag.t = setInterval(() => { if ($("dlg").open) fillDiag(); else clearInterval(fillDiag.t); }, 3000);
     $("dlg").showModal();
   };
+  // the points recheck (content.js, 2.50.1): who had points taken off, and why – in ⚙'s health report and, once, in the change log
+  function recheckLines(W = ptCfg()) {
+    const rc = contrib?.recheck; if (!rc?.at) return [];
+    const rows = Object.entries(rc.removed || {}).map(([u, o]) => { const pts = Math.round(W.p * (o.p || 0) + W.x * (o.x || 0) + (W.bonus ? (o.p1 || 0) + 2 * (o.p2 || 0) : 0)) + Math.ceil((o.u || 0) / Math.max(1, Number(W.u4) || 4)); return { u, o, pts }; }).filter((x) => x.pts > 0 && isPerson(x.u)).sort((a, b) => b.pts - a.pts);
+    const rev = badgesD?.revoked || {};
+    return [`  Points recheck ${new Date(rc.at).toLocaleString("en-GB")} – every day since points started looked at again (${rc.jobs} jobs): supplier invoice lines aren't pricing, a save after invoicing isn't clearing. ${rows.length ? "Taken off:" : "Nothing needed taking off."}`,
+      ...rows.map((x) => `    ${person(contrib?.names?.[x.u] || x.u)}: −${fmtN(x.pts)} pts (${[x.o.p ? `${x.o.p} "priced" that were supplier invoice lines` : "", x.o.x ? `${x.o.x} "cleared" on jobs already invoiced` : "", x.o.u < 0 ? `now ${-x.o.u} other updates` : ""].filter(Boolean).join(", ")})${rev[x.u]?.length ? ` · badges gone: ${rev[x.u].map((id) => { const d = badgesD?.defs?.find((y) => y.id === id.split("@")[0]); return d ? badgeName(d, id.split("@")[1]) : id; }).join(", ")}` : ""}`)];
+  }
+  function noteRecheck() { // (once per recheck, into this board's change log)
+    const rc = contrib?.recheck; if (!rc?.at || localStorage.getItem("recheckLogged") === String(rc.at)) return;
+    localStorage.setItem("recheckLogged", String(rc.at)); for (const l of recheckLines()) logChange("board", "Points recheck", l.trim());
+  }
+  setInterval(() => { try { noteRecheck(); } catch (_) {} }, 30000);
   // plain-text health report, so problems can be copied into a chat
   async function fillDiag() {
     const d = (await chrome.storage.local.get("dash:data"))["dash:data"] || {}; const al = await chrome.alarms?.getAll?.().catch(() => []) || [];
@@ -2731,6 +2744,7 @@ window.MRIV={"repo":"jascoooo/mri-board-view","branch":"data","file":"board.bin"
         return [
           `Staff points since ${sn ? new Date(sn).toLocaleString("en-GB") : "not started"}${contribPending() ? " (reset waiting for the next update)" : ""}`,
           `  Values: raise ${W.r} · book ${W.b} · letter/call ${W.k} · price ${W.p} · close ${W.c} · clear ${W.x} · 1 per ${W.u4} other updates${W.bonus ? " · +1 / +2 for jobs with 3–5 / 6+ sales lines" : ""}`,
+          ...recheckLines(W),
           ...(st.catchup ? [`  Re-reading today's jobs from ${new Date(contrib?.since || 0).toLocaleTimeString("en-GB")} so every board counts the same: ${st.catchup.left} jobs left (the board keeps its current scores until it's done)`] : []),
           `  Quick check (every ${st.every || schedule.activitySecs || 20}s): ${st.overlay?.at ? "last revenue update from it " + t(st.overlay.at) + " (" + st.overlay.jobs + " jobs) · " : ""}jobs-touched search ${t(st.scanAt)}${st.scanRows != null ? ` · ${st.scanRows} jobs touched` : ""}${st.scanMs ? ` · MRI took ${(st.scanMs / 1000).toFixed(1)}s` : ""} · ${st.reads ?? 0} job logs read · ${st.queue ?? 0} waiting · MRI's clock ${Math.abs(st.clock || 0) < 1500 ? "matches this PC" : (st.clock > 0 ? "+" : "−") + Math.round(Math.abs(st.clock) / 1000) + "s vs this PC (allowed for)"}${st.err ? " · last problem: " + st.err : ""}`,
           ...contribRows(d.month).slice(0, 60).map(([u, v], i) => `  ${String(i + 1).padStart(2)}. ${person(u)}: ${v.pts} = ${actFull(v.t)}${jobsOf(u)}`),
